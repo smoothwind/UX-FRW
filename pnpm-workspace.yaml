@@ -2,5 +2,8 @@ packages:
   - packages/*
   - apps/*
 
-onlyBuiltDependencies:
-  - esbuild
+# pnpm 11+ 起由 allowBuilds 取代 onlyBuiltDependencies（旧键会被静默忽略，
+# 进而触发 ERR_PNPM_IGNORED_BUILDS）。esbuild 的 postinstall 用于落平台二进制，
+# vite/rollup 构建依赖它，必须放行。
+allowBuilds:
+  esbuild: true
