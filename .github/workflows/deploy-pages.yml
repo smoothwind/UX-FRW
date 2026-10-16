@@ -1,0 +1,68 @@
+name: Deploy Playground to GitHub Pages
+
+# 只部署 apps/playground 的构建产物（组件库本身不发版）。
+# 站点地址：https://smoothwind.github.io/UX-FRW/ ，与 vite 的 base `/UX-FRW/` 对应。
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+# 最小权限：只读源码 + 通过 OIDC 发布 Pages，无需 PAT / Secrets。
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时刻只允许一次 Pages 发布；排队等待而非中途取消，避免半成品上线。
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: 校验 + 构建
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 版本取自 package.json 的 packageManager 字段（pnpm@12.11.2），无需硬编码。
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 发布门禁：令牌 / 图标 / 快捷键 / i18n / 命令 五条红线全绿才允许部署。
+      - name: Lint (design red lines)
+        run: pnpm check
+
+      - name: Build playground
+        run: pnpm --filter @ux/playground build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/playground/dist
+
+  deploy:
+    name: 发布
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

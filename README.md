@@ -5,6 +5,8 @@
 
 完整设计方案见 [docs/UxKit-设计方案.md](docs/UxKit-设计方案.md)。
 
+在线预览（playground 由 GitHub Actions 发布到 Pages）：<https://smoothwind.github.io/UX-FRW/>
+
 ## 包结构（依赖单向：上层 → 下层）
 
 | 包 | 职责 | 状态 |
