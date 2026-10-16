@@ -1,0 +1,20 @@
+{
+  "name": "ux-frw",
+  "version": "0.1.0",
+  "private": true,
+  "description": "UxKit - 统一桌面交互框架（tokens / composables / services / components / shell / patterns）",
+  "packageManager": "pnpm@12.11.2",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @ux/playground dev",
+    "build": "pnpm -r build",
+    "check:tokens": "node scripts/check-tokens.mjs",
+    "check:icons": "node scripts/check-icons.mjs",
+    "check:shortcuts": "node scripts/check-shortcuts.mjs",
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "check:commands": "node scripts/check-commands.mjs",
+    "check": "node scripts/check-tokens.mjs && node scripts/check-icons.mjs && node scripts/check-shortcuts.mjs && node scripts/check-i18n.mjs && node scripts/check-commands.mjs"
+  }
+}

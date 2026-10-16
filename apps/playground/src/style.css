@@ -1,0 +1,17 @@
+/* Playground 全局样式：全部消费 @ux/tokens 语义令牌（受 check-tokens 约束） */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--ux-font-family);
+  font-size: var(--ux-fs-xl);
+  line-height: var(--ux-lh-normal);
+  color: var(--ux-fg);
+  background: var(--ux-bg);
+}
+
+button {
+  font-family: inherit;
+}

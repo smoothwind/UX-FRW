@@ -1,0 +1,213 @@
+{
+  "app": {
+    "title": "UxKit Playground",
+    "subtitle": "统一桌面交互框架 · M4"
+  },
+  "tabs": {
+    "tokens": "设计令牌",
+    "components": "原子组件",
+    "services": "系统服务",
+    "shell": "布局壳",
+    "patterns": "模式组件"
+  },
+  "theme": {
+    "light": "浅色",
+    "dark": "深色",
+    "system": "跟随系统"
+  },
+  "commands": {
+    "palette": {
+      "title": "命令面板",
+      "empty": "无匹配命令",
+      "hintMove": "选择",
+      "hintRun": "执行",
+      "hintClose": "关闭"
+    },
+    "export": "导出数据",
+    "reveal": "在文件夹中显示",
+    "reload": "重新加载数据",
+    "delete": "删除记录"
+  },
+  "services": {
+    "openPalette": "打开命令面板",
+    "commandsTitle": "命令注册表",
+    "commandsHint": "命令由业务注册，命令面板即时反映；快捷键可通过下方改键。",
+    "shortcutTitle": "快捷键自定义",
+    "run": "运行",
+    "rebind": "改键",
+    "capturing": "按下新键…",
+    "resetKey": "重置",
+    "prefsTitle": "偏好设置（版本化持久化）",
+    "density": "密度",
+    "comfortable": "宽松",
+    "compact": "紧凑",
+    "language": "语言",
+    "conflictsTitle": "冲突检测",
+    "noConflicts": "无冲突",
+    "resetPrefs": "恢复默认"
+  },
+  "shell": {
+    "window": {
+      "minimize": "最小化",
+      "maximize": "最大化",
+      "restore": "还原",
+      "close": "关闭"
+    },
+    "splitter": {
+      "left": "调整左侧栏宽度",
+      "right": "调整右侧栏宽度",
+      "bottom": "调整底部面板高度"
+    },
+    "panel": {
+      "dock": "停靠",
+      "float": "悬浮",
+      "minimize": "最小化",
+      "close": "关闭"
+    },
+    "drop": {
+      "left": "停靠到左侧",
+      "right": "停靠到右侧",
+      "bottom": "停靠到底部",
+      "float": "拖到此处悬浮"
+    },
+    "demoTitle": "工作台布局壳",
+    "demoHint": "拖动面板头到边缘停靠/交换、拖到中央可悬浮；双击面板头在停靠⇄悬浮间切换；悬浮窗可最小化收进右下角层叠条；布局自动持久化。",
+    "activity": {
+      "explorer": "资源管理器",
+      "search": "搜索",
+      "settings": "设置",
+      "output": "输出"
+    },
+    "body": {
+      "explorer": "资源管理器面板内容（由业务插槽渲染）。",
+      "search": "搜索面板内容。",
+      "settings": "设置面板内容。",
+      "output": "输出面板内容（日志/终端类）。"
+    },
+    "tabs": {
+      "close": "关闭",
+      "closeOthers": "关闭其他",
+      "closeRight": "关闭右侧",
+      "closeLeft": "关闭左侧",
+      "closeAll": "关闭全部",
+      "dirty": "未保存",
+      "label": "编辑器页签",
+      "new": "未命名",
+      "newAction": "新页签",
+      "limit": "最多 {n} 个页签",
+      "count": "页签"
+    },
+    "splitPane": {
+      "first": "第一窗格",
+      "second": "第二窗格（拖动分隔条或聚焦后用方向键调整，20%–80%）",
+      "label": "调整分屏比例",
+      "toggle": "分屏"
+    },
+    "statusReady": "就绪",
+    "activePanel": "活动面板",
+    "leftWidth": "左栏宽",
+    "bottomHeight": "底板高",
+    "floating": "悬浮窗",
+    "resetLayout": "重置布局",
+    "floatActive": "悬浮当前面板",
+    "intro": {
+      "title": "组件介绍",
+      "hint": "布局壳全部组件与稳定标注。根元素带 data-ux、关键区域带 data-ux-part，可直接作为 TourGuide 锚点与 E2E 选择器。",
+      "appshell": "应用外壳：垂直组合标题栏、菜单栏、主体工作区与状态栏，是整窗布局的根容器。",
+      "titlebar": "无边框标题栏：左品牌/标题、中内容、右动作与窗控按钮（窗控由 PlatformAdapter 注入）。",
+      "activitybar": "活动栏：垂直图标导航，单选高亮，用于在左侧面板间切换。",
+      "statusbar": "状态栏：左侧状态摘要、右侧徽标与动作，高度固定 26px。",
+      "dock": "停靠工作台：左/右/下/中四区停靠 + 拖拽换区/悬浮 + 悬浮层 + 右下最小化层叠条；状态由 useDockLayout 持有。",
+      "panel": "可停靠面板：可拖拽头部 + 停靠⇄悬浮 / 最小化 / 关闭按钮；双击头部在停靠与悬浮间切换。",
+      "float": "悬浮面板：标题栏指针拖动移动、右下角拖拽缩放、点击置焦（z 递增）。",
+      "splitter": "分隔条：指针拖拽 + 键盘（←↑↓→ / Shift 加速 / Home / End），语义 role=separator。",
+      "splitpane": "分屏容器：左右或上下双窗格，比例钳制 20%–80%，内部复用 UxSplitter。",
+      "tabs": "页签条：roving tabindex + ←→/Home/End 导航、中键关闭、拖拽排序、右键批量关闭、未保存圆点。",
+      "composables": "无渲染逻辑：useDockLayout（面板归属/尺寸/悬浮/最小化/持久化）与 useTabs（开合/激活/批量关闭/排序）。"
+    },
+    "tour": {
+      "start": "帮助",
+      "label": "工作台布局引导",
+      "s1Title": "标题栏",
+      "s1Desc": "应用标题与品牌区（左），右侧为动作与窗口控制按钮（由 PlatformAdapter 注入）。",
+      "s2Title": "活动栏",
+      "s2Desc": "垂直图标导航，点击切换左侧停靠面板，当前项高亮。",
+      "s3Title": "左侧停靠区",
+      "s3Desc": "面板头部可拖拽：拖到窗口边缘停靠、拖到中央悬浮，双击头部在停靠与悬浮间切换。",
+      "s4Title": "中心编辑区",
+      "s4Desc": "页签条（UxTabs）支持中键关闭、拖拽排序、右键批量关闭；开启分屏后由 UxSplitPane 左右分栏。",
+      "s5Title": "底部面板",
+      "s5Desc": "日志/终端类面板，可拖拽上方分隔条调整高度。",
+      "s6Title": "状态栏",
+      "s6Desc": "左侧显示状态摘要与活动面板，右侧显示关键尺寸与页签数。",
+      "s7Title": "组件介绍",
+      "s7Desc": "下方列出布局壳全部组件、API 与稳定标注（data-ux / data-ux-part），可作引导锚点与 E2E 选择器。"
+    }
+  },
+  "patterns": {
+    "demoTitle": "复合模式组件",
+    "error": {
+      "title": "操作失败",
+      "connTitle": "连接出现问题",
+      "retry": "重试",
+      "reconnect": "重连",
+      "copy": "复制详情",
+      "copied": "错误详情已复制",
+      "copyFailed": "复制失败",
+      "openLog": "查看日志"
+    },
+    "settings": {
+      "liveHint": "更改即时生效"
+    },
+    "tour": {
+      "skip": "跳过引导",
+      "prev": "上一步",
+      "next": "下一步",
+      "finish": "完成",
+      "start": "启动漫游引导",
+      "hint": "聚光遮罩 + 键盘（←→/Enter/Esc）；完成后写入 localStorage，下次不再自动弹出。",
+      "s1Title": "欢迎使用 UxKit",
+      "s1Desc": "这一步没有锚点：整屏暗化、卡片居中。\n按 Enter 或「下一步」继续。",
+      "s2Title": "虚拟数据表格",
+      "s2Desc": "10 万行数据只渲染可视窗口。\n点击表头排序，右键单元格复制，双击复制整行。",
+      "s3Title": "设置壳",
+      "s3Desc": "左侧分类导航（支持 ↑↓ 键盘），右侧内容卡片。\n底部footnote提示「更改即时生效」。",
+      "s4Title": "开始探索",
+      "s4Desc": "按 Esc 可随时退出引导。\n完成后刷新页面不会自动弹出。"
+    },
+    "dt": {
+      "label": "演示数据表",
+      "hint": "10 万行虚拟滚动：滚到底部仍然流畅；点击表头排序（null 恒排最前）；右键单元格 / 双击复制行。",
+      "clearSort": "取消排序",
+      "copyCell": "复制单元格",
+      "copyRow": "复制整行 (JSON)",
+      "copied": "已复制",
+      "rowCopied": "整行 JSON 已复制"
+    },
+    "demo": {
+      "emptyTitle": "暂无连接",
+      "emptyHint": "新建一个连接开始管理你的数据库。",
+      "emptyAction": "新建连接",
+      "emptyActionMsg": "打开新建连接对话框（演示）",
+      "showSql": "模拟 SQL 错误",
+      "showConn": "模拟连接错误",
+      "errorIdle": "点击上方按钮模拟错误。",
+      "retried": "已重新执行（演示）",
+      "reconnected": "已重新连接（演示）",
+      "logOpened": "已打开日志面板（演示）",
+      "settingsLabel": "演示设置",
+      "catAppearance": "外观",
+      "catEditor": "编辑器",
+      "catAbout": "关于",
+      "nameLabel": "应用名称"
+    }
+  },
+  "toast": {
+    "exported": "数据已导出",
+    "revealed": "已在文件夹中显示",
+    "reloaded": "数据已重新加载",
+    "deleted": "记录已删除",
+    "rebound": "快捷键已更新为 {keys}",
+    "resetKey": "已恢复默认快捷键"
+  }
+}

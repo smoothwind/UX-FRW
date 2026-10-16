@@ -1,0 +1,16 @@
+{
+  "name": "@ux/services",
+  "version": "0.1.0",
+  "description": "UxKit 系统服务：命令 / 快捷键 / 偏好 / 国际化",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@ux/components": "workspace:*",
+    "vue": "^3.5.13"
+  }
+}

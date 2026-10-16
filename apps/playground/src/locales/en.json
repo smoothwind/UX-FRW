@@ -1,0 +1,213 @@
+{
+  "app": {
+    "title": "UxKit Playground",
+    "subtitle": "Unified Desktop Interaction Framework · M4"
+  },
+  "tabs": {
+    "tokens": "Design Tokens",
+    "components": "Primitives",
+    "services": "System Services",
+    "shell": "Workbench Shell",
+    "patterns": "Patterns"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "commands": {
+    "palette": {
+      "title": "Command Palette",
+      "empty": "No matching commands",
+      "hintMove": "Move",
+      "hintRun": "Run",
+      "hintClose": "Close"
+    },
+    "export": "Export Data",
+    "reveal": "Reveal in Folder",
+    "reload": "Reload Data",
+    "delete": "Delete Record"
+  },
+  "services": {
+    "openPalette": "Open Command Palette",
+    "commandsTitle": "Command Registry",
+    "commandsHint": "Commands are registered by the app and reflect live in the palette; rebind shortcuts below.",
+    "shortcutTitle": "Shortcut Customization",
+    "run": "Run",
+    "rebind": "Rebind",
+    "capturing": "Press new keys…",
+    "resetKey": "Reset",
+    "prefsTitle": "Preferences (versioned persistence)",
+    "density": "Density",
+    "comfortable": "Comfortable",
+    "compact": "Compact",
+    "language": "Language",
+    "conflictsTitle": "Conflict Detection",
+    "noConflicts": "No conflicts",
+    "resetPrefs": "Reset to Defaults"
+  },
+  "shell": {
+    "window": {
+      "minimize": "Minimize",
+      "maximize": "Maximize",
+      "restore": "Restore",
+      "close": "Close"
+    },
+    "splitter": {
+      "left": "Resize left panel",
+      "right": "Resize right panel",
+      "bottom": "Resize bottom panel"
+    },
+    "panel": {
+      "dock": "Dock",
+      "float": "Float",
+      "minimize": "Minimize",
+      "close": "Close"
+    },
+    "drop": {
+      "left": "Dock left",
+      "right": "Dock right",
+      "bottom": "Dock bottom",
+      "float": "Drop here to float"
+    },
+    "demoTitle": "Workbench Shell",
+    "demoHint": "Drag a panel header to an edge to dock/swap, or to the center to float; double-click a header to toggle dock ⇄ float; minimize floats into the bottom-right stack; layout persists automatically.",
+    "activity": {
+      "explorer": "Explorer",
+      "search": "Search",
+      "settings": "Settings",
+      "output": "Output"
+    },
+    "body": {
+      "explorer": "Explorer panel content (rendered by the consumer slot).",
+      "search": "Search panel content.",
+      "settings": "Settings panel content.",
+      "output": "Output panel content (logs / terminal)."
+    },
+    "tabs": {
+      "close": "Close",
+      "closeOthers": "Close Others",
+      "closeRight": "Close Right",
+      "closeLeft": "Close Left",
+      "closeAll": "Close All",
+      "dirty": "Unsaved",
+      "label": "Editor Tabs",
+      "new": "Untitled",
+      "newAction": "New Tab",
+      "limit": "Up to {n} tabs",
+      "count": "Tabs"
+    },
+    "splitPane": {
+      "first": "First pane",
+      "second": "Second pane (drag the splitter or focus it and use arrow keys, 20%–80%)",
+      "label": "Adjust split ratio",
+      "toggle": "Split"
+    },
+    "statusReady": "Ready",
+    "activePanel": "Active",
+    "leftWidth": "Left",
+    "bottomHeight": "Bottom",
+    "floating": "Floating",
+    "resetLayout": "Reset Layout",
+    "floatActive": "Float Active Panel",
+    "intro": {
+      "title": "Components",
+      "hint": "Every shell component with its stable annotations. Roots carry data-ux, key regions carry data-ux-part — usable directly as TourGuide anchors and E2E selectors.",
+      "appshell": "App shell: vertically composes the title bar, menu bar, main work area and status bar — the root container of the window layout.",
+      "titlebar": "Frameless title bar: brand/title left, content center, actions and window controls right (controls injected by PlatformAdapter).",
+      "activitybar": "Activity bar: vertical icon navigation with single-select highlight, switching left panels.",
+      "statusbar": "Status bar: status summary left, badges and actions right; fixed 26px height.",
+      "dock": "Dock workbench: left/right/bottom/center zones + drag to re-dock/float + float layer + bottom-right minimize stack; state held by useDockLayout.",
+      "panel": "Dockable panel: draggable header + dock / float / minimize / close buttons; double-click header toggles float.",
+      "float": "Floating panel: drag header to move, drag bottom-right corner to resize, click to focus (z increments).",
+      "splitter": "Splitter: pointer drag + keyboard (←↑↓→ / Shift to accelerate / Home / End), role=separator.",
+      "splitpane": "Split pane: horizontal or vertical two-pane split, ratio clamped 20%–80%, reuses UxSplitter.",
+      "tabs": "Tab strip: roving tabindex + ←→/Home/End navigation, middle-click close, drag reorder, right-click bulk close, unsaved dot.",
+      "composables": "Headless logic: useDockLayout (ownership/size/float/minimize/persistence) and useTabs (open/activate/bulk close/reorder)."
+    },
+    "tour": {
+      "start": "Help",
+      "label": "Workbench layout tour",
+      "s1Title": "Title bar",
+      "s1Desc": "App title and brand area (left); actions and window controls on the right (injected by PlatformAdapter).",
+      "s2Title": "Activity bar",
+      "s2Desc": "Vertical icon navigation; click to switch the left dock panel; the active item is highlighted.",
+      "s3Title": "Left dock zone",
+      "s3Desc": "Drag a panel header: drop on a window edge to dock, drop in the center to float; double-click the header to toggle between dock and float.",
+      "s4Title": "Center editor area",
+      "s4Desc": "The tab strip (UxTabs) supports middle-click close, drag reorder and right-click bulk close; enabling split uses UxSplitPane for a two-pane layout.",
+      "s5Title": "Bottom panel",
+      "s5Desc": "Logs / terminal panel; drag the splitter above to resize its height.",
+      "s6Title": "Status bar",
+      "s6Desc": "Left shows the status summary and active panel; right shows key sizes and tab count.",
+      "s7Title": "Components",
+      "s7Desc": "Below lists every shell component with its API and stable annotations (data-ux / data-ux-part), usable as anchors and E2E selectors."
+    }
+  },
+  "patterns": {
+    "demoTitle": "Pattern Components",
+    "error": {
+      "title": "Operation Failed",
+      "connTitle": "Connection Problem",
+      "retry": "Retry",
+      "reconnect": "Reconnect",
+      "copy": "Copy Details",
+      "copied": "Error details copied",
+      "copyFailed": "Copy failed",
+      "openLog": "View Logs"
+    },
+    "settings": {
+      "liveHint": "Changes take effect immediately"
+    },
+    "tour": {
+      "skip": "Skip Tour",
+      "prev": "Previous",
+      "next": "Next",
+      "finish": "Finish",
+      "start": "Start Tour",
+      "hint": "Spotlight mask + keyboard (←→/Enter/Esc); completion is remembered in localStorage and won't auto-start next time.",
+      "s1Title": "Welcome to UxKit",
+      "s1Desc": "This step has no anchor: the whole screen dims with a centered card.\nPress Enter or \"Next\" to continue.",
+      "s2Title": "Virtual Data Table",
+      "s2Desc": "100,000 rows render only the visible window.\nClick headers to sort, right-click a cell to copy, double-click to copy the row.",
+      "s3Title": "Settings Shell",
+      "s3Desc": "Category navigation on the left (↑↓ keyboard), content card on the right.\nA footnote at the bottom notes that changes take effect immediately.",
+      "s4Title": "Start Exploring",
+      "s4Desc": "Press Esc to exit the tour anytime.\nIt won't auto-start again after refresh."
+    },
+    "dt": {
+      "label": "Demo Data Table",
+      "hint": "100k rows of virtual scrolling: smooth all the way to the bottom; click headers to sort (nulls first); right-click a cell / double-click to copy a row.",
+      "clearSort": "Clear Sort",
+      "copyCell": "Copy Cell",
+      "copyRow": "Copy Row (JSON)",
+      "copied": "Copied",
+      "rowCopied": "Row JSON copied"
+    },
+    "demo": {
+      "emptyTitle": "No Connections",
+      "emptyHint": "Create a connection to start managing your databases.",
+      "emptyAction": "New Connection",
+      "emptyActionMsg": "Open the new-connection dialog (demo)",
+      "showSql": "Simulate SQL Error",
+      "showConn": "Simulate Conn Error",
+      "errorIdle": "Use the buttons above to simulate an error.",
+      "retried": "Re-executed (demo)",
+      "reconnected": "Reconnected (demo)",
+      "logOpened": "Log panel opened (demo)",
+      "settingsLabel": "Demo Settings",
+      "catAppearance": "Appearance",
+      "catEditor": "Editor",
+      "catAbout": "About",
+      "nameLabel": "App Name"
+    }
+  },
+  "toast": {
+    "exported": "Data exported",
+    "revealed": "Revealed in folder",
+    "reloaded": "Data reloaded",
+    "deleted": "Record deleted",
+    "rebound": "Shortcut updated to {keys}",
+    "resetKey": "Shortcut reset to default"
+  }
+}

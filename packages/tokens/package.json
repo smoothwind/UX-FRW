@@ -1,0 +1,16 @@
+{
+  "name": "@ux/tokens",
+  "version": "0.1.0",
+  "description": "UxKit 设计令牌：三层 CSS 变量（primitives/semantic/layout）+ TS 主题工具",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens.css": "./src/index.css",
+    "./primitives.css": "./src/primitives.css",
+    "./semantic.css": "./src/semantic.css",
+    "./layout.css": "./src/layout.css"
+  },
+  "files": [
+    "src"
+  ]
+}
