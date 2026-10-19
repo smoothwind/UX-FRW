@@ -8,7 +8,7 @@ enableAutoUnmount(afterEach)
 const origClipboard = navigator.clipboard
 
 function mountError(props: Record<string, unknown>): VueWrapper {
-  return mount(ErrorState, { props, attachTo: document.body })
+  return mount(ErrorState, { props: props as never, attachTo: document.body })
 }
 
 describe('looksLikeConnError', () => {

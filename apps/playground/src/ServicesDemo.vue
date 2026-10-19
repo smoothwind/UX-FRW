@@ -230,7 +230,7 @@ function resetPrefs(): void {
 }
 
 .is-danger {
-  color: var(--ux-danger);
+  color: var(--ux-danger-fg);
 }
 
 .sv-keys em {
@@ -253,7 +253,7 @@ function resetPrefs(): void {
   display: inline-flex;
   align-items: center;
   gap: var(--ux-sp-1);
-  color: var(--ux-success);
+  color: var(--ux-success-fg);
 }
 
 .sv-issues {
@@ -268,7 +268,7 @@ function resetPrefs(): void {
   display: inline-flex;
   align-items: center;
   gap: var(--ux-sp-1);
-  color: var(--ux-warning);
+  color: var(--ux-warning-fg);
   font-size: var(--ux-fs-md);
 }
 

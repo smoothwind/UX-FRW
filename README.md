@@ -36,9 +36,12 @@ pnpm check:i18n       # 国际化：同目录所有语言包叶子 key 完全对
 pnpm check:commands   # 命令：引用完整性（悬空 id）+ PlatformAdapter 契约两端比对
 pnpm typecheck        # vue-tsc 全量类型检查（packages + playground）
 pnpm test             # vitest 单元测试（headless 逻辑 + 组件交互 + 系统服务）
+pnpm test:coverage    # 单测 + 覆盖率（阈值锁定在 vitest.config.ts，低于阈值即失败）
 pnpm build            # 各包 lib 构建（dist/：ESM + d.ts，vue/@ux/* 外置）
 pnpm size             # dist 产物体积报告（M6「包体积不增」基线工具）
-pnpm test:e2e         # Playwright 端到端（自动拉起 playground，先跑一次 pnpm exec playwright install chromium）
+pnpm size --check     # 体积红线：gzip 超预算（scripts/size-budget.json + 2KB 余量）即失败
+pnpm size --update    # 确认体积增长合理后刷新预算基准（随 PR 评审）
+pnpm test:e2e         # Playwright 端到端（含 axe-core 无障碍；自动拉起 playground，先跑一次 pnpm exec playwright install chromium）
 pnpm changeset        # 记录本次改动（发版流程，见「发版流程」一节）
 ```
 
@@ -123,7 +126,8 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 
 单元测试（vitest + happy-dom）覆盖不到「真实浏览器里的布局、滚动、焦点与指针命中」，这部分由 Playwright 在 playground 上验证：
 
-- **组织**：`e2e/` 下按主题拆分——`playground.spec.ts`（外壳 / 分区 / 主题 / 语言持久化 / 无控制台错误）、`keyboard.spec.ts`（Ctrl+K 面板、菜单按钮、页签方向键）、`overlays.spec.ts`（浮层开合与外部点击、对话框焦点陷阱、通知）、`data-table.spec.ts`（10 万行虚拟滚动、列头排序）、`tour.spec.ts`（首次访问自动导览、键盘推进、完成记忆）。
+- **组织**：`e2e/` 下按主题拆分——`playground.spec.ts`（外壳 / 分区 / 主题 / 语言持久化 / 无控制台错误）、`keyboard.spec.ts`（Ctrl+K 面板、菜单按钮、页签方向键）、`overlays.spec.ts`（浮层开合与外部点击、对话框焦点陷阱、通知）、`data-table.spec.ts`（10 万行虚拟滚动、列头排序）、`tour.spec.ts`（首次访问自动导览、键盘推进、完成记忆）、`a11y.spec.ts`（axe-core：浅色主页面 / 组件分区、暗色组件分区、命令面板均无 serious/critical 违规）。
+- **无障碍门槛**：`a11y.spec.ts` 只阻断 `serious` / `critical` 级违规（当前覆盖 color-contrast 等规则）；令牌层已按 WCAG AA（≥4.5:1）校准功能色前景（`--ux-*-fg`）与 `--ux-fg-subtle`，新增配色须保持该基线。
 - **选择器约定**：一律走 `data-ux` / `data-ux-part` 稳定锚点（对应设计文档 §6.3 的 `form`/`slot`/`state`/`a11y` 契约），不依赖样式类名与文案；playground 自身同样补齐锚点：导航 `data-ux="pg-nav"`、分区按钮 `data-ux-tab`、主题按钮 `data-ux-theme`、语言按钮 `data-ux-locale`、内容区 `data-ux="pg-body"` + `data-ux-section`。
 - **首次访问导览**：`playwright.config.ts` 用 `storageState` 预置 `uxkit.playground.tour=1`，避免 PatternsDemo 的 TourGuide 自动全屏启动（遮罩会拦截点击，`onReflow` 会在滚动时反复 `scrollIntoView` 让元素永不稳定）；导览自身行为由 `tour.spec.ts` 显式清除标记后单独覆盖。
 - **CI**：`ci.yml` 的 `e2e` job 安装 chromium 后运行 `pnpm test:e2e`（webServer 自动拉起 playground），失败时上传 `playwright-report/` 与 `test-results/`。

@@ -470,8 +470,10 @@ Command { id, title, icon?, shortcut?, when?, category?, danger?, run }
 | `check-shortcuts` ✅ | 注册表内冲突检测 + 与保留键位表（浏览器/Ctrl+K 命令面板/编辑器惯例）比对 |
 | `check-commands` | 模板/代码中引用的 `command:xxx` 必须在注册表或声明文件中存在；PlatformAdapter 契约两端签名比对 |
 | `check-icons` ✅ | 图标注册表一对一映射校验：同一 iconId 绑定多个语义、或同一语义注册多个 iconId 即失败；易困惑组合黑名单（`×` 绑定删除、箭头双义等）直接拦截（红线 13/14） |
-| 测试 | composables 100% 单测（headless 纯逻辑，jsdom 即可）；原子组件渲染快照 + 交互测试（@vue/test-utils）；a11y 断言（role/aria-label 存在性） |
+| 测试 | composables 单测覆盖（`useDockLayout`/`useTabs`/`useFocusTrap` 等）；原子组件渲染 + 交互测试（@vue/test-utils）；a11y 断言（role/aria-label 存在性）。覆盖率阈值锁定在 `vitest.config.ts`（statements/lines/branches/functions），低于阈值 CI 失败；shell / patterns 组件全部补盲 |
 | `changesets` ✅ | `@ux/*` 版本号与 CHANGELOG 单一来源：`pnpm changeset` 记录改动并随功能提交；`master` 推送后 `release.yml` 自动开「版本 PR」，合并即完成发版（`updateInternalDependencies: patch` 联动内部依赖；`@ux/playground` 忽略；npm 发布需另配 `NPM_TOKEN`） |
+| 体积红线 | `scripts/size-report.mjs --check`：gzip 总量超 `scripts/size-budget.json` 预算 + 2KB 余量即失败；膨胀合理时 `--update` 刷新基准并随 PR 评审 |
+| 无障碍（axe-core）✅ | `e2e/a11y.spec.ts` 对浅色主页面 / 组件分区、暗色组件分区、命令面板跑 axe，阻断 serious/critical 违规；令牌按 WCAG AA（≥4.5:1）校准 `--ux-fg-subtle`、`--ux-*-fg`、`--ux-accent-fg` |
 | E2E（Playwright）✅ | 真实浏览器验证单元测试覆盖不到的行为：分区切换 / 主题·语言持久化 / Ctrl+K 命令面板 / 菜单按钮与页签方向键 / 浮层开合与外部点击 / 对话框焦点陷阱 / 10 万行虚拟滚动与排序 / 首次访问导览。选择器一律用 `data-ux`、`data-ux-part` 锚点（不依赖样式类与文案）；config 以 `storageState` 预置导览完成标记，导览行为单独覆盖 |
 
 ---

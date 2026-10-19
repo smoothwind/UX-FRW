@@ -47,14 +47,15 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
-      - name: Unit tests
-        run: pnpm test
+      # 单测 + 覆盖率阈值（vitest.config.ts 中 thresholds 锁定基线）
+      - name: Unit tests & coverage
+        run: pnpm test:coverage
 
-      # 产物构建 + 体积基线（M6「包体积不增」验收的持续观测）
-      - name: Build & size report
+      # 产物构建 + 体积红线（超出 scripts/size-budget.json 预算 + 余量则失败）
+      - name: Build & size budget
         run: |
           pnpm build
-          pnpm size
+          pnpm size --check
 
   e2e:
     name: E2E（Playwright / playground）

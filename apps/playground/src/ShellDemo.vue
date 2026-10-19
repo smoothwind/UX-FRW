@@ -478,6 +478,6 @@ function startTour(): void {
 
 .sl-cmp__api-tag {
   flex: none;
-  color: var(--ux-accent);
+  color: var(--ux-accent-fg);
 }
 </style>

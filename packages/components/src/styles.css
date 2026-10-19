@@ -1,4 +1,4 @@
-﻿/* UxKit 原子组件样式：全部消费语义令牌，受 check-tokens 约束 */
+/* UxKit 原子组件样式：全部消费语义令牌，受 check-tokens 约束 */
 
 .ux-icon {
   width: 1em;
@@ -180,7 +180,7 @@
 
 .ux-field__error {
   font-size: var(--ux-fs-sm);
-  color: var(--ux-danger);
+  color: var(--ux-danger-fg);
 }
 
 /* ===== UxKbd ===== */
@@ -292,7 +292,7 @@
 }
 
 .ux-menu__item--danger {
-  color: var(--ux-danger);
+  color: var(--ux-danger-fg);
 }
 
 .ux-menu__item:disabled {
@@ -431,7 +431,7 @@
   justify-self: start;
   font: inherit;
   font-size: var(--ux-fs-md);
-  color: var(--ux-accent);
+  color: var(--ux-accent-fg);
   background: none;
   border: none;
   padding: 0;
@@ -442,25 +442,25 @@
   border-left-color: var(--ux-info);
 }
 .ux-toast--info .ux-toast__icon {
-  color: var(--ux-info);
+  color: var(--ux-info-fg);
 }
 .ux-toast--success {
   border-left-color: var(--ux-success);
 }
 .ux-toast--success .ux-toast__icon {
-  color: var(--ux-success);
+  color: var(--ux-success-fg);
 }
 .ux-toast--warning {
   border-left-color: var(--ux-warning);
 }
 .ux-toast--warning .ux-toast__icon {
-  color: var(--ux-warning);
+  color: var(--ux-warning-fg);
 }
 .ux-toast--danger {
   border-left-color: var(--ux-danger);
 }
 .ux-toast--danger .ux-toast__icon {
-  color: var(--ux-danger);
+  color: var(--ux-danger-fg);
 }
 
 /* ===== UxSegmented ===== */
@@ -507,7 +507,7 @@
 
 .ux-seg__item.is-active {
   background: var(--ux-accent-subtle);
-  color: var(--ux-accent);
+  color: var(--ux-accent-fg);
   font-weight: var(--ux-fw-medium);
 }
 
@@ -624,23 +624,23 @@
 
 .ux-chip--accent {
   background: var(--ux-accent-subtle);
-  color: var(--ux-accent);
+  color: var(--ux-accent-fg);
 }
 .ux-chip--success {
   background: var(--ux-success-subtle);
-  color: var(--ux-success);
+  color: var(--ux-success-fg);
 }
 .ux-chip--warning {
   background: var(--ux-warning-subtle);
-  color: var(--ux-warning);
+  color: var(--ux-warning-fg);
 }
 .ux-chip--danger {
   background: var(--ux-danger-subtle);
-  color: var(--ux-danger);
+  color: var(--ux-danger-fg);
 }
 .ux-chip--info {
   background: var(--ux-info-subtle);
-  color: var(--ux-info);
+  color: var(--ux-info-fg);
 }
 
 /* ===== UxTree ===== */
@@ -672,7 +672,7 @@
 
 .ux-tree__row.is-selected {
   background: var(--ux-accent-subtle);
-  color: var(--ux-accent);
+  color: var(--ux-accent-fg);
 }
 
 .ux-tree__row.is-disabled {
@@ -731,7 +731,7 @@
 }
 
 .ux-tree__icon.is-lost {
-  color: var(--ux-danger);
+  color: var(--ux-danger-fg);
 }
 
 .ux-tree__icon.is-off {

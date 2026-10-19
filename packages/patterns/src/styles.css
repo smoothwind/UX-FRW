@@ -84,7 +84,7 @@
 }
 
 .ux-cmdk__item--danger {
-  color: var(--ux-danger);
+  color: var(--ux-danger-fg);
 }
 
 .ux-cmdk__item-label {
@@ -166,7 +166,7 @@
 
 .ux-error__icon {
   font-size: var(--ux-fs-icon);
-  color: var(--ux-danger);
+  color: var(--ux-danger-fg);
 }
 
 .ux-error__title {
@@ -429,7 +429,7 @@
 .ux-dt__sort {
   flex: none;
   font-size: var(--ux-fs-lg);
-  color: var(--ux-accent);
+  color: var(--ux-accent-fg);
 }
 
 .ux-dt__sort--desc {
@@ -550,16 +550,16 @@
 }
 
 .ux-log__row--info .ux-log__icon {
-  color: var(--ux-info);
+  color: var(--ux-info-fg);
 }
 .ux-log__row--warn .ux-log__icon {
-  color: var(--ux-warning);
+  color: var(--ux-warning-fg);
 }
 .ux-log__row--error .ux-log__icon {
-  color: var(--ux-danger);
+  color: var(--ux-danger-fg);
 }
 .ux-log__row--error .ux-log__title {
-  color: var(--ux-danger);
+  color: var(--ux-danger-fg);
 }
 
 .ux-log__time {

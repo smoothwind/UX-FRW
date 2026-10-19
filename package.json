@@ -11,6 +11,7 @@
     "dev": "pnpm --filter @ux/playground dev",
     "build": "pnpm -r build",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
@@ -28,10 +29,12 @@
     "check": "node scripts/check-tokens.mjs && node scripts/check-icons.mjs && node scripts/check-shortcuts.mjs && node scripts/check-i18n.mjs && node scripts/check-commands.mjs"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@changesets/cli": "^3.0.3",
     "@playwright/test": "1.57.0",
     "@types/node": "^26.6.5",
     "@vitejs/plugin-vue": "^6.0.10",
+    "@vitest/coverage-v8": "^5.0.5",
     "@vue/test-utils": "^2.5.1",
     "eslint": "^10.13.0",
     "eslint-plugin-vue": "^10.11.1",

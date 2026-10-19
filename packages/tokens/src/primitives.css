@@ -14,6 +14,7 @@
   --ux-gray-200: #d0d7de;
   --ux-gray-300: #afb8c1;
   --ux-gray-400: #8c959f;
+  --ux-gray-450: #646e7d;
   --ux-gray-500: #6a7381;
   --ux-gray-600: #57606a;
   --ux-gray-700: #424a53;
@@ -38,17 +39,21 @@
   --ux-indigo-500: #4c6ef5;
   --ux-indigo-600: #3b5bdb;
   --ux-indigo-700: #2f4bc9;
+  --ux-indigo-800: #28399b;
 
   /* 功能色 */
   --ux-green-300: #6fd08c;
   --ux-green-500: #2da44e;
   --ux-green-600: #22823c;
+  --ux-green-700: #146c2e;
   --ux-red-300: #f0666c;
   --ux-red-500: #e03131;
   --ux-red-600: #c22525;
+  --ux-red-700: #a11d1d;
   --ux-yellow-300: #e8c368;
   --ux-yellow-500: #bf8700;
   --ux-yellow-600: #9a6700;
+  --ux-yellow-700: #7a5200;
   --ux-blue-300: #6ea8f7;
   --ux-blue-500: #0969da;
   --ux-blue-600: #0757ba;

@@ -166,7 +166,7 @@
 }
 
 .ux-activitybar__btn.is-active {
-  color: var(--ux-accent);
+  color: var(--ux-accent-fg);
   background: var(--ux-accent-subtle);
 }
 
@@ -612,7 +612,7 @@ body.ux-resizing--horizontal {
 
 .ux-tabs__tab.is-lost,
 .ux-tabs__tab.is-lost .ux-tabs__subtitle {
-  color: var(--ux-danger);
+  color: var(--ux-danger-fg);
 }
 
 .ux-tabs__tab.is-off {
@@ -823,7 +823,7 @@ body.ux-resizing--horizontal {
 }
 
 .ux-tablist__item.is-active .ux-tablist__title {
-  color: var(--ux-accent);
+  color: var(--ux-accent-fg);
 }
 
 .ux-tablist__subtitle {
