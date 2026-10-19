@@ -25,6 +25,9 @@ export { default as UxContextMenuHost } from './context-menu/ContextMenuHost.vue
 export { closeContextMenu, openContextMenu, openContextMenuAt } from './context-menu/service'
 export type { MenuItem, MenuItemsSource } from './context-menu/service'
 
+export { default as UxDropdown } from './dropdown/UxDropdown.vue'
+export { default as UxPopover } from './popover/UxPopover.vue'
+
 export { default as UxMenuBar } from './menu/UxMenuBar.vue'
 export { default as UxMenuPanel } from './menu/MenuPanel.vue'
 export { isCheckable, menuItemKind } from './menu/types'

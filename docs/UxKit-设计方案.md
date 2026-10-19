@@ -278,7 +278,8 @@ interface Platform {
 | `UxTooltip` ✅ | 120ms hover 意图延迟 + 焦点即显 + Esc 关闭 + `useOverflowPosition` 视口翻转；`role=tooltip` + `aria-describedby`；图标按钮配套 |
 | `UxSegmented` ✅ | 分段单选：`role=radiogroup` + roving tabindex + ←→/↑↓/Home/End；size `sm/md`；禁用项跳过；选中=主色淡底（提炼自 PersonalDb SPEC-UI-24/27/28） |
 | `UxBadge / UxChip` ✅ | 计数/圆点角标（`max` 封顶、可包裹触发元素）；状态胶囊（`tone` + `dot`，`*-subtle` 底） |
-| `UxDropdown / UxPopover` | 复用 useOverflowPosition；下拉菜单另见 §6.6（待补齐） |
+| `UxDropdown` ✅ | 菜单按钮（APG menubutton）：`aria-haspopup=menu` + `aria-expanded`；点击 / ↓ / Enter / Space 打开，Esc 关闭并归还焦点，Tab 只进出一次，外部点击关闭，`checkable` 项激活不关闭；复用 `MenuPanel`（全类型项 + 子菜单），定位 `useOverflowPosition`，层级 `--ux-z-dropdown`；`v-model:open` 可选受控（详见 §6.6） |
+| `UxPopover` ✅ | 通用锚定浮层（非菜单类）：默认插槽=触发元素（点击开合，`trigger="manual"` 纯 API）+ `#content` 插槽；`useOverflowPosition` 视口翻转 + 钳制 + `matchTriggerWidth`；外部点击 / Esc 关闭（可分别开关）；`role`/`ariaLabel`/`focusOnOpen`；`v-model:open` 可选受控 + expose `open()/close()/toggle()` |
 | `UxToastHost` | aria-live、四语义色、可点击动作按钮、notifyOnce 集成 |
 | `UxTabs` | role=tablist、dirty 圆点、中键关闭、拖拽排序、溢出滚动；页签状态三态 `status`（on/lost 红/off 灰化）+ `subtitle` 双行 + `accent` 标识色点（SPEC-UI-22）；`#actions` 插槽在页签栏右侧追加动作区（页签列表/分屏控件图标化 `act-split` / `act-split-stack` / `act-unsplit`，SPEC-UI-27） |
 | `UxTree` | 懒加载 + 搜索过滤 + 右键菜单集成 + 状态角标 + 拖拽（防守式校验） |

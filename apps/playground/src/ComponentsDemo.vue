@@ -5,10 +5,12 @@ import {
   UxButton,
   UxChip,
   UxDialog,
+  UxDropdown,
   UxIcon,
   UxInput,
   UxKbd,
   UxMenuBar,
+  UxPopover,
   UxSegmented,
   UxTooltip,
   UxTree,
@@ -225,6 +227,18 @@ function openMenu(e: MouseEvent): void {
   openContextMenu(e, () => ctxItems.value)
 }
 
+const dropdownOpen = ref(false)
+const dropdownItems: MenuItem[] = [
+  { id: 'new', label: '新建连接', icon: 'act-plus', shortcut: 'Ctrl+N', run: () => notify('新建连接') },
+  { id: 'open', label: '打开…', icon: 'obj-folder', run: () => notify('打开文件') },
+  { type: 'separator' },
+  { id: 'wrap', type: 'checkbox', label: '自动换行', checked: wrapText.value, run: () => notify('切换自动换行') },
+  { type: 'separator' },
+  { id: 'delete', label: '删除', icon: 'act-delete', danger: true, run: () => notify({ type: 'danger', message: '已删除' }) },
+]
+
+const popOpen = ref(false)
+
 function fakeError(): void {
   notifyOnce('demo-error', { type: 'danger', message: '连接失败：超时', action: { label: '重试', run: () => notify('重试中…') } })
 }
@@ -361,6 +375,30 @@ function fakeError(): void {
     </section>
 
     <section class="pg-card">
+      <h2>UxDropdown / UxPopover（锚定浮层 / 视口翻转）</h2>
+      <div class="row">
+        <UxDropdown :items="dropdownItems" label="操作" aria-label="操作菜单" />
+        <UxDropdown :items="dropdownItems" icon="act-settings" aria-label="更多操作" variant="ghost" />
+        <UxDropdown :items="dropdownItems" label="禁用" disabled />
+        <UxDropdown v-model:open="dropdownOpen" :items="dropdownItems" label="受控" />
+        <UxButton @click="dropdownOpen = !dropdownOpen">外部切换受控项</UxButton>
+        <UxPopover v-model:open="popOpen" aria-label="过滤器" role="dialog">
+          <UxButton variant="primary">打开浮层</UxButton>
+          <template #content>
+            <div class="col">
+              <strong>过滤条件</strong>
+              <UxInput v-model="name" placeholder="关键字…" />
+              <UxButton size="sm" variant="primary" @click="popOpen = false">应用</UxButton>
+            </div>
+          </template>
+        </UxPopover>
+      </div>
+      <p class="pg-note">
+        Dropdown：menubutton 语义（aria-haspopup/aria-expanded）、↓/Enter/Space 打开、Esc 关闭并归还焦点、Tab 只进出一次、点击外部关闭、checkable 项不关闭、菜单层级 z 走 --ux-z-dropdown；Popover：点击锚点开合（或 trigger=manual）、外部点击/Esc 关闭、视口溢出自动翻转、v-model:open 受控。
+      </p>
+    </section>
+
+    <section class="pg-card">
       <h2>UxToast（aria-live / notifyOnce 去重）</h2>
       <div class="row">
         <UxButton @click="notify({ type: 'info', message: '这是一条信息' })">info</UxButton>
@@ -420,6 +458,13 @@ function fakeError(): void {
 
 .row:last-child {
   margin-bottom: 0;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ux-sp-2);
 }
 
 .grid-2 {

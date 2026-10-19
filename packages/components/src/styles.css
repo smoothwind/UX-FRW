@@ -764,3 +764,41 @@
   border-radius: var(--ux-radius-full);
   background: var(--ux-danger);
 }
+
+/* ===== UxPopover ===== */
+.ux-pop-trigger {
+  display: inline-flex;
+}
+
+.ux-pop {
+  position: fixed;
+  z-index: var(--ux-z-pop);
+  min-width: 120px;
+  max-width: calc(100vw - var(--ux-sp-4) * 2);
+  padding: var(--ux-sp-2);
+  color: var(--ux-fg);
+  background: var(--ux-bg-overlay);
+  border: 1px solid var(--ux-border);
+  border-radius: var(--ux-radius);
+  box-shadow: var(--ux-elev-2);
+}
+
+.ux-pop:focus {
+  outline: none;
+}
+
+/* ===== UxDropdown ===== */
+.ux-dropdown {
+  display: inline-flex;
+}
+
+.ux-dropdown__caret {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  color: var(--ux-fg-muted);
+}
+
+.ux-dropdown__menu {
+  z-index: var(--ux-z-dropdown);
+}

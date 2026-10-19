@@ -35,7 +35,7 @@ pnpm check:shortcuts  # 快捷键：键位唯一占用（错误）+ 保留键位
 pnpm check:i18n       # 国际化：同目录所有语言包叶子 key 完全对齐
 pnpm check:commands   # 命令：引用完整性（悬空 id）+ PlatformAdapter 契约两端比对
 pnpm typecheck        # vue-tsc 全量类型检查（packages + playground）
-pnpm test             # vitest 单元测试（headless 逻辑 + 系统服务）
+pnpm test             # vitest 单元测试（headless 逻辑 + 组件交互 + 系统服务）
 pnpm build            # 各包 lib 构建（dist/：ESM + d.ts，vue/@ux/* 外置）
 pnpm size             # dist 产物体积报告（M6「包体积不增」基线工具）
 ```
@@ -54,6 +54,8 @@ pnpm size             # dist 产物体积报告（M6「包体积不增」基线�
 | `UxDialog` | `v-model:open`；focus trap + Esc + 遮罩 + aria-modal + 焦点归还 |
 | `UxContextMenuHost` + `openContextMenu(e, items)` / `openContextMenuAt(x, y, items)` | 单例右键菜单：`role=menu/menuitem/menuitemcheckbox/menuitemradio/separator`；全类型项 `item/separator/label/checkbox/radio/submenu`（二级子菜单）；防溢出定位 + ↑↓/←→/Home/End/Enter/Space/Esc/首字母 + hover 跟随；危险项/禁用项（仍可聚焦）；菜单源可为数组或 getter（复选/单选实时勾选）。规范见 [§6.6](docs/UxKit-设计方案.md) |
 | `UxMenuBar` | 工具菜单栏：`role=menubar` + roving tabindex + ←→ 切顶级项 + ↓/Enter/Space 展开 + Home/End/首字母；下拉复用 `MenuPanel`（含子菜单/复选/单选）；Esc 关闭并归还焦点 |
+| `UxDropdown` | 菜单按钮（APG menubutton）：`aria-haspopup=menu` + `aria-expanded`；点击 / ↓ / Enter / Space 打开、Esc 关闭并归还焦点、Tab 只进出一次、外部点击关闭、`checkable` 项激活不关闭；复用 `MenuPanel`（全类型项/子菜单），层级 `--ux-z-dropdown`；`v-model:open` 可选受控；`matchTriggerWidth` 对齐触发按钮 |
+| `UxPopover` | 通用锚定浮层：默认插槽=触发元素（点击开合，或 `trigger="manual"` 纯 API）；`#content` 插槽=浮层内容；`useOverflowPosition` 视口翻转 + 钳制；外部点击 / Esc 关闭（可分别开关）；`role`/`ariaLabel`/`focusOnOpen`/`matchTriggerWidth`；`v-model:open` 可选受控 + expose `open()/close()/toggle()` |
 | `UxToastHost` + `notify()` / `notifyOnce(key, ...)` | aria-live 通知 + 5 秒去重 + 可点击动作 |
 | `useFocusTrap` / `useOverflowPosition` / `useDismiss` / `useHoverIntent` | headless 逻辑，可独立用于任意浮层（`useHoverIntent`：hover 意图延迟走廊 ~120ms） |
 | `CommandPalette`（patterns） | Ctrl+K 命令面板：注册表实时联动 + 过滤 + ↑↓/Enter/Esc + combobox aria |
@@ -131,7 +133,7 @@ pnpm size             # dist 产物体积报告（M6「包体积不增」基线�
 6. **子菜单**：最多 2 级，父项 chevron-right，右缘不足翻转左侧，hover 走廊延迟。
 7. **视觉**：全走语义令牌（`--ux-bg-overlay`/`--ux-elev-2`/`--ux-radius-md`），图标 16px 语义唯一、快捷键列右对齐、删除必须垃圾桶 + danger（红线 13/14）。
 
-**当前状态**：`MenuPanel` + `UxContextMenuHost`（单例，含全类型项/子菜单/复选/单选/组标题、数组或 getter 菜单源）与 `UxMenuBar`（`role=menubar`）已交付并验证；`check-commands`（命令引用完整性 + PlatformAdapter 契约）、子菜单 `useHoverIntent` 延迟走廊（~120ms）、`Shift+F10` / 菜单键显式绑定（原生优先 + 兜底合成）均已落地。菜单项 `{ command }` 内置映射仍由应用层按注册表生成 `MenuItem[]`（组件层不反向依赖 services）。
+**当前状态**：`MenuPanel` + `UxContextMenuHost`（单例，含全类型项/子菜单/复选/单选/组标题、数组或 getter 菜单源）、`UxMenuBar`（`role=menubar`）与 `UxDropdown`（menubutton，锚定宿主 + APG 键盘/Esc 归还焦点）已交付并验证；`UxPopover` 提供通用锚定浮层底座（视口翻转 + 外部/Esc 关闭 + 受控/非受控）；`check-commands`（命令引用完整性 + PlatformAdapter 契约）、子菜单 `useHoverIntent` 延迟走廊（~120ms）、`Shift+F10` / 菜单键显式绑定（原生优先 + 兜底合成）均已落地。菜单项 `{ command }` 内置映射仍由应用层按注册表生成 `MenuItem[]`（组件层不反向依赖 services）。
 
 ## 主题切换
 
