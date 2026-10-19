@@ -31,7 +31,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # changesets 3.x（及 vitest 5）要求 Node >= 22.11，Node 20 下会报
+          # "enableCompileCache is not a function"。
+          node-version: 22
           cache: pnpm
 
       - name: Install

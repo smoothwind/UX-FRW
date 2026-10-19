@@ -5,7 +5,7 @@
   "description": "UxKit - 统一桌面交互框架（tokens / composables / services / components / shell / patterns）",
   "packageManager": "pnpm@12.11.2",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.13"
   },
   "scripts": {
     "dev": "pnpm --filter @ux/playground dev",

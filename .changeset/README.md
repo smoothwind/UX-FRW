@@ -4,6 +4,9 @@
 
 ## 日常流程
 
+> 需要 Node.js ≥ 22.13。changesets 3.x 使用了 Node 22.11 才引入的 `module.enableCompileCache`，
+> 在 Node 20 下运行会报 `TypeError: enableCompileCache is not a function`。
+
 ```bash
 pnpm changeset          # 交互式记录本次改动：选包 + 选 bump 类型（major/minor/patch）+ 写说明
 ```
