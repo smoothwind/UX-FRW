@@ -12,6 +12,8 @@
     "build": "pnpm -r build",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",
     "lint": "eslint .",
     "size": "node scripts/size-report.mjs",
@@ -27,6 +29,7 @@
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
+    "@playwright/test": "1.57.0",
     "@types/node": "^26.6.5",
     "@vitejs/plugin-vue": "^6.0.10",
     "@vue/test-utils": "^2.5.1",

@@ -472,6 +472,7 @@ Command { id, title, icon?, shortcut?, when?, category?, danger?, run }
 | `check-icons` ✅ | 图标注册表一对一映射校验：同一 iconId 绑定多个语义、或同一语义注册多个 iconId 即失败；易困惑组合黑名单（`×` 绑定删除、箭头双义等）直接拦截（红线 13/14） |
 | 测试 | composables 100% 单测（headless 纯逻辑，jsdom 即可）；原子组件渲染快照 + 交互测试（@vue/test-utils）；a11y 断言（role/aria-label 存在性） |
 | `changesets` ✅ | `@ux/*` 版本号与 CHANGELOG 单一来源：`pnpm changeset` 记录改动并随功能提交；`master` 推送后 `release.yml` 自动开「版本 PR」，合并即完成发版（`updateInternalDependencies: patch` 联动内部依赖；`@ux/playground` 忽略；npm 发布需另配 `NPM_TOKEN`） |
+| E2E（Playwright）✅ | 真实浏览器验证单元测试覆盖不到的行为：分区切换 / 主题·语言持久化 / Ctrl+K 命令面板 / 菜单按钮与页签方向键 / 浮层开合与外部点击 / 对话框焦点陷阱 / 10 万行虚拟滚动与排序 / 首次访问导览。选择器一律用 `data-ux`、`data-ux-part` 锚点（不依赖样式类与文案）；config 以 `storageState` 预置导览完成标记，导览行为单独覆盖 |
 
 ---
 

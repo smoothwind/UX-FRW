@@ -38,6 +38,7 @@ pnpm typecheck        # vue-tsc 全量类型检查（packages + playground）
 pnpm test             # vitest 单元测试（headless 逻辑 + 组件交互 + 系统服务）
 pnpm build            # 各包 lib 构建（dist/：ESM + d.ts，vue/@ux/* 外置）
 pnpm size             # dist 产物体积报告（M6「包体积不增」基线工具）
+pnpm test:e2e         # Playwright 端到端（自动拉起 playground，先跑一次 pnpm exec playwright install chromium）
 pnpm changeset        # 记录本次改动（发版流程，见「发版流程」一节）
 ```
 
@@ -117,6 +118,15 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 **国际化纪律**（check-i18n）：
 
 9. 同一 locales 目录下所有语言包的叶子 key **完全对齐**（禁缺 key / 多 key）；所有面向用户的文案一律走 i18n key，禁止散落硬编码
+
+## 端到端测试（Playwright）
+
+单元测试（vitest + happy-dom）覆盖不到「真实浏览器里的布局、滚动、焦点与指针命中」，这部分由 Playwright 在 playground 上验证：
+
+- **组织**：`e2e/` 下按主题拆分——`playground.spec.ts`（外壳 / 分区 / 主题 / 语言持久化 / 无控制台错误）、`keyboard.spec.ts`（Ctrl+K 面板、菜单按钮、页签方向键）、`overlays.spec.ts`（浮层开合与外部点击、对话框焦点陷阱、通知）、`data-table.spec.ts`（10 万行虚拟滚动、列头排序）、`tour.spec.ts`（首次访问自动导览、键盘推进、完成记忆）。
+- **选择器约定**：一律走 `data-ux` / `data-ux-part` 稳定锚点（对应设计文档 §6.3 的 `form`/`slot`/`state`/`a11y` 契约），不依赖样式类名与文案；playground 自身同样补齐锚点：导航 `data-ux="pg-nav"`、分区按钮 `data-ux-tab`、主题按钮 `data-ux-theme`、语言按钮 `data-ux-locale`、内容区 `data-ux="pg-body"` + `data-ux-section`。
+- **首次访问导览**：`playwright.config.ts` 用 `storageState` 预置 `uxkit.playground.tour=1`，避免 PatternsDemo 的 TourGuide 自动全屏启动（遮罩会拦截点击，`onReflow` 会在滚动时反复 `scrollIntoView` 让元素永不稳定）；导览自身行为由 `tour.spec.ts` 显式清除标记后单独覆盖。
+- **CI**：`ci.yml` 的 `e2e` job 安装 chromium 后运行 `pnpm test:e2e`（webServer 自动拉起 playground），失败时上传 `playwright-report/` 与 `test-results/`。
 
 ## 菜单设计规范（右键菜单 / 工具菜单）
 

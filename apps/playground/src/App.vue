@@ -115,13 +115,15 @@ onUnmounted(stopShortcuts)
     <header class="pg-header">
       <h1 class="pg-title">{{ t('app.title') }}</h1>
       <span class="pg-sub">{{ t('app.subtitle') }}</span>
-      <nav class="pg-tabs" aria-label="demo sections">
+      <nav class="pg-tabs" data-ux="pg-nav" aria-label="demo sections">
         <button
           v-for="item in tabs"
           :key="item.value"
           class="pg-btn"
           :class="{ 'is-active': tab === item.value }"
           type="button"
+          :data-ux-tab="item.value"
+          :aria-current="tab === item.value ? 'page' : undefined"
           @click="tab = item.value"
         >
           {{ item.label }}
@@ -134,6 +136,7 @@ onUnmounted(stopShortcuts)
           class="pg-btn"
           :class="{ 'is-active': localeRef === locale }"
           type="button"
+          :data-ux-locale="locale"
           @click="i18n.setLocale(locale)"
         >
           {{ locale === 'zh-CN' ? '中' : 'EN' }}
@@ -146,6 +149,7 @@ onUnmounted(stopShortcuts)
           class="pg-btn"
           :class="{ 'is-active': theme === item.value }"
           type="button"
+          :data-ux-theme="item.value"
           @click="setTheme(item.value)"
         >
           {{ item.label }}
@@ -153,7 +157,7 @@ onUnmounted(stopShortcuts)
       </div>
     </header>
 
-    <main class="pg-body">
+    <main class="pg-body" data-ux="pg-body" :data-ux-section="tab">
       <TokensPanel v-if="tab === 'tokens'" />
       <ComponentsDemo v-else-if="tab === 'components'" />
       <ServicesDemo v-else-if="tab === 'services'" />
