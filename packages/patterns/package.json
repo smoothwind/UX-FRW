@@ -1,15 +1,28 @@
 {
   "name": "@ux/patterns",
   "version": "0.1.0",
-  "description": "UxKit 复合模式：CommandPalette / SettingsShell / TourGuide…",
+  "description": "UxKit 复合模式：CommandPalette / SettingsShell / TourGuide",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./styles.css": "./src/styles.css"
   },
   "files": [
+    "dist",
     "src"
   ],
+  "scripts": {
+    "build": "vite build --config vite.lib.config.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./styles.css": "./src/styles.css"
+    }
+  },
   "dependencies": {
     "@ux/components": "workspace:*",
     "@ux/composables": "workspace:*",

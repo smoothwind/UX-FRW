@@ -46,3 +46,9 @@ jobs:
 
       - name: Unit tests
         run: pnpm test
+
+      # 产物构建 + 体积基线（M6「包体积不增」验收的持续观测）
+      - name: Build & size report
+        run: |
+          pnpm build
+          pnpm size

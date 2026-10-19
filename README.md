@@ -33,6 +33,8 @@ pnpm check:i18n       # 国际化：同目录所有语言包叶子 key 完全对
 pnpm check:commands   # 命令：引用完整性（悬空 id）+ PlatformAdapter 契约两端比对
 pnpm typecheck        # vue-tsc 全量类型检查（packages + playground）
 pnpm test             # vitest 单元测试（headless 逻辑 + 系统服务）
+pnpm build            # 各包 lib 构建（dist/：ESM + d.ts，vue/@ux/* 外置）
+pnpm size             # dist 产物体积报告（M6「包体积不增」基线工具）
 ```
 
 ## 已交付组件与 API
