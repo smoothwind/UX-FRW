@@ -1,6 +1,6 @@
 {
   "name": "@ux/patterns",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "UxKit 复合模式：CommandPalette / SettingsShell / TourGuide",
   "type": "module",
   "exports": {
