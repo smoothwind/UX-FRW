@@ -1,0 +1,26 @@
+# Changesets
+
+本目录由 [changesets](https://github.com/changesets/changesets) 管理，负责 `@ux/*` 各包的版本号提升与 CHANGELOG 生成。
+
+## 日常流程
+
+```bash
+pnpm changeset          # 交互式记录本次改动：选包 + 选 bump 类型（major/minor/patch）+ 写说明
+```
+
+该命令会在 `.changeset/` 下生成一个 Markdown 文件，**随功能改动一起提交**（不要手动改版本号）。
+
+## 发版流程（CI 自动化）
+
+1. 功能 PR 合并进 `master` → `.github/workflows/release.yml` 自动运行 changesets action。
+2. action 发现存在 changeset 文件时，自动创建/更新 **「chore: version packages」** 的版本 PR：
+   - 消费 `.changeset/*.md`，提升各包 `version`，更新内部依赖区间，写入各包 `CHANGELOG.md`。
+3. 合并该版本 PR → 版本号落地。
+4. 发布到 npm 属于**可选步骤**：需在仓库 Secret 配置 `NPM_TOKEN`，并在 `release.yml` 的 changesets action 上补 `publish: pnpm release`。未配置时流程只做到「版本 PR」，不会推送 npm。
+
+## 约定
+
+- `baseBranch: master`、`access: restricted`（`@ux/*` 为私有 scope，发布前需确认 scope 归属）。
+- `ignore: ["@ux/playground"]`：演示应用不参与版本管理。
+- `updateInternalDependencies: patch`：被依赖包发版时，内部依赖区间自动跟随 patch 提升。
+- 未使用 `fixed` / `linked` 分组，各包可独立演进；框架整体发版时一并选择全部包即可。

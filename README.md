@@ -38,6 +38,7 @@ pnpm typecheck        # vue-tsc 全量类型检查（packages + playground）
 pnpm test             # vitest 单元测试（headless 逻辑 + 组件交互 + 系统服务）
 pnpm build            # 各包 lib 构建（dist/：ESM + d.ts，vue/@ux/* 外置）
 pnpm size             # dist 产物体积报告（M6「包体积不增」基线工具）
+pnpm changeset        # 记录本次改动（发版流程，见「发版流程」一节）
 ```
 
 ## 已交付组件与 API
@@ -135,8 +136,16 @@ pnpm size             # dist 产物体积报告（M6「包体积不增」基线�
 
 **当前状态**：`MenuPanel` + `UxContextMenuHost`（单例，含全类型项/子菜单/复选/单选/组标题、数组或 getter 菜单源）、`UxMenuBar`（`role=menubar`）与 `UxDropdown`（menubutton，锚定宿主 + APG 键盘/Esc 归还焦点）已交付并验证；`UxPopover` 提供通用锚定浮层底座（视口翻转 + 外部/Esc 关闭 + 受控/非受控）；`check-commands`（命令引用完整性 + PlatformAdapter 契约）、子菜单 `useHoverIntent` 延迟走廊（~120ms）、`Shift+F10` / 菜单键显式绑定（原生优先 + 兜底合成）均已落地。菜单项 `{ command }` 内置映射仍由应用层按注册表生成 `MenuItem[]`（组件层不反向依赖 services）。
 
-## 主题切换
+## 发版流程（changesets）
 
+`@ux/*` 各包的版本号与 CHANGELOG 由 [changesets](https://github.com/changesets/changesets) 管理（配置见 [`.changeset/config.json`](.changeset/config.json)，说明见 [`.changeset/README.md`](.changeset/README.md)）。
+
+- **开发时**：`pnpm changeset` 记录改动（选包 + major/minor/patch + 说明），生成的 `.changeset/*.md` **随功能提交**；禁止手改 `version`。
+- **发版时**：功能合并进 `master` 后，[`release.yml`](.github/workflows/release.yml) 自动开启/更新 **「chore: version packages」版本 PR**（消费 changeset、提升版本号、更新内部依赖区间、写 CHANGELOG）；合并该 PR 即完成发版。
+- **npm 发布（可选）**：仓库配置 `NPM_TOKEN` 后，在 `release.yml` 的 changesets action 补 `publish: pnpm release` 即可推送 `@ux/*`；未配置时流程止步于版本 PR。
+- `@ux/playground` 已 `ignore`（演示应用不参与版本管理）；被依赖包发版时内部依赖区间按 `updateInternalDependencies: patch` 自动跟随。
+
+## 主题切换
 ```ts
 import { applyTheme, getToken } from '@ux/tokens'
 

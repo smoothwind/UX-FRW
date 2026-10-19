@@ -1,0 +1,47 @@
+name: Release
+
+# 发版流程（changesets）：master 上出现 .changeset/*.md 时，自动开启/更新「版本 PR」。
+# 合并版本 PR 即完成版本号提升与 CHANGELOG 生成；发布 npm 需另配 NPM_TOKEN 并启用 publish（见 .changeset/README.md）。
+
+on:
+  push:
+    branches: [master]
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: 版本 PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Create or update version PR
+        uses: changesets/action@v1
+        with:
+          version: pnpm run version-packages
+          commit: "chore: version packages"
+          title: "chore: version packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
