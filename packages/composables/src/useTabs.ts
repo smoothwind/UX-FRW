@@ -4,6 +4,12 @@ import { computed, ref, type ComputedRef, type Ref } from 'vue'
 export interface TabItemState {
   id: string
   title: string
+  /** 副标题（双行页签展示） */
+  subtitle?: string
+  /** 状态标记：on 正常 / lost 丢失（红）/ off 停用（灰化） */
+  status?: 'on' | 'lost' | 'off'
+  /** 标识色点（CSS 颜色，建议走语义令牌如 var(--ux-accent)） */
+  accent?: string
   /** 未保存标记（圆点指示） */
   dirty?: boolean
   /** false 时隐藏关闭按钮且中键不可关 */

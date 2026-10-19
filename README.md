@@ -31,6 +31,8 @@ pnpm check:icons      # 图标纪律：语义/形状唯一 + 易困惑组合黑�
 pnpm check:shortcuts  # 快捷键：键位唯一占用（错误）+ 保留键位（警告）
 pnpm check:i18n       # 国际化：同目录所有语言包叶子 key 完全对齐
 pnpm check:commands   # 命令：引用完整性（悬空 id）+ PlatformAdapter 契约两端比对
+pnpm typecheck        # vue-tsc 全量类型检查（packages + playground）
+pnpm test             # vitest 单元测试（headless 逻辑 + 系统服务）
 ```
 
 ## 已交付组件与 API

@@ -22,6 +22,8 @@ const ROOT = process.cwd()
 const SCAN_DIRS = ['packages', 'apps']
 const EXTS = new Set(['.vue', '.ts', '.tsx', '.js', '.mjs'])
 const SKIP_DIRS = new Set(['node_modules', 'dist', '.git', '.vite', 'coverage'])
+// 单测 fixture 会故意引用未注册命令（覆盖悬空检测），不属于应用命令引用
+const SKIP_FILE_RE = /\.(test|spec)\.[jt]sx?$/
 
 function walk(dir, out = []) {
   for (const name of readdirSync(dir)) {
@@ -34,7 +36,10 @@ function walk(dir, out = []) {
     }
     if (st.isDirectory()) {
       if (!SKIP_DIRS.has(name)) walk(full, out)
-    } else if (EXTS.has(name.slice(name.lastIndexOf('.')))) {
+    } else if (
+      EXTS.has(name.slice(name.lastIndexOf('.'))) &&
+      !SKIP_FILE_RE.test(name)
+    ) {
       out.push(full)
     }
   }

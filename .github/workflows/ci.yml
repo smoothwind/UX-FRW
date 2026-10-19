@@ -1,0 +1,48 @@
+name: CI
+
+# 红线校验 + 类型检查 + 单元测试的主路径门禁（红线不豁免主分支合并，见设计文档 §十）。
+# deploy-pages.yml 另含发布门禁；本工作流覆盖 PR 与主分支推送。
+
+on:
+  pull_request:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: 校验 + 类型 + 测试
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 版本取自 package.json 的 packageManager 字段（pnpm@12.11.2），无需硬编码。
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # 五条设计红线（令牌 / 图标 / 快捷键 / i18n / 命令）
+      - name: Lint (design red lines)
+        run: pnpm check
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test

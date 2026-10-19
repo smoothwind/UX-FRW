@@ -16,6 +16,8 @@ const ROOT = process.cwd()
 const SCAN_DIRS = ['packages', 'apps']
 const EXTS = new Set(['.vue', '.ts', '.tsx', '.js', '.mjs'])
 const SKIP_DIRS = new Set(['node_modules', 'dist', '.git', '.vite', 'coverage'])
+// 单测 fixture 会故意声明冲突/保留键序（覆盖 findShortcutIssues），不属于应用键位声明
+const SKIP_FILE_RE = /\.(test|spec)\.[jt]sx?$/
 const EXEMPT_MARK = 'shortcut-exempt'
 
 const MOD_ALIASES = {
@@ -96,7 +98,10 @@ function walk(dir, out = []) {
     }
     if (st.isDirectory()) {
       if (!SKIP_DIRS.has(name)) walk(full, out)
-    } else if (EXTS.has(name.slice(name.lastIndexOf('.')))) {
+    } else if (
+      EXTS.has(name.slice(name.lastIndexOf('.'))) &&
+      !SKIP_FILE_RE.test(name)
+    ) {
       out.push(full)
     }
   }

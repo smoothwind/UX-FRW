@@ -59,7 +59,7 @@ export function useOverflowPosition(options: OverflowPositionOptions): () => voi
   function compute(placement: Placement): { left: number; top: number } {
     const p = popper.value
     if (!p) return { left: -9999, top: -9999 }
-    const ar: RectLike = options.getRect ? options.getRect() : anchorRect()
+    const ar = options.getRect ? options.getRect() : anchorRect()
     if (!ar) return { left: -9999, top: -9999 }
     const pw = p.offsetWidth
     const ph = p.offsetHeight

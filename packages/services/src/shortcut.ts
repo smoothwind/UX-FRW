@@ -85,7 +85,8 @@ export function eventToShortcut(e: KeyboardEvent): string | null {
   if (e.altKey) mods.push('Alt')
   if (e.metaKey) mods.push('Meta')
   const key = e.key
-  if ((MODIFIER_ORDER as readonly string[]).includes(key)) return null
+  // KeyboardEvent.key 对修饰键的本名为 Control/Shift/Alt/Meta（注意 Control ≠ Ctrl）
+  if (key === 'Control' || key === 'Shift' || key === 'Alt' || key === 'Meta') return null
   const normalizedKey = normalizeKey(key === ' ' ? 'space' : key)
   return [...mods, normalizedKey].join('+')
 }

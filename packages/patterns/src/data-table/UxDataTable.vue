@@ -84,10 +84,6 @@ function onCellContext(e: MouseEvent, row: number, col: number, value: unknown):
   emit('cellContext', { row, col, value, x: e.clientX, y: e.clientY })
 }
 
-function copyCell(value: unknown): void {
-  void navigator.clipboard.writeText(display(value)).catch(() => {})
-}
-
 function onHeadContext(e: MouseEvent): void {
   e.preventDefault()
   openContextMenu(e, [

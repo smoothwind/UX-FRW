@@ -2,7 +2,7 @@
 import { nextTick, onMounted, ref } from 'vue'
 import { useHoverIntent } from '@ux/composables'
 import UxIcon from '../icon/UxIcon.vue'
-import { isCheckable, menuItemKind, type MenuItem } from './types'
+import { isCheckable, menuItemKind, type MenuItem, type MenuItemKind } from './types'
 
 defineOptions({ name: 'UxMenuPanel' })
 

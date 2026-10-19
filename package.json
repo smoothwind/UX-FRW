@@ -10,11 +10,24 @@
   "scripts": {
     "dev": "pnpm --filter @ux/playground dev",
     "build": "pnpm -r build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json",
     "check:tokens": "node scripts/check-tokens.mjs",
     "check:icons": "node scripts/check-icons.mjs",
     "check:shortcuts": "node scripts/check-shortcuts.mjs",
     "check:i18n": "node scripts/check-i18n.mjs",
     "check:commands": "node scripts/check-commands.mjs",
     "check": "node scripts/check-tokens.mjs && node scripts/check-icons.mjs && node scripts/check-shortcuts.mjs && node scripts/check-i18n.mjs && node scripts/check-commands.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@vue/test-utils": "^2.5.1",
+    "happy-dom": "^21.0.3",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5",
+    "vue": "^3.5.44",
+    "vue-tsc": "^3.3.13"
   }
 }
