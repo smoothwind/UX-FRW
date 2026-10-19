@@ -1,6 +1,6 @@
 {
   "name": "@ux/shell",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "UxKit 工作台布局壳：AppShell / TitleBar / DockWorkbench / StatusBar",
   "type": "module",
   "exports": {
