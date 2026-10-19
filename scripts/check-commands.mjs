@@ -16,7 +16,7 @@
  *     createWebWindowControls 实现的方法必须一一对应（契约两端签名比对）。
  */
 import { readFileSync, readdirSync, statSync } from 'node:fs'
-import { join, relative, sep } from 'node:path'
+import { join, relative } from 'node:path'
 
 const ROOT = process.cwd()
 const SCAN_DIRS = ['packages', 'apps']

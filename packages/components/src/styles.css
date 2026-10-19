@@ -1,4 +1,4 @@
-/* UxKit 原子组件样式：全部消费语义令牌，受 check-tokens 约束 */
+﻿/* UxKit 原子组件样式：全部消费语义令牌，受 check-tokens 约束 */
 
 .ux-icon {
   width: 1em;
@@ -641,4 +641,126 @@
 .ux-chip--info {
   background: var(--ux-info-subtle);
   color: var(--ux-info);
+}
+
+/* ===== UxTree ===== */
+.ux-tree {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  font-size: var(--ux-fs-md);
+  color: var(--ux-fg);
+  outline: none;
+  user-select: none;
+}
+
+.ux-tree__row {
+  display: flex;
+  align-items: center;
+  gap: var(--ux-sp-1);
+  height: var(--ux-control-h-sm);
+  padding-right: var(--ux-sp-2);
+  border-radius: var(--ux-radius-sm);
+  cursor: pointer;
+  position: relative;
+  transition: background-color var(--ux-dur-fast) var(--ux-ease-out);
+}
+
+.ux-tree__row:hover {
+  background: var(--ux-bg-hover);
+}
+
+.ux-tree__row.is-selected {
+  background: var(--ux-accent-subtle);
+  color: var(--ux-accent);
+}
+
+.ux-tree__row.is-disabled {
+  color: var(--ux-fg-disabled);
+  cursor: not-allowed;
+}
+
+.ux-tree__row.is-drop-before::before,
+.ux-tree__row.is-drop-after::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--ux-accent);
+}
+
+.ux-tree__row.is-drop-before::before {
+  top: 0;
+}
+
+.ux-tree__row.is-drop-after::after {
+  bottom: 0;
+}
+
+.ux-tree__row.is-drop-inside {
+  outline: 2px solid var(--ux-accent);
+}
+
+.ux-tree__twist {
+  flex: none;
+  width: var(--ux-sp-4);
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ux-fg-subtle);
+}
+
+.ux-tree__chevron {
+  transition: transform var(--ux-dur-fast) var(--ux-ease-out);
+}
+
+.ux-tree__chevron.is-open {
+  transform: rotate(90deg);
+}
+
+.ux-tree__spinner {
+  animation: ux-tree-spin 0.8s linear infinite;
+}
+
+@keyframes ux-tree-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ux-tree__icon.is-lost {
+  color: var(--ux-danger);
+}
+
+.ux-tree__icon.is-off {
+  color: var(--ux-fg-subtle);
+}
+
+.ux-tree__label {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ux-tree__badge {
+  flex: none;
+  min-width: var(--ux-sp-4);
+  padding: 0 var(--ux-sp-1);
+  border-radius: var(--ux-radius-full, 999px);
+  background: var(--ux-danger);
+  color: var(--ux-fg-on-accent);
+  font-size: var(--ux-fs-xs);
+  line-height: 1.4;
+  text-align: center;
+}
+
+.ux-tree__dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--ux-radius-full);
+  background: var(--ux-danger);
 }

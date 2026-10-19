@@ -12,6 +12,15 @@ export { default as UxTooltip } from './tooltip/UxTooltip.vue'
 export { default as UxBadge } from './badge/UxBadge.vue'
 export { default as UxChip } from './chip/UxChip.vue'
 
+export { default as UxTree } from './tree/UxTree.vue'
+export type {
+  DropPosition,
+  NodeContextMenuPayload,
+  NodeMovePayload,
+  TreeNodeData,
+  TreeStatus,
+} from './tree/types'
+
 export { default as UxContextMenuHost } from './context-menu/ContextMenuHost.vue'
 export { closeContextMenu, openContextMenu, openContextMenuAt } from './context-menu/service'
 export type { MenuItem, MenuItemsSource } from './context-menu/service'

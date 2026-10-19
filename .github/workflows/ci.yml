@@ -41,6 +41,9 @@ jobs:
       - name: Lint (design red lines)
         run: pnpm check
 
+      - name: ESLint
+        run: pnpm lint
+
       - name: Typecheck
         run: pnpm typecheck
 

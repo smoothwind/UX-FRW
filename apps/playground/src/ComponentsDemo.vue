@@ -11,14 +11,17 @@ import {
   UxMenuBar,
   UxSegmented,
   UxTooltip,
+  UxTree,
   iconIds,
   iconRegistry,
   notify,
   notifyOnce,
   openContextMenu,
+  openContextMenuAt,
   type MenuBarItem,
   type MenuItem,
   type SegmentedOption,
+  type TreeNodeData,
 } from '@ux/components'
 
 const name = ref('')
@@ -40,6 +43,95 @@ const segAlignOptions: SegmentedOption[] = [
   { value: 'right', label: '右' },
   { value: 'justify', label: '两端', disabled: true },
 ]
+
+const treeSelected = ref<string | null>(null)
+const treeExpanded = ref<string[]>(['n-db', 'n-tables'])
+const treeFilter = ref('')
+const treeItems = ref<TreeNodeData[]>([
+  {
+    id: 'n-db',
+    label: 'demo@localhost',
+    icon: 'obj-database',
+    badge: 2,
+    children: [
+      {
+        id: 'n-tables',
+        label: '表',
+        icon: 'obj-folder',
+        children: [
+          { id: 'n-users', label: 'users', icon: 'obj-table', leaf: true },
+          { id: 'n-orders', label: 'orders', icon: 'obj-table', leaf: true },
+          { id: 'n-logs', label: 'op_logs', icon: 'obj-table', leaf: true, status: 'lost' },
+        ],
+      },
+      { id: 'n-views', label: '视图', icon: 'obj-folder', children: [] },
+      { id: 'n-remote', label: '远程 Schema', icon: 'obj-folder-tree' },
+      { id: 'n-locked', label: '只读副本（禁拖入）', icon: 'obj-key' },
+    ],
+  },
+  { id: 'n-trash', label: '回收站', icon: 'obj-file', leaf: true, disabled: true },
+])
+
+function treeLazyLoad(node: TreeNodeData): Promise<TreeNodeData[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(
+        node.id === 'n-remote'
+          ? [
+              { id: 'n-remote-t1', label: 'remote_orders', icon: 'obj-table', leaf: true },
+              { id: 'n-remote-t2', label: 'remote_users', icon: 'obj-table', leaf: true },
+            ]
+          : [],
+      )
+    }, 600)
+  })
+}
+
+function treeCanDrop(_dragId: string, targetId: string): boolean {
+  return targetId !== 'n-locked'
+}
+
+function onTreeContext(payload: { node: TreeNodeData; x: number; y: number }): void {
+  openContextMenuAt(payload.x, payload.y, [
+    { type: 'label', label: payload.node.label },
+    { id: 'tree.refresh', label: '刷新', icon: 'act-retry', run: () => notify(`已刷新 ${payload.node.label}`) },
+    { id: 'tree.drop', label: '删除节点', icon: 'act-delete', danger: true, run: () => notify({ type: 'warning', message: '演示环境不执行删除' }) },
+  ])
+}
+
+function treeMove(payload: { dragId: string; targetId: string; position: string }): void {
+  const { dragId, targetId, position } = payload
+  let dragged: TreeNodeData | undefined
+  const remove = (nodes: TreeNodeData[]): boolean => {
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i].id === dragId) {
+        dragged = nodes.splice(i, 1)[0]
+        return true
+      }
+      if (nodes[i].children && remove(nodes[i].children!)) return true
+    }
+    return false
+  }
+  if (!remove(treeItems.value) || !dragged) return
+  const insert = (nodes: TreeNodeData[]): boolean => {
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i].id === targetId) {
+        if (position === 'inside') {
+          const target = nodes[i]
+          target.children = target.children ?? []
+          target.children.push(dragged!)
+          treeExpanded.value = [...new Set([...treeExpanded.value, target.id])]
+        } else {
+          nodes.splice(position === 'before' ? i : i + 1, 0, dragged!)
+        }
+        return true
+      }
+      if (nodes[i].children && insert(nodes[i].children!)) return true
+    }
+    return false
+  }
+  insert(treeItems.value)
+}
 
 const ctxItems = computed<MenuItem[]>(() => [
   { type: 'label', label: '编辑' },
@@ -187,6 +279,27 @@ function fakeError(): void {
         <UxSegmented v-model="segAlign" disabled aria-label="禁用" :options="segAlignOptions" />
       </div>
       <p class="pg-note">单选分段：←→/↑↓/Home/End 键盘切换 + roving tabindex；选中=主色淡底；禁用项跳过。</p>
+    </section>
+
+    <section class="pg-card">
+      <h2>UxTree（树形控件 / role=tree）</h2>
+      <div class="grid-2">
+        <UxTree
+          v-model="treeSelected"
+          v-model:expanded="treeExpanded"
+          :items="treeItems"
+          :filter="treeFilter"
+          :lazy-load="treeLazyLoad"
+          :can-drop="treeCanDrop"
+          aria-label="数据库对象树"
+          @node-contextmenu="onTreeContext"
+          @node-move="treeMove"
+        />
+        <div>
+          <UxInput v-model="treeFilter" label="搜索过滤" placeholder="输入关键字，命中保留祖先链" />
+          <p class="pg-note">↑↓/←→/Home/End/Enter/首字母 键盘（APG Tree）· 懒加载（展开「远程 Schema」）· 搜索过滤 · 右键菜单 · 拖拽（防守式校验：禁拖入「只读副本」，禁拖入自身子树）。</p>
+        </div>
+      </div>
     </section>
 
     <section class="pg-card">

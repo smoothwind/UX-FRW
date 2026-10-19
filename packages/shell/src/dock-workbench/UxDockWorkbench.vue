@@ -22,6 +22,20 @@ function tr(key: string, fallback: string): string {
 
 const hoverZone = ref<DockZone | 'float' | null>(null)
 
+/** 经 resizeZone 写入（含钳制），避免直改 prop 深层属性 */
+const leftSize = computed({
+  get: () => props.layout.sizes.left,
+  set: (v: number) => props.layout.resizeZone('left', v),
+})
+const rightSize = computed({
+  get: () => props.layout.sizes.right,
+  set: (v: number) => props.layout.resizeZone('right', v),
+})
+const bottomSize = computed({
+  get: () => props.layout.sizes.bottom,
+  set: (v: number) => props.layout.resizeZone('bottom', v),
+})
+
 const draggingId = computed(() => props.layout.dragging.value)
 const leftPanel = computed(() => props.layout.panelInZone('left'))
 const rightPanel = computed(() => props.layout.panelInZone('right'))
@@ -77,7 +91,7 @@ function dropOn(zone: DockZone | 'float'): void {
         </div>
         <UxSplitter
           v-if="leftPanel"
-          v-model="layout.sizes.left"
+          v-model="leftSize"
           orientation="vertical"
           :min="layout.limits.left[0]"
           :max="layout.limits.left[1]"
@@ -90,7 +104,7 @@ function dropOn(zone: DockZone | 'float'): void {
 
         <UxSplitter
           v-if="rightPanel"
-          v-model="layout.sizes.right"
+          v-model="rightSize"
           orientation="vertical"
           reverse
           :min="layout.limits.right[0]"
@@ -119,7 +133,7 @@ function dropOn(zone: DockZone | 'float'): void {
 
       <UxSplitter
         v-if="bottomPanel"
-        v-model="layout.sizes.bottom"
+        v-model="bottomSize"
         orientation="horizontal"
         :min="layout.limits.bottom[0]"
         :max="layout.limits.bottom[1]"
