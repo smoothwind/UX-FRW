@@ -154,6 +154,7 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 - **发版时**：功能合并进 `master` 后，[`release.yml`](.github/workflows/release.yml) 自动开启/更新 **「chore: version packages」版本 PR**（消费 changeset、提升版本号、更新内部依赖区间、写 CHANGELOG）；合并该 PR 即完成发版。
 - **npm 发布（可选）**：仓库配置 `NPM_TOKEN` 后，在 `release.yml` 的 changesets action 补 `publish: pnpm release` 即可推送 `@ux/*`；未配置时流程止步于版本 PR。
 - `@ux/playground` 已 `ignore`（演示应用不参与版本管理）；被依赖包发版时内部依赖区间按 `updateInternalDependencies: patch` 自动跟随。
+- **前提**：工作流已声明 `contents: write` + `pull-requests: write`，但仓库设置会封顶该权限——需在 `Settings → Actions → General` 选择 **Read and write permissions** 并勾选 **Allow GitHub Actions to create and approve pull requests**，否则版本 PR 步骤会失败（详见 [`.changeset/README.md`](.changeset/README.md)）。
 
 ## 主题切换
 ```ts
