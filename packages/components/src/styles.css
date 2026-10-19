@@ -676,7 +676,7 @@
 }
 
 .ux-tree__row.is-disabled {
-  color: var(--ux-fg-disabled);
+  color: var(--ux-fg-subtle);
   cursor: not-allowed;
 }
 
