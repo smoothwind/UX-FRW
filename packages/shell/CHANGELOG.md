@@ -1,5 +1,13 @@
 # @ux/shell
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [8a496a8]
+  - @ux/components@0.3.0
+  - @ux/services@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes

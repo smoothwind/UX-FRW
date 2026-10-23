@@ -1,6 +1,6 @@
 {
   "name": "@ux/services",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "UxKit 系统服务：命令 / 快捷键 / 偏好 / 国际化",
   "type": "module",
   "exports": {
