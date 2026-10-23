@@ -18,6 +18,9 @@
   --ux-bg-overlay: var(--ux-gray-0);    /* 浮层（对话框/下拉/菜单） */
   --ux-bg-hover: rgba(31, 35, 40, 0.05);
   --ux-bg-active: rgba(31, 35, 40, 0.09);
+  /* 选中态分层（见设计文档 4.4 / check-tokens R4）：
+     控件级（按钮/页签/分段）实心主色，配 --ux-fg-on-accent；
+     行级（表格行/树节点/列表项）用 --ux-accent-subtle + --ux-accent-fg，禁用本令牌 */
   --ux-bg-selected: var(--ux-accent);
 
   /* 文本 */
@@ -84,6 +87,7 @@
   --ux-bg-overlay: var(--ux-navy-800);
   --ux-bg-hover: rgba(255, 255, 255, 0.06);
   --ux-bg-active: rgba(255, 255, 255, 0.1);
+  /* 同浅色：控件级实心选中专用，行级请用 --ux-accent-subtle + --ux-accent-fg */
   --ux-bg-selected: var(--ux-indigo-350);
 
   /* 文本 */

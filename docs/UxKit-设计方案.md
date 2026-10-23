@@ -171,6 +171,17 @@ function applyTheme(theme: 'light' | 'dark' | 'system'): void {
 
 JS 需要主题色的场景（图表/画布）**运行时读令牌**（`getComputedStyle`），禁止 JS 分支硬编码——MdReader 已验证的规则。
 
+### 4.4 选中态令牌分层（控件级 vs 行级）
+
+| 层级 | 场景 | 底色 | 前景 | 理由 |
+|------|------|------|------|------|
+| 控件级 | 按钮 / 页签 / 分段控件等整块控件被选中 | `--ux-bg-selected`（实心主色） | `--ux-fg-on-accent` | 面积小、文字短，实心主色强化状态且不影响阅读 |
+| 行级 | 表格行 / 树节点 / 列表项 / 列表选项（`*__row`、`tr`、`role=row|option|treeitem|menuitem`） | `--ux-accent-subtle` | `--ux-accent-fg` | 面积大，实心主色会压过内容；subtle 底 + 深色前景才有 AA 对比度 |
+
+- **参照实现**：`UxTree` 行选中（`.ux-tree__row.is-selected`）与 `UxSegmented` 选项（`.ux-seg__item.is-active`）都是 subtle 底 + `--ux-accent-fg`；行级选中不铺实心主色是既有惯例。
+- **强制**：`check-tokens` 的 **R4** 按选择器判定——行级选择器上出现 `background: var(--ux-bg-selected)` 直接失败（`tokens-exempt` 可豁免，仅限命名含 `row` 但确属控件级的特例）。
+- **对比度**：行级前景必须用 `--ux-accent-fg`（浅色 indigo-700 / 暗色 indigo-300），保证 subtle 底上 ≥4.5:1；实心主色底必须配 `--ux-fg-on-accent`，禁止用 `--ux-fg` 等正文色。
+
 ---
 
 ## 五、UX 设计规范（PRINCIPLES.md 骨架，16 条硬规则）
@@ -465,7 +476,7 @@ Command { id, title, icon?, shortcut?, when?, category?, danger?, run }
 
 | 脚本 | 规则 |
 |------|------|
-| `check-tokens` ✅ | R1 禁裸 hex（`tokens-exempt` 豁免）；R2 间距 >4px 必须走 `--ux-sp-*`；R3 禁字面量 z-index/圆角/字号/阴影 |
+| `check-tokens` ✅ | R1 禁裸 hex（`tokens-exempt` 豁免）；R2 间距 >4px 必须走 `--ux-sp-*`；R3 禁字面量 z-index/圆角/字号/阴影；R4 行级选择器（`*__row`/`tr`/`role=row|option|treeitem|…`）禁 `--ux-bg-selected`，选中态只准 `--ux-accent-subtle` + `--ux-accent-fg` |
 | `check-i18n` ✅ | zh-CN/en 叶子 key 递归对齐，缺失即失败 |
 | `check-shortcuts` ✅ | 注册表内冲突检测 + 与保留键位表（浏览器/Ctrl+K 命令面板/编辑器惯例）比对 |
 | `check-commands` | 模板/代码中引用的 `command:xxx` 必须在注册表或声明文件中存在；PlatformAdapter 契约两端签名比对 |

@@ -29,7 +29,7 @@
 pnpm install
 pnpm dev              # 启动 playground（令牌 / 原子组件 / 系统服务 / 布局壳 四 Tab）
 pnpm check            # 全部红线校验（下面四项串联）
-pnpm check:tokens     # 令牌纪律：R1 禁裸色值 / R2 间距走令牌 / R3 禁字面量 z/圆角/字号/阴影
+pnpm check:tokens     # 令牌纪律：R1 禁裸色值 / R2 间距走令牌 / R3 禁字面量 z/圆角/字号/阴影 / R4 行级选中禁实心主色
 pnpm check:icons      # 图标纪律：语义/形状唯一 + 易困惑组合黑名单
 pnpm check:shortcuts  # 快捷键：键位唯一占用（错误）+ 保留键位（警告）
 pnpm check:i18n       # 国际化：同目录所有语言包叶子 key 完全对齐
@@ -108,19 +108,20 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 3. z-index / 圆角 / 字号 / 阴影只用令牌；新增浮层层级必须在 `packages/tokens/src/layout.css` 登记新档
 4. 暗色适配只允许发生在 `semantic.css` 的 `.dark` 块内
 5. 数据配色（图表/画布）用行内注释 `tokens-exempt` 豁免
+6. **选中态分层**：控件级（按钮/页签/分段控件）选中用 `--ux-bg-selected` + `--ux-fg-on-accent`；行级（`*__row`、`tr`、`role=row|option|treeitem|menuitem`）只允许 `--ux-accent-subtle` 底 + `--ux-accent-fg` 字（check-tokens R4 强制，参照 `UxTree` 行选中）
 
 **图标纪律**（check-icons，随 UxIcon 落地）：
 
-6. **禁止不同语义使用相同图标**——iconId ↔ 语义一对一注册（`obj-*` 对象 / `act-*` 动作 / `st-*` 状态），放大镜只能=查找，软盘只能=保存
-7. **禁止易困惑图标**——`×` 只作关闭/清除（删除必须垃圾桶+danger 色）、箭头不得一箭两义、`+/-` 只作增减、近形图标禁止同屏异义；图标达意不足必须配文字 tooltip + aria-label
+7. **禁止不同语义使用相同图标**——iconId ↔ 语义一对一注册（`obj-*` 对象 / `act-*` 动作 / `st-*` 状态），放大镜只能=查找，软盘只能=保存
+8. **禁止易困惑图标**——`×` 只作关闭/清除（删除必须垃圾桶+danger 色）、箭头不得一箭两义、`+/-` 只作增减、近形图标禁止同屏异义；图标达意不足必须配文字 tooltip + aria-label
 
 **快捷键纪律**（check-shortcuts，随服务层落地）：
 
-8. **同一键位只准绑定一个命令**（首个独占；冲突时相关命令自动挂起，命令面板仍可运行）；输入框/编辑器聚焦时默认不触发，需 `allowInInput` 显式放行；避开浏览器/系统保留键位（Ctrl+C/V/X/A/Z/Y/F/P/W/T/N、F5/F11/F12）
+9. **同一键位只准绑定一个命令**（首个独占；冲突时相关命令自动挂起，命令面板仍可运行）；输入框/编辑器聚焦时默认不触发，需 `allowInInput` 显式放行；避开浏览器/系统保留键位（Ctrl+C/V/X/A/Z/Y/F/P/W/T/N、F5/F11/F12）
 
 **国际化纪律**（check-i18n）：
 
-9. 同一 locales 目录下所有语言包的叶子 key **完全对齐**（禁缺 key / 多 key）；所有面向用户的文案一律走 i18n key，禁止散落硬编码
+10. 同一 locales 目录下所有语言包的叶子 key **完全对齐**（禁缺 key / 多 key）；所有面向用户的文案一律走 i18n key，禁止散落硬编码
 
 ## 端到端测试（Playwright）
 
