@@ -1,6 +1,6 @@
 {
   "name": "@ux/components",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "UxKit 原子组件（样式只消费语义令牌）",
   "type": "module",
   "exports": {
