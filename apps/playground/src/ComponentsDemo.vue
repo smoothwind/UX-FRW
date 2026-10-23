@@ -93,6 +93,10 @@ function treeCanDrop(_dragId: string, targetId: string): boolean {
   return targetId !== 'n-locked'
 }
 
+function onTreeDblclick(payload: { node: TreeNodeData }): void {
+  if (payload.node.leaf) notify(`打开 ${payload.node.label}（双击）`)
+}
+
 function onTreeContext(payload: { node: TreeNodeData; x: number; y: number }): void {
   openContextMenuAt(payload.x, payload.y, [
     { type: 'label', label: payload.node.label },
@@ -307,11 +311,12 @@ function fakeError(): void {
           :can-drop="treeCanDrop"
           aria-label="数据库对象树"
           @node-contextmenu="onTreeContext"
+          @node-dblclick="onTreeDblclick"
           @node-move="treeMove"
         />
         <div>
           <UxInput v-model="treeFilter" label="搜索过滤" placeholder="输入关键字，命中保留祖先链" />
-          <p class="pg-note">↑↓/←→/Home/End/Enter/首字母 键盘（APG Tree）· 懒加载（展开「远程 Schema」）· 搜索过滤 · 右键菜单 · 拖拽（防守式校验：禁拖入「只读副本」，禁拖入自身子树）。</p>
+          <p class="pg-note">↑↓/←→/Home/End/Enter/首字母 键盘（APG Tree）· 懒加载（展开「远程 Schema」）· 搜索过滤 · 右键菜单 · 双击叶子节点触发 <code>node-dblclick</code>（目录双击仍展开/收起）· 拖拽（防守式校验：禁拖入「只读副本」，禁拖入自身子树）。</p>
         </div>
       </div>
     </section>

@@ -87,7 +87,7 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 | `TourGuide`（patterns） | 聚光遮罩（锚点外扩 6px）+ 无锚点整屏暗化居中；不可见锚点剔除；←→/Enter/Esc；storageKey 记忆；expose `start()`；`auto=false` 关闭自动启动（纯按钮触发） |
 | `UxDataTable`（patterns） | 10 万行虚拟滚动（useVirtualRows 固定行高窗口）；表头排序（null 恒排首、保持原始行号、`aria-sort`）；单元格右键坐标 + 双击复制行 |
 | `useVirtualRows`（composables） | 固定行高虚拟窗口：overscan + ResizeObserver 视口测量 + rAF 滚动节流 |
-| `UxTree`（components） | 树形控件（APG Tree View）：↑↓/←→（展开·进子级·回父级）/Home/End/Enter/首字母 + roving tabindex；`role=tree/treeitem` + `aria-level/expanded/selected`；搜索过滤（命中保留祖先链并强制展开）；懒加载（`lazyLoad` 结果缓存于组件内部，loading 态）；右键 `node-contextmenu` 上报（业务用 `openContextMenuAt` 承接）；拖拽防守式校验（`canDrop` + 内建禁拖自身/自身子树，before/after/inside 三区投放指示）；`status` 三态红点/灰化 + `badge` 计数角标（99+ 封顶）；`data-ux="tree"` |
+| `UxTree`（components） | 树形控件（APG Tree View）：↑↓/←→（展开·进子级·回父级）/Home/End/Enter/首字母 + roving tabindex；`role=tree/treeitem` + `aria-level/expanded/selected`；搜索过滤（命中保留祖先链并强制展开）；懒加载（`lazyLoad` 结果缓存于组件内部，loading 态）；右键 `node-contextmenu`（业务用 `openContextMenuAt` 承接）、双击 `node-dblclick` 上报（`{ node, event }`；双击目录仍切换展开，业务可据此「打开」）；拖拽防守式校验（`canDrop` + 内建禁拖自身/自身子树，before/after/inside 三区投放指示）；`status` 三态红点/灰化 + `badge` 计数角标（99+ 封顶）；`data-ux="tree"` |
 | `useActivityLog`（composables） | 活动日志环形缓冲（会话内存）：`limit` 上限、`unreadErrors` 未读错误累计、`markOpened` 清零、`clear`；配 `LogPanel` |
 | `LogPanel`（patterns） | 活动日志面板：级别过滤（全部/错误/警告/信息）+ 计数 chip + 自动滚动（上翻暂停）+ 行展开完整详情 + 清空 |
 | `openContextMenuAt(x, y, items)`（components） | 坐标版右键菜单（虚拟滚动/画布场景） |

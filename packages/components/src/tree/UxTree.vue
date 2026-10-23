@@ -4,6 +4,7 @@ import UxIcon from '../icon/UxIcon.vue'
 import type {
   DropPosition,
   NodeContextMenuPayload,
+  NodeDblclickPayload,
   NodeMovePayload,
   TreeNodeData,
 } from './types'
@@ -32,6 +33,7 @@ const emit = defineEmits<{
   'update:expanded': [ids: string[]]
   'node-contextmenu': [payload: NodeContextMenuPayload]
   'node-move': [payload: NodeMovePayload]
+  'node-dblclick': [payload: NodeDblclickPayload]
 }>()
 
 /** 懒加载结果缓存（组件内持有，不回写 props.items——数据单向） */
@@ -268,6 +270,11 @@ function onContextmenu(e: MouseEvent, node: TreeNodeData): void {
   emit('node-contextmenu', { node, x: e.clientX, y: e.clientY })
 }
 
+function onDblclick(e: MouseEvent, node: TreeNodeData): void {
+  emit('node-dblclick', { node, event: e })
+  toggleExpand(node)
+}
+
 const rootEl = ref<HTMLElement | null>(null)
 </script>
 
@@ -301,7 +308,7 @@ const rootEl = ref<HTMLElement | null>(null)
       :tabindex="row.node.id === tabbableId ? 0 : -1"
       :draggable="!row.node.disabled"
       @click="select(row.node.id)"
-      @dblclick="toggleExpand(row.node)"
+      @dblclick="onDblclick($event, row.node)"
       @contextmenu="onContextmenu($event, row.node)"
       @dragstart="onDragStart($event, row.node)"
       @dragover="onDragOver($event, row.node)"

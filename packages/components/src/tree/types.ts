@@ -30,3 +30,9 @@ export interface NodeMovePayload {
   targetId: string
   position: DropPosition
 }
+
+/** 双击上报：组件只上报节点与原始事件，是否「打开」由业务决定（默认仍切换展开） */
+export interface NodeDblclickPayload {
+  node: TreeNodeData
+  event: MouseEvent
+}

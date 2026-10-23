@@ -223,6 +223,31 @@ describe('UxTree 右键菜单集成', () => {
   })
 })
 
+describe('UxTree 双击', () => {
+  it('双击节点上报 node-dblclick（含节点与原始事件）', async () => {
+    const w = mountTree()
+    await row(w, 'db').trigger('dblclick')
+    const emitted = w.emitted('node-dblclick')
+    expect(emitted).toHaveLength(1)
+    const payload = emitted![0][0] as { node: TreeNodeData; event: MouseEvent }
+    expect(payload.node.id).toBe('db')
+    expect(payload.event).toBeInstanceOf(MouseEvent)
+  })
+
+  it('双击目录仍切换展开（保留原行为）', async () => {
+    const w = mountTree({ expanded: [] })
+    await row(w, 'db').trigger('dblclick')
+    expect(w.emitted('update:expanded')?.[0][0]).toEqual(['db'])
+  })
+
+  it('双击叶子节点只上报事件、不产生 expanded 变更', async () => {
+    const w = mountTree({ expanded: ['db'] })
+    await row(w, 'users').trigger('dblclick')
+    expect(w.emitted('node-dblclick')).toHaveLength(1)
+    expect(w.emitted('update:expanded')).toBeUndefined()
+  })
+})
+
 describe('UxTree 拖拽（防守式校验）', () => {
   function dragOn(w: VueWrapper, id: string, clientY = 0) {
     const el = row(w, id)
