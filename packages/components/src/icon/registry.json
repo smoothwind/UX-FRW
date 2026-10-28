@@ -176,6 +176,15 @@
       "M9 4v16"
     ]
   },
+  "act-panel-open": {
+    "category": "act",
+    "semantic": "展开侧栏",
+    "paths": [
+      "M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z",
+      "M9 4v16",
+      "m12 10 3 2-3 2"
+    ]
+  },
   "act-float": {
     "category": "act",
     "semantic": "面板悬浮",
