@@ -233,7 +233,7 @@ function openMenu(e: MouseEvent): void {
 
 const dropdownOpen = ref(false)
 const dropdownItems: MenuItem[] = [
-  { id: 'new', label: '新建连接', icon: 'act-plus', shortcut: 'Ctrl+N', run: () => notify('新建连接') },
+  { id: 'new', label: '新建连接', icon: 'act-connection-plus', shortcut: 'Ctrl+N', run: () => notify('新建连接') },
   { id: 'open', label: '打开…', icon: 'obj-folder', run: () => notify('打开文件') },
   { type: 'separator' },
   { id: 'wrap', type: 'checkbox', label: '自动换行', checked: wrapText.value, run: () => notify('切换自动换行') },
