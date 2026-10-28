@@ -670,6 +670,11 @@
   background: var(--ux-bg-hover);
 }
 
+/* 指针兜底拖拽进行中（Tauri/WebView2 无 HTML5 DnD）的光标反馈 */
+.ux-tree.is-pointer-dragging .ux-tree__row {
+  cursor: grabbing;
+}
+
 .ux-tree__row.is-selected {
   background: var(--ux-accent-subtle);
   color: var(--ux-accent-fg);

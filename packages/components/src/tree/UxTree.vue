@@ -1,5 +1,5 @@
 ﻿<script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onScopeDispose, ref } from 'vue'
 import UxIcon from '../icon/UxIcon.vue'
 import type {
   DropPosition,
@@ -215,9 +215,9 @@ function isDescendant(ancestorId: string, targetId: string): boolean {
   return walk(props.items, false)
 }
 
-function dropPositionOf(e: DragEvent): DropPosition {
-  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-  const ratio = (e.clientY - rect.top) / rect.height
+function dropPositionOf(el: HTMLElement, clientY: number): DropPosition {
+  const rect = el.getBoundingClientRect()
+  const ratio = (clientY - rect.top) / rect.height
   if (ratio < 0.25) return 'before'
   if (ratio > 0.75) return 'after'
   return 'inside'
@@ -246,7 +246,7 @@ function onDragOver(e: DragEvent, node: TreeNodeData): void {
   if (!dragId.value) return
   e.preventDefault()
   if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'
-  const position = dropPositionOf(e)
+  const position = dropPositionOf(e.currentTarget as HTMLElement, e.clientY)
   dropMarker.value = allowed(node.id, position) ? { id: node.id, position } : null
 }
 
@@ -276,6 +276,82 @@ function onDblclick(e: MouseEvent, node: TreeNodeData): void {
 }
 
 const rootEl = ref<HTMLElement | null>(null)
+
+/** ---- 指针拖拽兜底 ----
+ * 行元素不设 draggable：Tauri(Windows) 的 WebView2 默认 dragDropEnabled 会接管拖放
+ * （dragstart/dragover/drop 不再派发），且 Chromium 对 draggable 元素启动原生拖拽循环时
+ * 会终止指针流（pointercancel），两者叠加导致「原生路径失效 + 指针兜底被取消」。
+ * 因此拖拽完全由指针手势承担：主键按住位移 ≥5px 激活，直接驱动与原生路径同一套
+ * dragId/dropMarker 状态，落点行由 elementFromPoint 判定；dragstart/dragover/drop
+ * 监听保留，供宿主合成事件或未来恢复原生路径使用。触屏排除（与滚动手势冲突）。
+ */
+const POINTER_DRAG_THRESHOLD = 5
+let pointerDrag: { nodeId: string; x: number; y: number; active: boolean } | null = null
+
+function clearPointerDrag(): void {
+  pointerDrag = null
+  rootEl.value?.classList.remove('is-pointer-dragging')
+}
+
+function pointerRowFromPoint(x: number, y: number): HTMLElement | null {
+  const el = document.elementFromPoint?.(x, y) ?? null
+  return el?.closest<HTMLElement>('[data-ux-tree-id]') ?? null
+}
+
+function onPointerDown(e: PointerEvent): void {
+  if (e.button !== 0 || e.pointerType === 'touch') return
+  const row = (e.target as HTMLElement).closest<HTMLElement>('[data-ux-tree-id]')
+  const nodeId = row?.dataset.uxTreeId
+  if (!nodeId || !row || row.classList.contains('is-disabled')) return
+  pointerDrag = { nodeId, x: e.clientX, y: e.clientY, active: false }
+}
+
+function onDocPointerMove(e: PointerEvent): void {
+  const st = pointerDrag
+  if (!st) return
+  if (!st.active) {
+    if (Math.hypot(e.clientX - st.x, e.clientY - st.y) < POINTER_DRAG_THRESHOLD) return
+    st.active = true
+    dragId.value = st.nodeId
+    rootEl.value?.classList.add('is-pointer-dragging')
+  }
+  const row = pointerRowFromPoint(e.clientX, e.clientY)
+  const targetId = row?.dataset.uxTreeId
+  if (!row || !targetId) {
+    dropMarker.value = null
+    return
+  }
+  const position = dropPositionOf(row, e.clientY)
+  dropMarker.value = allowed(targetId, position) ? { id: targetId, position } : null
+}
+
+function onDocPointerUp(): void {
+  const st = pointerDrag
+  if (!st) return
+  const active = st.active
+  const marker = dropMarker.value
+  clearPointerDrag()
+  dragId.value = null
+  if (!active) return
+  // 指示即所得：投放位取最后一次 move 的指示，与原生 dragover/drop 语义一致
+  if (marker) emit('node-move', { dragId: st.nodeId, targetId: marker.id, position: marker.position })
+}
+
+function onDocPointerCancel(): void {
+  if (!pointerDrag) return
+  dragId.value = null
+  dropMarker.value = null
+  clearPointerDrag()
+}
+
+document.addEventListener('pointermove', onDocPointerMove)
+document.addEventListener('pointerup', onDocPointerUp)
+document.addEventListener('pointercancel', onDocPointerCancel)
+onScopeDispose(() => {
+  document.removeEventListener('pointermove', onDocPointerMove)
+  document.removeEventListener('pointerup', onDocPointerUp)
+  document.removeEventListener('pointercancel', onDocPointerCancel)
+})
 </script>
 
 <template>
@@ -286,6 +362,7 @@ const rootEl = ref<HTMLElement | null>(null)
     role="tree"
     :aria-label="ariaLabel"
     @keydown="onKeydown"
+    @pointerdown="onPointerDown"
   >
     <div
       v-for="row in flatRows"
@@ -306,7 +383,6 @@ const rootEl = ref<HTMLElement | null>(null)
       :aria-selected="row.node.id === selectedId"
       :aria-disabled="row.node.disabled ? 'true' : undefined"
       :tabindex="row.node.id === tabbableId ? 0 : -1"
-      :draggable="!row.node.disabled"
       @click="select(row.node.id)"
       @dblclick="onDblclick($event, row.node)"
       @contextmenu="onContextmenu($event, row.node)"

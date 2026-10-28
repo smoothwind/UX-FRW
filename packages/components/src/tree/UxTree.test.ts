@@ -1,4 +1,4 @@
-﻿import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 import { mount, type VueWrapper } from '@vue/test-utils'
 import UxTree from './UxTree.vue'
@@ -299,6 +299,110 @@ describe('UxTree 拖拽（防守式校验）', () => {
     await dragOn(w, 'lost', 50)
     expect(row(w, 'lost').classes()).not.toContain('is-drop-inside')
     await row(w, 'lost').trigger('drop', { dataTransfer: {} })
+    expect(w.emitted('node-move')).toBeUndefined()
+  })
+})
+
+describe('UxTree 指针拖拽兜底（Tauri/WebView2 无 HTML5 DnD）', () => {
+  function press(w: VueWrapper, id: string, x = 10, y = 10): void {
+    row(w, id).element.dispatchEvent(
+      new MouseEvent('pointerdown', { bubbles: true, button: 0, clientX: x, clientY: y }),
+    )
+  }
+
+  function move(x: number, y: number): void {
+    document.dispatchEvent(new MouseEvent('pointermove', { bubbles: true, clientX: x, clientY: y }))
+  }
+
+  function up(x = 10, y = 10): void {
+    document.dispatchEvent(new MouseEvent('pointerup', { bubbles: true, clientX: x, clientY: y }))
+  }
+
+  it('行不设 draggable（Tauri 下避免原生拖拽循环取消指针流），拖拽全由指针兜底承担', () => {
+    const w = mountTree({ expanded: ['db'] })
+    expect(row(w, 'users').attributes('draggable')).toBeUndefined()
+  })
+
+  it('指针手势超阈值激活，落点行由 elementFromPoint 判定并 emit node-move', async () => {
+    const w = mountTree({ expanded: ['db'] })
+    const target = row(w, 'db').element
+    vi.spyOn(target, 'getBoundingClientRect').mockReturnValue({
+      top: 0,
+      height: 100,
+      bottom: 100,
+    } as DOMRect)
+    const original = document.elementFromPoint
+    document.elementFromPoint = () => target
+    try {
+      press(w, 'users')
+      move(30, 50)
+      await nextTick()
+      expect(row(w, 'db').classes()).toContain('is-drop-inside')
+      expect(w.find('.ux-tree').classes()).toContain('is-pointer-dragging')
+      up(30, 50)
+    } finally {
+      document.elementFromPoint = original
+      vi.restoreAllMocks()
+    }
+    const moved = w.emitted('node-move')?.[0][0]
+    expect(moved).toMatchObject({ dragId: 'users', targetId: 'db', position: 'inside' })
+  })
+
+  it('位移未超阈值松开不触发拖拽，点击选中不受影响', async () => {
+    const w = mountTree({ expanded: ['db'] })
+    press(w, 'users')
+    move(12, 11)
+    up(12, 11)
+    expect(w.emitted('node-move')).toBeUndefined()
+    await row(w, 'users').trigger('click')
+    expect(w.emitted('update:modelValue')?.map((args) => args[0])).toEqual(['users'])
+  })
+
+  it('pointercancel（原生拖拽接管信号）后指针流失效并清场', async () => {
+    const w = mountTree({ expanded: ['db'] })
+    const target = row(w, 'db').element
+    const original = document.elementFromPoint
+    document.elementFromPoint = () => target
+    try {
+      press(w, 'users')
+      move(30, 12)
+      document.dispatchEvent(new Event('pointercancel'))
+      move(40, 14)
+      up(40, 14)
+    } finally {
+      document.elementFromPoint = original
+    }
+    await nextTick()
+    expect(w.emitted('node-move')).toBeUndefined()
+    expect(w.find('.ux-tree').classes()).not.toContain('is-pointer-dragging')
+  })
+
+  it('disabled 节点不可发起指针拖拽', () => {
+    const w = mountTree({ expanded: ['db'] })
+    const target = row(w, 'users').element
+    const original = document.elementFromPoint
+    document.elementFromPoint = () => target
+    try {
+      press(w, 'off')
+      move(30, 12)
+      up(30, 12)
+    } finally {
+      document.elementFromPoint = original
+    }
+    expect(w.emitted('node-move')).toBeUndefined()
+  })
+
+  it('落点在树外（elementFromPoint 无行）时不产生指示与移动', () => {
+    const w = mountTree({ expanded: ['db'] })
+    const original = document.elementFromPoint
+    document.elementFromPoint = () => null
+    try {
+      press(w, 'users')
+      move(400, 300)
+      up(400, 300)
+    } finally {
+      document.elementFromPoint = original
+    }
     expect(w.emitted('node-move')).toBeUndefined()
   })
 })
