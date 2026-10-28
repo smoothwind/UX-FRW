@@ -184,7 +184,7 @@ JS 需要主题色的场景（图表/画布）**运行时读令牌**（`getCompu
 
 ---
 
-## 五、UX 设计规范（PRINCIPLES.md 骨架，16 条硬规则）
+## 五、UX 设计规范（PRINCIPLES.md 骨架，18 条硬规则）
 
 1. **令牌优先**：一切颜色/字号/间距/圆角/阴影/层级来自语义令牌；`check-tokens` CI 强制（R1 禁裸 hex、R2 间距走令牌、R3 禁字面量 z/圆角/字号/阴影）。数据可视化等"数据配色"用 `tokens-exempt` 注释豁免。
 2. **命令驱动**：任何可触发动作（菜单项/工具栏按钮/快捷键/右键菜单项/命令面板条目）必须注册为 `Command { id, title, icon?, shortcut?, when?, run() }`；UI 控件只负责触发命令，不自带逻辑。→ 一处注册，四类入口同时可用（VSCode 模式，根治 PDB 三处菜单重复与 MdReader 无面板问题）。
@@ -198,7 +198,7 @@ JS 需要主题色的场景（图表/画布）**运行时读令牌**（`getCompu
 10. **无障碍基线**：对话框 focus trap + aria-modal；通知 aria-live="polite"；图标按钮必须有 aria-label（不只 title）；frameless 窗控按钮 aria-label 必填；全组件键盘可达。
 11. **偏好即时生效**：设置改完即生效（无保存按钮），UI 上注明"本页改动即时生效"；"需重启"类设置必须单独分区并明确提示。
 12. **平台适配单接口**：渲染层只认 `platform.*` 一个契约对象（`window.appApi.*`），Electron preload 与 Tauri adapter 提供同签名实现；CI 校验三端命令一致性（MdReader check-commands 模式）。
-13. **图标语义唯一（红线）**：同一图标在同一应用内**只能绑定一个语义**，禁止不同语义共用同一图标；反之一个语义也只允许一个图标。"放大镜"只能表示查找，不得兼作预览；"保存/应用/提交"必须用不同图标，不得共用软盘。落地：图标注册表（沿用 PDB 的 `obj-*` 对象 / `act-*` 动作 / `st-*` 状态三类命名）+ 单一映射出口，iconId ↔ 语义一对一，CI `check-icons` 校验唯一性。
+13. **图标语义唯一（红线）**：同一图标在同一应用内**只能绑定一个语义**，禁止不同语义共用同一图标；反之一个语义也只允许一个图标。"放大镜"只能表示查找，不得兼作预览；"保存/应用/提交"必须用不同图标，不得共用软盘。**单状态单图标**：同一按钮/菜单项/触发器在**同一状态下最多呈现一个图标**——图标与 loading 指示互斥、图标与展开箭头不得并存于同一触发控件（需要两种信息时拆分为 split-button / 相邻控件，或只保留其一）；允许随状态切换更换图标，但任一时刻仅显示一个。落地：图标注册表（沿用 PDB 的 `obj-*` 对象 / `act-*` 动作 / `st-*` 状态三类命名）+ 单一映射出口，iconId ↔ 语义一对一，CI `check-icons` 校验唯一性；单状态单图标由评审 + 应用侧静态扫描保障。
 14. **禁止易困惑图标（红线）**：不得使用语义反转、文化歧义或与平台惯例冲突的图标。具体禁例：
     - `×` 仅表示关闭/清除；**删除必须用垃圾桶 + danger 色**，禁止用 `×` 承担删除语义（与关窗/关页签混淆）；
     - 箭头语义不得混用：`▸` 只作展开/折叠，`→` 只作前进/跳转，禁止一箭两义；
@@ -208,6 +208,8 @@ JS 需要主题色的场景（图表/画布）**运行时读令牌**（`getCompu
     - 近形图标（复制/层叠、星标/收藏类）禁止在同屏承担不同语义，必要时换形或加角标区分。
 15. **快捷键唯一占用**：同一键位只准绑定一个命令（首个独占；冲突时相关命令自动挂起，命令面板仍可运行）；输入框/编辑器聚焦时默认不触发，需 `allowInInput` 显式放行；避开浏览器/系统保留键位（Ctrl+C/V/X/A/Z/Y/F/P/W/T/N、F5/F11/F12）。落地：`ShortcutController` 运行时命序归一化 + 冲突检测 + 用户改键覆盖，`check-shortcuts` CI 静态扫描。
 16. **文案单一来源**：所有面向用户的文案走 i18n key，禁止硬编码散落各处；同一 locales 目录下各语言包叶子 key 完全对齐（禁缺 key / 多 key）。落地：`createI18n`（点分查找 + 插值 + 回落链）+ `check-i18n` CI 校验。
+17. **列表行单行与信息层级（红线）**：面板内列表/文件浏览器默认**单行**呈现一条记录——一等信息 = 类型图标 + 名称（类型必须由图标承担，禁止仅用颜色/标点区分目录与文件）；二等元信息（大小/时间/状态）右对齐、弱色、`tabular-nums`；**机器信息（权限串/校验和/原始路径）不占行版面**，进 tooltip 或详情浮层。禁止在数据行内放与决策无关的装饰图形（如相对大小条）。行高消费令牌且为常量（虚拟列表网格对齐）；行内 hover 浮现高频操作 ≤2 个，全量操作走右键菜单（规则 9）。
+18. **状态指示与强调克制（红线）**：状态图形只用于**偏离预期**的态（进行中/失败/待处理）——正常态不得常驻成功图标（绿勾/徽标属噪声），最多允许中性微点占位对齐。单一对象的选中/活跃强调信号 ≤2 种（如背景 + 左缘指示线），禁止「背景 + 边线 + 文字变色 + 加粗」多重叠加；活跃行文字保持前景色，强调色只落在指示元素上，着色文字必须用 `accent-fg` 语义令牌（禁止裸用 `--ux-accent` 作正文色）。分区头（小节标题）= 标题文字 + 至多一个计数徽标，**不放图标**——父级导航（rail/页签栏）已带同类图标时，分区头重复同图标属冗余。次级动作（行关闭/下载等）hover 或选中态才浮现（保持可聚焦，不得 `display:none` 破坏键盘可达）。
 
 ---
 
@@ -283,7 +285,7 @@ interface Platform {
 |------|---------|
 | `UxButton` | variant: `primary / secondary / ghost / danger`；size: `sm(24) / md(28) / lg(32)`；`:loading` 内建；icon-only 必须传 aria-label（类型强制） |
 | `UxInput / UxTextarea / UxSelect / UxSwitch / UxCheckbox / UxSlider` | 统一 28px 高度、focus ring 走 `--ux-focus-ring`、错误态 + 描述文案插槽 |
-| `UxDialog` | 内建 focus trap、aria-modal、Esc 关闭、遮罩点击可配置、Promise 化 `open()` 返回结果（脑图窗口模式） |
+| `UxDialog` | 内建 focus trap、aria-modal、Esc 关闭、遮罩点击可配置、Promise 化 `open()` 返回结果（脑图窗口模式）；**动作按钮一律放 `#footer` 插槽**（框架统一 flex 右对齐 + `--ux-sp-2` 间距 + 上边框分隔，见 §11.3），禁止在 body 内自造按钮容器 |
 | `UxContextMenu` | 单例（`openContextMenu(e, items)` / `openContextMenuAt(x, y, items)`）+ Teleport + 防溢出 + 右键/Shift+F10 触发 + ↑↓/←→/Home/End/Enter/Space/Esc/首字母导航 + 分隔线/danger/disabled + 子菜单/复选/单选/分组标题（`menuitemcheckbox`/`menuitemradio`）；内容驱动自命令数组（详见 §6.6） |
 | `UxMenuBar` | 工具菜单栏（`role=menubar`）：roving tabindex + ←→ 切顶级项 + ↓/↑/Enter/Space 展开子菜单 + 首字母跳转 + 与命令注册表联动（详见 §6.6） |
 | `UxTooltip` ✅ | 120ms hover 意图延迟 + 焦点即显 + Esc 关闭 + `useOverflowPosition` 视口翻转；`role=tooltip` + `aria-describedby`；图标按钮配套 |
@@ -293,7 +295,7 @@ interface Platform {
 | `UxPopover` ✅ | 通用锚定浮层（非菜单类）：默认插槽=触发元素（点击开合，`trigger="manual"` 纯 API）+ `#content` 插槽；`useOverflowPosition` 视口翻转 + 钳制 + `matchTriggerWidth`；外部点击 / Esc 关闭（可分别开关）；`role`/`ariaLabel`/`focusOnOpen`；`v-model:open` 可选受控 + expose `open()/close()/toggle()` |
 | `UxToastHost` | aria-live、四语义色、可点击动作按钮、notifyOnce 集成 |
 | `UxTabs` | role=tablist、dirty 圆点、中键关闭、拖拽排序、溢出滚动；页签状态三态 `status`（on/lost 红/off 灰化）+ `subtitle` 双行 + `accent` 标识色点（SPEC-UI-22）；`#actions` 插槽在页签栏右侧追加动作区（页签列表/分屏控件图标化 `act-split` / `act-split-stack` / `act-unsplit`，SPEC-UI-27） |
-| `UxTree` | 懒加载 + 搜索过滤 + 右键菜单集成 + 状态角标 + 拖拽（防守式校验） |
+| `UxTree` | 懒加载 + 搜索过滤 + 右键菜单集成 + 状态角标 + 拖拽（防守式校验）；**内建指针拖拽兜底**：Tauri(Windows) 等 HTML5 DnD 被宿主接管的环境里，指针手势（≥5px 阈值）直接驱动同一套 dragId/dropMarker 状态，`pointercancel`（原生接管信号）自动让位，触屏排除（见 §11.1） |
 | `UxDataTable` | **单一实现双模式**：行数 ≤600 全渲染 / >600 自动虚拟滚动（同一套 API，终结 PDB 双表格路径）；列宽拖拽、列显隐、列值筛选、右键菜单、单元格复制 |
 | `UxTabList` ✅ | 页签列表 popover（供页签栏 `#actions` 使用）：过滤输入 + 选项（accent 色点 / icon / title / subtitle / close 按钮）+ 当前项高亮 + ↑↓/Enter/Esc + `useOverflowPosition` 视口翻转（SPEC-UI-27） |
 | `UxSplitter` | 面板间分隔条，双击复位 |
@@ -470,6 +472,19 @@ Command { id, title, icon?, shortcut?, when?, category?, danger?, run }
 - ✅ **菜单纪律与交互强化**：`check-commands`（C1 命令引用完整性 + C2 PlatformAdapter 契约比对）已接入 `pnpm check`；子菜单 hover 意图延迟走廊（`useHoverIntent` ~120ms，双向延迟切换 / 收起，跨越项不闪切）；`Shift+F10` / 菜单键显式绑定（原生事件优先，下一拍未见原生则在聚焦元素上兜底合成 `contextmenu`，仍走「单入口」）。
 - ⬜ **待补齐**：菜单项 `{ command }` 引用命令注册表的内置映射（当前由应用层按注册表映射生成 `MenuItem[]`，组件层不反向依赖 services，见 §6.6.4）。
 
+### 6.7 侧栏列表/文件浏览器布局规范（TerminalX SFTP 沉淀）
+
+侧栏内的路径型浏览器（SFTP / 日志目录 / 备份文件等）统一为「位置带 → 工具带 → 列表带 → 传输带」四带结构，全部消费 band 令牌，禁止功能无分组平铺成按钮堆：
+
+1. **位置带**：上级目录钮 + 路径输入（`flex:1` 吃满剩余宽度）+ 刷新钮；按钮统一 ghost sm，与输入框等高，宽度全部让给路径。
+2. **工具带**：按「视图 | 动作」分组，组间 `ux-sep` 分隔线：
+   - **视图组**：过滤输入 + 视图开关（显隐隐藏文件、跟随终端等）。开关必须 `aria-pressed` + 激活药丸底色（状态可发现），开关语义不得与动作语义混排同组。
+   - **动作组**：新建文件夹、上传等；最高频动作（上传）可升 secondary 与 ghost 拉开主次。
+   - **可折叠**：窄侧栏下工具带必须可整体收起（位置带尾部 chevron 按钮，`aria-expanded` 表达状态，单一图标靠朝向表达展开/收起，不新增 up/down 双形）；折叠态保留位置带与恢复按钮，不得把恢复入口一并隐藏；折叠偏好持久化（localStorage），默认展开。
+3. **列表带**：单行行布局（红线 17）——`[类型图标 14px] [名称 minmax(0,1fr) 省略] [大小 max-content 右对齐]`；行高常量 26px（虚拟列表网格对齐）；hairline 半强度分隔；权限串与修改时间进 tooltip；hover 浮现 ≤2 个高频行动作（下载/删除），全量操作走右键（§6.6）。
+4. **传输带**：仅有传输时出现，置底、限高滚动；传输方向由图标承担（↓ 下载 / ↑ 上传），取消按钮用 `act-close`（×=取消/关闭，红线 14 合规），「清除已完成」ghost sm。
+5. **图标注册**：字形（`.*`、`⇧`、`＋`、裸 `↑`、`↻`）一律淘汰换注册表图标；缺口按注册流程补——`act-level-up`（上级目录）、`act-eye`（显隐切换）、`act-link`（跟随/联动）、`obj-folder-plus`（新建文件夹）、`act-download`（传输下载，与 `act-save`「导出/另存」区分）。
+
 ---
 
 ## 七、质量保障（CI 四件套 + 测试）
@@ -537,3 +552,63 @@ ux.mount('#app')
 | 双壳（Electron/Tauri）差异扩大 | PlatformAdapter 契约测试 + check-commands 三端比对 |
 | 令牌规则被绕过（历史教训：内联 z-index、魔法数） | check-tokens 进 CI 主路径，不豁免主分支合并 |
 | EP 渐进替换期视觉双轨 | M7 期间允许 EP 存在但样式经 overrides.css 桥接到 UxKit 令牌，设最终删除期限 |
+
+---
+
+## 十一、平台集成指引（Tauri / WebView2 / Electron）
+
+> 本节沉淀跨项目踩坑经验。宿主环境对 WebView 的定制会静默改变 Web 标准行为，
+> 组件与宿主两侧都按本节约定处理，避免每个项目重复排查。
+
+### 11.1 HTML5 拖拽被宿主接管：UxTree 指针兜底（已内建）
+
+**现象**：Tauri(Windows) 的 WebView2 默认 `dragDropEnabled: true`，WebView 层接管全部
+拖放事件用于「文件拖入窗口」，页面内 `draggable` 元素的原生
+`dragstart / dragover / drop` **不再派发**。UxTree 的树拖拽因此整体失效——浏览器里
+正常、Tauri 真机上无反应，且无任何报错。该开关不能简单关闭：宿主的「文件拖入上传」
+（如终端拖文件传 SFTP）依赖它。
+
+**框架对策（UxTree ≥ 内建，无需宿主配置）**：行元素**不设 `draggable`**——原生拖拽循环
+在 Tauri 下既收不到事件、又会以 `pointercancel` 终止指针流，留着只会坏事。拖拽完全由
+指针手势承担，直接驱动组件内部的 `dragId / dropMarker` 状态：
+
+- `pointerdown`（主键、非触屏、非 disabled 行）记录起点；
+- 指针位移 ≥ 5px 激活拖拽（root 加 `is-pointer-dragging`），此后 `document.elementFromPoint`
+  定位落点行，按原生同一套 before/after/inside 分区更新指示；
+- `pointerup` 按「指示即所得」结算 `node-move`；
+- `pointercancel`（系统中断指针流）清场；触屏排除（与滚动手势冲突）；
+- `dragstart/dragover/drop` 监听保留，宿主合成事件仍可用（测试便利）。
+
+**宿主侧注意事项**：
+
+1. Tauri 项目**不要**为树拖拽关闭 `dragDropEnabled`；文件拖入与树拖拽可以共存。
+2. 若业务侧曾自行合成 DragEvent 驱动 UxTree（旧方案），升级后应移除——会与内建
+   代理叠加。
+3. `@ux/shell` 的 `UxTabs`（拖拽排序）、`UxPanel / UxDockWorkbench`（面板拖拽换区）
+   仍基于原生 HTML5 DnD，在 Tauri(Windows) 下当前**不受兜底覆盖**，宿主需用
+   指针事件自行实现或等待后续版本内建（见 §11.4）。
+4. 测试环境（jsdom）无 `elementFromPoint` 与 PointerEvent 构造器：测试可用
+   `new MouseEvent('pointerdown', …)` 按事件名派发，并临时替换
+   `document.elementFromPoint`。
+
+### 11.2 其他宿主差异速查
+
+| 宿主行为 | 影响 | 对策 |
+|----------|------|------|
+| WebView2 `dragDropEnabled` | 页内 HTML5 DnD 失效 | UxTree 已兜底；shell 拖拽待内建 |
+| Electron 默认允许页内 DnD | 文件拖入会触发导航/下载 | `window.addEventListener('dragover'/'drop', e => e.preventDefault())` 全局拦截 |
+| macOS/Windows 字体渲染差异 | 控件高度视觉不一 | 一律用 `--ux-control-h-*` 令牌，不写像素字面量 |
+| Tauri `visible: false` + splash | 首绘前白窗 | 宿主模式：splash 窗 + 首绘后 show，宿主自备超时兜底 |
+
+### 11.3 弹窗动作按钮规范
+
+`UxDialog` 的 `#footer` 插槽已统一排布（flex 右对齐、`--ux-sp-2` 间距、上边框分隔、
+`--ux-sp-3/--ux-sp-4` 内边距）。**宿主项目禁止在 body 内自造 `__actions`/`__buttons`
+容器或手写按钮间距**——那是间距漂移与高度不一的根源。主按钮用 `variant="primary"`，
+破坏性按钮用 `variant="danger"`，同排按钮 size 必须一致（默认 md）。
+
+### 11.4 待办
+
+- [ ] `UxTabs` / `UxPanel / UxDockWorkbench` 拖拽在 Tauri(Windows) 下的指针兜底。
+- [ ] `useDropProxy` composable：把「指针手势 → 拖拽语义」提炼为可复用 headless 逻辑，
+      供业务自定义可拖拽列表使用。

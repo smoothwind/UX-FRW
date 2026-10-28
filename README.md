@@ -95,7 +95,7 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 | `UxSplitter` | 分隔条：指针拖拽（4px 宽 + 6px 命中区）+ 键盘（←↑↓→ / Shift 加速 / Home / End）+ `role=separator` |
 | `setPlatformAdapter` / `getPlatformAdapter` / `createWebWindowControls`（services） | 宿主适配：注入 Electron/Tauri 窗控；内置浏览器模拟适配器供预览 |
 
-> 图标按钮配套约定：仅图标按钮必须给 `label`（aria，红线 14），并建议用 `UxTooltip` 补充文字说明；截断文本用 `UxTooltip` 呈现全文。
+> 图标按钮配套约定：仅图标按钮必须给 `label`（aria，红线 14），并建议用 `UxTooltip` 补充文字说明；截断文本用 `UxTooltip` 呈现全文。**单状态单图标**（红线 13）：同一按钮/触发器在同一状态下最多呈现一个图标，图标与 loading、展开箭头互斥。
 >
 > 功能带（chrome）约定：菜单栏 / 标题栏 / 工具栏 / 页签栏 / 面板头 / 状态栏统一 `background: var(--ux-band-bg)` + 边线 `var(--ux-band-border)`，形成「带=chrome、内容=画布」层次语言（提炼自 PersonalDb SPEC-UI-25）；面板内工具栏用 `UxPanelToolbar`（lead/monitor/actions 三段），段间竖线用 `.ux-sep`、弹性占位用 `.ux-spacer`。
 
@@ -150,6 +150,19 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 7. **视觉**：全走语义令牌（`--ux-bg-overlay`/`--ux-elev-2`/`--ux-radius-md`），图标 16px 语义唯一、快捷键列右对齐、删除必须垃圾桶 + danger（红线 13/14）。
 
 **当前状态**：`MenuPanel` + `UxContextMenuHost`（单例，含全类型项/子菜单/复选/单选/组标题、数组或 getter 菜单源）、`UxMenuBar`（`role=menubar`）与 `UxDropdown`（menubutton，锚定宿主 + APG 键盘/Esc 归还焦点）已交付并验证；`UxPopover` 提供通用锚定浮层底座（视口翻转 + 外部/Esc 关闭 + 受控/非受控）；`check-commands`（命令引用完整性 + PlatformAdapter 契约）、子菜单 `useHoverIntent` 延迟走廊（~120ms）、`Shift+F10` / 菜单键显式绑定（原生优先 + 兜底合成）均已落地。菜单项 `{ command }` 内置映射仍由应用层按注册表生成 `MenuItem[]`（组件层不反向依赖 services）。
+
+## 面板列表/浏览器布局规范（侧栏 SFTP 类）
+
+依据「单行行布局 + 功能分组 + 状态克制」原则，完整规范见 [设计文档 §6.7 与红线 17/18](docs/UxKit-设计方案.md)。适用于侧栏内的路径型浏览器（SFTP、日志目录、备份文件等）与侧栏列表分区（页签列表等）。
+
+**关键规则**：
+
+1. **四带结构**：位置带（上级 + 路径输入 + 刷新）→ 工具带（过滤 + 视图开关 ｜ 动作，组间 `ux-sep` 分隔）→ 列表带 → 传输带（有传输才出现）；禁止功能无分组平铺成字形按钮堆（红线 17）。**工具带可整体折叠**：位置带尾部 chevron（`aria-expanded`，单图标旋转表达朝向），折叠后保留位置带与恢复入口，偏好持久化、默认展开。
+2. **单行行布局**：`[类型图标] 名称 …… 大小右对齐`，行高常量 26px；目录/文件类型由图标承担，不只靠颜色/斜杠；权限串、修改时间等机器信息进 tooltip 不占版面；禁止装饰性数据图形（相对大小条）。
+3. **开关可发现**：视图开关必须 `aria-pressed` + 激活药丸底色，与动作按钮分组隔离。
+4. **hover 行动作 ≤2 个**（下载/删除等最高频），全量操作走右键菜单（红线 9）。
+5. **状态克制（红线 18）**：正常态零图标（或中性微点），loading/失败才显示语义图标；选中强调 ≤2 信号（背景 + 左缘线），文字保持前景色；分区头 = 标题 + 计数徽标，不放图标（父级 rail 已带）。
+6. **图标全注册表化**：淘汰 `.*` `⇧` `＋` `↻` `↑` 等字形；使用 `act-level-up` / `act-eye` / `act-link` / `obj-folder-plus` / `act-download` / `act-upload`（红线 13）。
 
 ## 发版流程（changesets）
 
