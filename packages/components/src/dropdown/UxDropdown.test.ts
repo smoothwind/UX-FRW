@@ -58,6 +58,8 @@ describe('UxDropdown', () => {
     expect(btn.attributes('aria-haspopup')).toBe('menu')
     expect(btn.attributes('aria-expanded')).toBe('false')
     expect(btn.attributes('aria-label')).toBe('操作菜单')
+    // 红线 14：悬浮提示与读屏双通道——title 缺省回退 label/ariaLabel
+    expect(btn.attributes('title')).toBe('操作菜单')
     expect(btn.text()).toContain('操作')
   })
 

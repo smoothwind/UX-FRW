@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useDismiss, useOverflowPosition, type Placement } from '@ux/composables'
 import UxIcon from '../icon/UxIcon.vue'
 import UxMenuPanel from '../menu/MenuPanel.vue'
@@ -20,7 +20,7 @@ const props = withDefaults(
     variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
     size?: 'sm' | 'md' | 'lg'
     disabled?: boolean
-    /** 是否显示右侧 chevron */
+    /** 是否显示右侧 chevron；icon 存在时强制隐藏（单状态单图标，红线 13） */
     showCaret?: boolean
     /** 菜单宽度与触发按钮对齐 */
     matchTriggerWidth?: boolean
@@ -35,6 +35,9 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{ select: [item: MenuItem] }>()
+
+/** 单状态单图标（红线 13）：触发器已带 icon 时不再叠加 caret */
+const caretVisible = computed(() => props.showCaret && !props.icon)
 
 /** 开合状态：绑定 v-model:open 即可受控；不绑定时为内部自持 */
 const isOpen = defineModel<boolean>('open', { default: false })
@@ -126,6 +129,7 @@ defineExpose({ open: () => setOpen(true), close, toggle: toggleOpen })
       :class="[`ux-btn--${variant}`, `ux-btn--${size}`]"
       type="button"
       :aria-label="ariaLabel"
+      :title="ariaLabel ?? label"
       aria-haspopup="menu"
       :aria-expanded="isOpen"
       :disabled="disabled"
@@ -138,7 +142,7 @@ defineExpose({ open: () => setOpen(true), close, toggle: toggleOpen })
     >
       <UxIcon v-if="icon" :name="icon" />
       <span v-if="label" class="ux-btn__text">{{ label }}</span>
-      <UxIcon v-if="showCaret" name="act-chevron-down" class="ux-dropdown__caret" />
+      <UxIcon v-if="caretVisible" name="act-chevron-down" class="ux-dropdown__caret" />
     </button>
 
     <Teleport to="body">
