@@ -10,6 +10,7 @@ import {
   SettingsShell,
   TourGuide,
   UxDataTable,
+  UxSplash,
   type DataTableColumn,
   type SettingsCategory,
 } from '@ux/patterns'
@@ -143,6 +144,25 @@ function pushSample(): void {
   const [lv, title, detail] = logSamples[logSeq++ % logSamples.length]
   log.push(lv, title, detail)
 }
+
+/* ---------- UxSplash ---------- */
+const splashOpen = ref(false)
+const splashWaiting = ref(false)
+const splashRef = ref<InstanceType<typeof UxSplash> | null>(null)
+let splashTimer: number | undefined
+
+function playSplash(waiting: boolean): void {
+  splashWaiting.value = waiting
+  splashOpen.value = true
+  window.clearTimeout(splashTimer)
+  // 等待模式演示：模拟宿主 2.4s 后就绪
+  if (waiting) splashTimer = window.setTimeout(() => splashRef.value?.finish(), 2400)
+}
+
+function onSplashDone(): void {
+  window.clearTimeout(splashTimer)
+  splashOpen.value = false
+}
 </script>
 
 <template>
@@ -192,6 +212,29 @@ function pushSample(): void {
         />
         <p v-else class="pg-note">{{ t('patterns.demo.errorIdle') }}</p>
       </div>
+    </section>
+
+    <section class="pg-card">
+      <h3>UxSplash</h3>
+      <p class="pg-note">{{ t('patterns.splash.hint') }}</p>
+      <div class="pt-row">
+        <UxButton size="sm" variant="primary" data-ux-splash-play @click="playSplash(false)">
+          {{ t('patterns.splash.play') }}
+        </UxButton>
+        <UxButton size="sm" data-ux-splash-wait @click="playSplash(true)">
+          {{ t('patterns.splash.playWaiting') }}
+        </UxButton>
+      </div>
+      <UxSplash
+        ref="splashRef"
+        :open="splashOpen"
+        :waiting="splashWaiting"
+        icon="obj-database"
+        :title="t('patterns.splash.title')"
+        :subtitle="t('patterns.splash.subtitle')"
+        :label="t('patterns.splash.label')"
+        @done="onSplashDone"
+      />
     </section>
 
     <section class="pg-card">

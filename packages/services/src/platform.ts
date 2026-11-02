@@ -13,6 +13,8 @@ export interface PlatformAdapter {
   os?: 'win32' | 'darwin' | 'linux'
   /** 提供后 TitleBar 显示窗控按钮（frameless 模式） */
   windowControls?: WindowControls
+  /** 提供后 UxSplash 收场时关闭宿主原生启动窗（Electron/Tauri）；web 无需实现 */
+  closeSplash?: () => void
 }
 
 let current: PlatformAdapter | null = null

@@ -69,12 +69,15 @@
   --ux-z-dropdown: 2200;   /* 下拉（须高于菜单） */
   --ux-z-tour: 2600;       /* 漫游引导聚光层 */
   --ux-z-toast: 2700;      /* 通知（最高，不被引导遮罩盖住） */
+  --ux-z-splash: 2800;     /* 启动页（最高，盖过一切浮层） */
 
   /* 动效 */
   --ux-dur-fast: 120ms;
   --ux-dur-normal: 160ms;
   --ux-dur-slow: 240ms;
+  --ux-dur-splash: 760ms;
   --ux-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ux-ease-out-strong: cubic-bezier(0.22, 1, 0.36, 1);
 
   /* 焦点环宽度 */
   --ux-focus-width: 2px;

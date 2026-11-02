@@ -594,3 +594,108 @@
   word-break: break-all;
   background: var(--ux-bg-sunken);
 }
+
+/* ===== UxSplash 启动页（小点旋转成窗体）===== */
+
+.ux-splash {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ux-z-splash);
+  display: grid;
+  place-items: center;
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity var(--ux-dur-slow) var(--ux-ease-out),
+    transform var(--ux-dur-slow) var(--ux-ease-out);
+}
+
+/* window 模式：中心窗体 + 环境渐变底；cover 模式：整屏填充 */
+.ux-splash--cover {
+  background: var(--ux-bg);
+}
+
+.ux-splash--window {
+  background: radial-gradient(120% 90% at 50% 0%, var(--ux-bg-panel), var(--ux-bg));
+}
+
+.ux-splash--leaving,
+.ux-splash--gone {
+  opacity: 0;
+  transform: scale(1.04);
+}
+
+.ux-splash__stage {
+  position: relative;
+}
+
+.ux-splash__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.ux-splash__rect {
+  fill: transparent;
+  stroke: var(--ux-accent);
+  stroke-width: 1.5;
+}
+
+.ux-splash__dot {
+  fill: var(--ux-accent);
+  filter: drop-shadow(0 0 6px var(--ux-accent));
+  transition: opacity var(--ux-dur-fast) var(--ux-ease-out);
+}
+
+.ux-splash__body {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ux-sp-2);
+  padding: var(--ux-sp-4);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity var(--ux-dur-slow) var(--ux-ease-out),
+    transform var(--ux-dur-slow) var(--ux-ease-out);
+}
+
+/* 内容只在 settle（含 reduced-motion 直达）阶段可见 */
+.ux-splash--settle .ux-splash__body {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ux-splash__logo {
+  font-size: var(--ux-fs-icon);
+  color: var(--ux-accent);
+}
+
+.ux-splash__title {
+  margin: 0;
+  font-size: var(--ux-fs-display);
+  font-weight: var(--ux-fw-semibold);
+  color: var(--ux-fg);
+}
+
+.ux-splash__sub {
+  margin: 0;
+  font-size: var(--ux-fs-lg);
+  color: var(--ux-fg-muted);
+}
+
+.ux-splash__extra {
+  margin-top: var(--ux-sp-2);
+  color: var(--ux-fg-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ux-splash,
+  .ux-splash__body {
+    transition: none;
+  }
+}
