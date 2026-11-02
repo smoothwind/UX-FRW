@@ -30,6 +30,7 @@ useFocusTrap(dialogEl, { active: () => props.open, onEscape: close })
       <div
         ref="dialogEl"
         class="ux-dialog"
+        data-ux-fx-surface
         role="dialog"
         aria-modal="true"
         :aria-label="title"

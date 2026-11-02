@@ -62,6 +62,7 @@ function onResizePointerDown(e: PointerEvent): void {
   <div
     class="ux-float"
     data-ux="float"
+    data-ux-fx-surface
     :style="{ left: `${geom.x}px`, top: `${geom.y}px`, width: `${geom.w}px`, height: `${geom.h}px`, zIndex: z }"
     @pointerdown="emit('focus', panelId)"
   >

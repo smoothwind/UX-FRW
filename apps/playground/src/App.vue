@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onUnmounted, ref } from 'vue'
-import { applyTheme, watchSystemTheme, type UxTheme } from '@ux/tokens'
+import { applyTheme, watchSystemTheme, FX_FROST, FX_METAL, FX_SHEEN, type UxTheme } from '@ux/tokens'
 import { UxContextMenuHost, UxToastHost, notify } from '@ux/components'
 import { CommandPalette } from '@ux/patterns'
 import { createI18n, provideI18n, registerCommand, shortcuts, type Command } from '@ux/services'
@@ -29,8 +29,62 @@ const tab = ref<'tokens' | 'components' | 'services' | 'shell' | 'patterns'>('to
 const themes = computed(() => [
   { value: 'light' as UxTheme, label: t('theme.light') },
   { value: 'dark' as UxTheme, label: t('theme.dark') },
+  { value: 'dark-silk' as UxTheme, label: t('theme.darkSilk') },
   { value: 'system' as UxTheme, label: t('theme.system') },
 ])
+
+// 视觉特效：空数组 = 主题默认（dark-silk 默认 sheen）；显式列表覆盖默认
+const fx = ref<string[]>([])
+const fxOpacity = ref(0.72)
+const fxSheen = ref(1)
+const fxOptions = computed(() => [
+  { name: FX_SHEEN, label: t('theme.sheen') },
+  { name: FX_METAL, label: t('theme.metal') },
+  { name: FX_FROST, label: t('theme.frost') },
+])
+
+function toggleFx(name: string): void {
+  fx.value = fx.value.includes(name) ? fx.value.filter((n) => n !== name) : [...fx.value, name]
+  applyTheme(theme.value, { fx: fx.value.length ? fx.value : undefined })
+}
+
+function onFxOpacity(value: number): void {
+  fxOpacity.value = value
+  document.documentElement.style.setProperty('--ux-frost-opacity', String(value))
+}
+
+function onFxSheen(value: number): void {
+  fxSheen.value = value
+  document.documentElement.style.setProperty('--ux-sheen-strength', String(value))
+}
+
+/** 单一调节滑块：跟随最后切换的可调特效（丝光/磨砂），始终只显示一个 */
+const fxSlider = computed(() => {
+  const last = fx.value[fx.value.length - 1]
+  if (last === FX_FROST) {
+    return {
+      min: 0.5,
+      max: 0.95,
+      step: 0.01,
+      value: fxOpacity.value,
+      label: t('theme.frostOpacity'),
+      fxAttr: 'data-ux-fx-opacity',
+      set: (v: number) => onFxOpacity(v),
+    }
+  }
+  if (last === FX_SHEEN) {
+    return {
+      min: 0,
+      max: 1.5,
+      step: 0.05,
+      value: fxSheen.value,
+      label: t('theme.sheenStrength'),
+      fxAttr: 'data-ux-fx-sheen',
+      set: (v: number) => onFxSheen(v),
+    }
+  }
+  return null
+})
 
 const tabs = computed(() => [
   { value: 'tokens' as const, label: t('tabs.tokens') },
@@ -42,7 +96,7 @@ const tabs = computed(() => [
 
 function setTheme(next: UxTheme): void {
   theme.value = next
-  applyTheme(next)
+  applyTheme(next, { fx: fx.value.length ? fx.value : undefined })
   prefs.patch({ theme: next })
 }
 
@@ -142,6 +196,31 @@ onUnmounted(stopShortcuts)
           {{ locale === 'zh-CN' ? '中' : 'EN' }}
         </button>
       </div>
+      <div class="pg-fx" role="group" :aria-label="t('theme.fx')">
+        <button
+          v-for="effect in fxOptions"
+          :key="effect.name"
+          class="pg-btn"
+          :class="{ 'is-active': fx.includes(effect.name) }"
+          type="button"
+          :data-ux-fx-toggle="effect.name"
+          @click="toggleFx(effect.name)"
+        >
+          {{ effect.label }}
+        </button>
+        <input
+          v-if="fxSlider"
+          class="pg-fx-opacity"
+          type="range"
+          :min="fxSlider.min"
+          :max="fxSlider.max"
+          :step="fxSlider.step"
+          :value="fxSlider.value"
+          :aria-label="fxSlider.label"
+          :[fxSlider.fxAttr]="''"
+          @input="fxSlider.set(Number(($event.target as HTMLInputElement).value))"
+        />
+      </div>
       <div class="pg-themes" role="group" aria-label="Theme">
         <button
           v-for="item in themes"
@@ -203,6 +282,17 @@ onUnmounted(stopShortcuts)
 .pg-tabs {
   display: flex;
   gap: var(--ux-sp-1);
+}
+
+.pg-fx {
+  display: flex;
+  gap: var(--ux-sp-1);
+  align-items: center;
+}
+
+.pg-fx-opacity {
+  width: 96px;
+  accent-color: var(--ux-accent);
 }
 
 .pg-themes {

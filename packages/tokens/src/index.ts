@@ -6,25 +6,61 @@ export type { ApplyThemeOptions, ResolvedTheme, UxTheme } from './types'
 export const THEME_ATTR = 'data-color-mode'
 /** 暗色类名（Element Plus/主流库约定，双通道兼容） */
 export const DARK_CLASS = 'dark'
+/** 黑暗主题类名（叠加在 .dark 之上，仅覆盖表面基色/文本/边框/阴影） */
+export const SILK_CLASS = 'dark-silk'
+
+/** 视觉特效标记：data-ux-fx = 空格分隔的效果列表（sheen/frost 等见 semantic.css 特效层） */
+export const FX_ATTR = 'data-ux-fx'
+/** 背景丝光特效名（表面 = 顶部丝光渐变 + 主题基色，对所有主题生效） */
+export const FX_SHEEN = 'sheen'
+/** 磨砂玻璃特效名（浮层半透明 + backdrop blur，组件以 data-ux-fx-surface 标注） */
+export const FX_FROST = 'frost'
+/** 金属质感特效名（表面 = 镜面高光 + 拉丝纹理 + 主题基色） */
+export const FX_METAL = 'metal'
+
+/** 主题切换过渡标记（样式见 semantic.css；切换瞬间设置，超时摘除） */
+export const THEME_TRANSITION_ATTR = 'data-theme-transition'
+/** 主题过渡窗口时长：与 --ux-dur-slow 对齐 */
+export const THEME_TRANSITION_MS = 240
+
+let themeTransitionTimer: ReturnType<typeof setTimeout> | undefined
 
 /** 跟随系统偏好时监听的媒体查询 */
 const SYSTEM_QUERY = '(prefers-color-scheme: dark)'
 
 export function resolveTheme(theme: UxTheme): ResolvedTheme {
-  if (theme !== 'system') return theme
-  return window.matchMedia(SYSTEM_QUERY).matches ? 'dark' : 'light'
+  if (theme === 'system') return window.matchMedia(SYSTEM_QUERY).matches ? 'dark' : 'light'
+  return theme === 'light' ? 'light' : 'dark'
 }
 
 /**
  * 应用主题到文档根元素。
- * 三通道同步：data-color-mode（Primer）+ .dark 类（EP/主流库）+ color-scheme（原生控件）。
+ * 三通道同步：data-color-mode（Primer）+ .dark 类（EP/主流库约定）+ color-scheme（原生控件）。
+ * dark-silk 在 dark 基础上叠加 SILK_CLASS，并默认携带 sheen 视觉特效（FX_ATTR）；
+ * 其余主题不附带特效——宿主可对任意主题自行追加 FX_ATTR 启用 sheen。
+ * options.fx 显式传入时覆盖主题默认（dark-silk 默认 [sheen]）。
+ * 切换瞬间设置 THEME_TRANSITION_ATTR，全元素颜色按 --ux-dur-slow 过渡，超时摘除。
  */
 export function applyTheme(theme: UxTheme, options: ApplyThemeOptions = {}): ResolvedTheme {
   const resolved = resolveTheme(theme)
+  const silk = theme === 'dark-silk'
+  const effects = options.fx ?? (silk ? [FX_SHEEN] : [])
   const root = document.documentElement
-  root.setAttribute(THEME_ATTR, resolved)
+  root.setAttribute(THEME_TRANSITION_ATTR, '')
+  root.setAttribute(THEME_ATTR, silk ? 'dark-silk' : resolved)
   root.classList.toggle(DARK_CLASS, resolved === 'dark')
+  root.classList.toggle(SILK_CLASS, silk)
+  if (effects.length > 0) {
+    root.setAttribute(FX_ATTR, effects.join(' '))
+  } else {
+    root.removeAttribute(FX_ATTR)
+  }
   root.style.colorScheme = resolved
+  window.clearTimeout(themeTransitionTimer)
+  themeTransitionTimer = setTimeout(() => {
+    root.removeAttribute(THEME_TRANSITION_ATTR)
+    themeTransitionTimer = undefined
+  }, THEME_TRANSITION_MS)
   options.syncPlatform?.(resolved)
   return resolved
 }

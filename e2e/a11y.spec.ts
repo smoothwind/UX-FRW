@@ -32,6 +32,14 @@ test.describe('无障碍（axe-core）', () => {
     await expectNoSeriousViolations(page, '暗色组件分区')
   })
 
+  test('黑暗主题组件分区无 serious/critical 问题', async ({ page }) => {
+    await page.goto('/')
+    await page.locator('[data-ux-theme="dark-silk"]').click()
+    await page.locator('[data-ux-tab="components"]').click()
+    await expect(page.locator('[data-ux="pg-body"]')).toHaveAttribute('data-ux-section', 'components')
+    await expectNoSeriousViolations(page, '黑暗主题组件分区')
+  })
+
   test('命令面板打开后无 serious/critical 问题', async ({ page }) => {
     await page.goto('/')
     await page.keyboard.press('Control+k')

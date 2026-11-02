@@ -13,7 +13,14 @@
   "theme": {
     "light": "Light",
     "dark": "Dark",
-    "system": "System"
+    "darkSilk": "Blackout",
+    "system": "System",
+    "fx": "Effects",
+    "sheen": "Sheen",
+    "sheenStrength": "Sheen intensity",
+    "metal": "Metal",
+    "frost": "Frost",
+    "frostOpacity": "Frost opacity"
   },
   "commands": {
     "palette": {
@@ -183,6 +190,14 @@
       "copyRow": "Copy Row (JSON)",
       "copied": "Copied",
       "rowCopied": "Row JSON copied"
+    },
+    "splash": {
+      "label": "Application starting",
+      "title": "UxKit",
+      "subtitle": "Starting up…",
+      "hint": "A dot sweeps out the panel: focus → SVG stroke expand → content settle; press Esc to skip. In waiting mode the dot patrols the outline until the host finishes after 2.4s.",
+      "play": "Play Entrance",
+      "playWaiting": "Play (Waiting)"
     },
     "demo": {
       "emptyTitle": "No Connections",

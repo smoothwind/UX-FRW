@@ -160,14 +160,25 @@ Tier 3 组件层 component    --ux-btn-height / --ux-input-height / --ux-tab-hei
 
 ```ts
 // @ux/tokens 的 applyTheme：一套代码同时兼容三种运行壳
-function applyTheme(theme: 'light' | 'dark' | 'system'): void {
-  const resolved = theme === 'system' ? matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' : theme
+function applyTheme(theme: 'light' | 'dark' | 'dark-silk' | 'system'): void {
+  const silk = theme === 'dark-silk'
+  const resolved = theme === 'system' ? matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+              : theme === 'light' ? 'light' : 'dark'
   document.documentElement.classList.toggle('dark', resolved === 'dark')          // PDB 惯例
-  document.documentElement.dataset.colorMode = resolved                            // Primer 惯例
+  document.documentElement.classList.toggle('dark-silk', silk)                    // 黑丝质感：叠加类
+  document.documentElement.dataset.colorMode = silk ? 'dark-silk' : resolved      // Primer 惯例
   document.documentElement.style.colorScheme = resolved                            // 原生控件跟随
-  platform.setNativeTheme(theme)   // Electron: nativeTheme.themeSource / Tauri: set_theme
+  platform.setNativeTheme(resolved)   // Electron: nativeTheme.themeSource / Tauri: set_theme（dark-silk 归入 dark）
 }
 ```
+
+- **dark-silk（黑暗主题）**：第三主题，叠加 `.dark.dark-silk` 双类。主题只声明表面**基色**（`--ux-bg-*-base`，silk 墨黑阶）、文本/边框/阴影（更强明度落差 + rim light 阴影），交互主色与功能色继承 `.dark`（indigo 不变）；平台通道（Electron/Tauri）解析为 `dark`。
+- **视觉特效层（`data-ux-fx`，主题无关）**：空格分隔的效果列表，挂载于 `html`，通过 `applyTheme(theme, { fx })` 或直接操作属性启用。已登记两个特效，参数化、可叠加：
+  - **sheen（背景丝光）**：所有主题表面 = 顶部丝光渐变 + 主题基色；参数 `--ux-sheen-hi`（高光色）、`--ux-sheen-strength`（总强度 0~n，滑块/宿主可调，等比缩放各表面）、`--ux-sheen-{canvas|panel|overlay|sunken}`（各表面强度，浅色主题可改暗色高光）。
+  - **metal（金属质感）**：表面 = 镜面高光渐变 + 拉丝纹理（`repeating-linear-gradient` 1px 亮带）+ 主题基色；参数 `--ux-metal-hi`（高光色）、`--ux-metal-{canvas|panel|overlay|sunken}`（镜面强度）、`--ux-metal-brush`（拉丝强度）。与 sheen 同为表面纹理类，二选一（同开时后者生效）。
+  - **frost（磨砂玻璃）**：浮层（`--ux-bg-overlay`）半透明化 + `backdrop-filter: blur()`；参数 `--ux-frost-opacity`（不透明度 0~1，默认 0.72）、`--ux-frost-blur`、`--ux-frost-saturate`；组件在浮层根元素标注 `data-ux-fx-surface`，特效层统一注入模糊。
+  - `dark-silk` 默认携带 sheen（其余主题由宿主追加），特效与主题完全解耦。表面令牌为「复合值 + 基色」两层：`:root` 默认 `表面 = 基色`，主题只写基色，特效只写复合；消费方走 `background:` 简式。
+- **主题切换过渡**：`applyTheme` 在切换瞬间于 `html` 上设置 `data-theme-transition`，semantic.css 据此为全元素开启颜色类属性（背景/边框/文本/阴影）按 `--ux-dur-slow`（240ms）过渡，超时后摘除——不污染日常 hover/按压动效；`prefers-reduced-motion` 下不播放。
 
 JS 需要主题色的场景（图表/画布）**运行时读令牌**（`getComputedStyle`），禁止 JS 分支硬编码——MdReader 已验证的规则。
 

@@ -1,7 +1,7 @@
 import { createPreferences } from '@ux/services'
 
 export interface PlaygroundPrefs extends Record<string, unknown> {
-  theme: 'light' | 'dark' | 'system'
+  theme: 'light' | 'dark' | 'dark-silk' | 'system'
   locale: string
   density: 'comfortable' | 'compact'
 }

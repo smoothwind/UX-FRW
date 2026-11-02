@@ -79,6 +79,29 @@ onMounted(() => {
     </section>
 
     <section class="pg-card">
+      <h2>视觉特效预览</h2>
+      <p class="pg-note">
+        用顶栏「视觉特效」开关切换 丝光 / 金属 / 磨砂。预览舞台固定为丝黑表面，
+        任何主题下纹理均可见；磨砂玻璃面板会在打开「磨砂」时半透明并模糊背后的彩色条纹。
+      </p>
+      <div class="fx-stage">
+        <div class="fx-chips">
+          <div class="fx-chip fx-chip--sheen"><code>丝光 · 表面</code></div>
+          <div class="fx-chip fx-chip--metal"><code>金属 · 表面</code></div>
+        </div>
+        <div class="fx-glass">
+          <div class="fx-stripes" aria-hidden="true"></div>
+          <div class="fx-pane" data-ux-fx-surface>
+            <div class="fx-pane__inner">
+              <code>data-ux-fx-surface</code>
+              <span>磨砂玻璃（浮层）</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pg-card">
       <h2>字号阶梯</h2>
       <div class="type-list">
         <p v-for="f in fontSizes" :key="f" :style="{ fontSize: `var(--ux-fs-${f})` }">
@@ -183,6 +206,96 @@ onMounted(() => {
   height: var(--ux-control-h-lg);
   border: 1px solid var(--ux-border);
   border-radius: var(--ux-radius-sm);
+}
+
+/* ===== 视觉特效预览舞台 =====
+   丝光/金属芯片：用 fx 层导出的纹理图（--ux-sheen-img / --ux-metal-img）直拼丝黑基色，
+   特效开启时出现纹理、关闭回落纯色——任何主题下均可见；
+   磨砂面板：用主题浮层令牌 --ux-bg-overlay，磨砂开启时半透明 + blur 背后彩色条纹。 */
+.fx-stage {
+  display: grid;
+  gap: var(--ux-sp-3);
+  margin-top: var(--ux-sp-3);
+}
+
+.fx-chips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--ux-sp-2);
+}
+
+.fx-chip {
+  height: var(--ux-control-h-lg);
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--ux-border);
+  border-radius: var(--ux-radius-sm);
+  color: var(--ux-silk-300);
+  font-size: var(--ux-fs-sm);
+}
+
+.fx-chip code {
+  font-size: var(--ux-fs-sm);
+  color: var(--ux-silk-300);
+}
+
+.fx-chip--sheen {
+  background: var(--ux-sheen-img, none), var(--ux-silk-850);
+}
+
+.fx-chip--metal {
+  background: var(--ux-metal-img, none), var(--ux-silk-850);
+}
+
+.fx-glass {
+  position: relative;
+  height: 132px;
+  border: 1px solid var(--ux-border);
+  border-radius: var(--ux-radius);
+  overflow: hidden;
+}
+
+.fx-stripes {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--ux-accent) 0 28px,
+    var(--ux-success) 28px 56px,
+    var(--ux-warning) 56px 84px,
+    var(--ux-danger) 84px 112px
+  );
+}
+
+.fx-pane {
+  position: absolute;
+  left: 16%;
+  top: var(--ux-sp-3);
+  right: 16%;
+  bottom: var(--ux-sp-3);
+  display: grid;
+  place-items: center;
+  background: var(--ux-bg-overlay);
+  border: 1px solid var(--ux-border);
+  border-radius: var(--ux-radius);
+}
+
+/* 深色内衬：不透明丝黑实底保证文字对比度（WCAG ≥4.5:1），不干扰玻璃透感 */
+.fx-pane__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ux-sp-1);
+  padding: var(--ux-sp-2) var(--ux-sp-3);
+  border-radius: var(--ux-radius-sm);
+  background: var(--ux-silk-900);
+  color: var(--ux-silk-300);
+  font-size: var(--ux-fs-lg);
+}
+
+.fx-pane__inner code {
+  font-size: var(--ux-fs-sm);
+  color: var(--ux-silk-300);
 }
 
 .type-list p {

@@ -11,11 +11,19 @@
 :root {
   color-scheme: light;
 
-  /* 表面 */
-  --ux-bg: var(--ux-gray-0);            /* 应用主表面 */
-  --ux-bg-panel: var(--ux-gray-50);     /* 侧栏/停靠面板 */
-  --ux-bg-sunken: var(--ux-gray-100);   /* 凹陷区（输入底/槽道） */
-  --ux-bg-overlay: var(--ux-gray-0);    /* 浮层（对话框/下拉/菜单） */
+  /* 表面复合：默认 = 纯基色；挂载 sheen 视觉特效后由特效层重写为「丝光渐变 + 基色」。
+     主题只声明 -base 基色，特效与主题解耦（消费方仍走 background: 简式） */
+  --ux-bg: var(--ux-bg-base);                  /* 应用主表面 */
+  --ux-bg-panel: var(--ux-bg-panel-base);      /* 侧栏/停靠面板 */
+  --ux-bg-sunken: var(--ux-bg-sunken-base);    /* 凹陷区（输入底/槽道） */
+  --ux-bg-overlay: var(--ux-bg-overlay-base);  /* 浮层（对话框/下拉/菜单） */
+
+  /* 基色（各主题覆盖此层） */
+  --ux-bg-base: var(--ux-gray-0);
+  --ux-bg-panel-base: var(--ux-gray-50);
+  --ux-bg-sunken-base: var(--ux-gray-100);
+  --ux-bg-overlay-base: var(--ux-gray-0);
+
   --ux-bg-hover: rgba(31, 35, 40, 0.05);
   --ux-bg-active: rgba(31, 35, 40, 0.09);
   /* 选中态分层（见设计文档 4.4 / check-tokens R4）：
@@ -36,7 +44,8 @@
 
   /* 功能带（chrome：菜单栏 / 工具栏 / 页签 / 面板头 / 状态栏）：
      「带=chrome、内容=画布」层次语言（PersonalDb SPEC-UI-25） */
-  --ux-band-bg: var(--ux-gray-50);
+  --ux-band-bg: var(--ux-band-bg-base);
+  --ux-band-bg-base: var(--ux-gray-50);
   --ux-band-border: var(--ux-gray-150);
 
   /* 交互主色 */
@@ -80,11 +89,11 @@
 .dark {
   color-scheme: dark;
 
-  /* 表面 */
-  --ux-bg: var(--ux-navy-900);
-  --ux-bg-panel: var(--ux-navy-850);
-  --ux-bg-sunken: var(--ux-navy-950);
-  --ux-bg-overlay: var(--ux-navy-800);
+  /* 表面基色（复合默认值见 :root；sheen 特效层据此重写表面） */
+  --ux-bg-base: var(--ux-navy-900);
+  --ux-bg-panel-base: var(--ux-navy-850);
+  --ux-bg-sunken-base: var(--ux-navy-950);
+  --ux-bg-overlay-base: var(--ux-navy-800);
   --ux-bg-hover: rgba(255, 255, 255, 0.06);
   --ux-bg-active: rgba(255, 255, 255, 0.1);
   /* 同浅色：控件级实心选中专用，行级请用 --ux-accent-subtle + --ux-accent-fg */
@@ -102,7 +111,7 @@
   --ux-border-strong: var(--ux-navy-500);
 
   /* 功能带（chrome band） */
-  --ux-band-bg: var(--ux-navy-850);
+  --ux-band-bg-base: var(--ux-navy-850);
   --ux-band-border: var(--ux-navy-600);
 
   /* 交互主色（暗色提亮，MdReader 惯例） */
@@ -139,4 +148,179 @@
   --ux-elev-4: 0 16px 40px rgba(0, 0, 0, 0.6);
 
   --ux-scrim: rgba(0, 0, 0, 0.55);
+}
+
+/**
+ * 黑暗主题（dark-silk，墨黑丝滑质感）：叠加在 .dark 之上，仅覆盖表面基色/文本/边框/阴影；
+ * 交互主色与功能色继承 .dark（indigo 与提亮功能色不变）。
+ * 丝光渐变不再是本主题私有：applyTheme 会为此主题挂载 sheen 视觉特效（见文件尾特效层），
+ * 表面 = 丝光渐变 + 这里的墨黑基色；关闭特效则回落为纯色平涂。
+ */
+.dark.dark-silk {
+  color-scheme: dark;
+
+  /* 表面基色：丝黑四层（凹陷 → 主表面 → 面板 → 浮层） */
+  --ux-bg-base: var(--ux-silk-900);
+  --ux-bg-panel-base: var(--ux-silk-850);
+  --ux-bg-sunken-base: var(--ux-silk-950);
+  --ux-bg-overlay-base: var(--ux-silk-800);
+  --ux-bg-hover: rgba(255, 255, 255, 0.07);
+  --ux-bg-active: rgba(255, 255, 255, 0.12);
+
+  /* 文本：银灰系，深黑底上正文/弱文本对比度高于 navy 暗色 */
+  --ux-fg: #e8eaee;
+  --ux-fg-muted: #9ba0a8;
+  --ux-fg-subtle: var(--ux-silk-300);
+  --ux-fg-on-accent: var(--ux-silk-950);
+  --ux-fg-inverse: var(--ux-silk-900);
+
+  /* 边框 */
+  --ux-border: var(--ux-silk-600);
+  --ux-border-strong: var(--ux-silk-500);
+
+  /* 功能带（chrome band） */
+  --ux-band-bg-base: var(--ux-silk-850);
+  --ux-band-border: var(--ux-silk-600);
+
+  /* 阴影：更深投影，高层级加顶部高光内阴影（rim light，丝绸光泽） */
+  --ux-elev-1: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --ux-elev-2: 0 4px 10px rgba(0, 0, 0, 0.55);
+  --ux-elev-3: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --ux-elev-4: 0 16px 40px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  --ux-scrim: rgba(0, 0, 0, 0.62);
+}
+
+/**
+ * ===== 视觉特效层（fx，主题无关）=====
+ * data-ux-fx = 空格分隔的效果列表，挂载于 html；新增特效在此登记。
+ *
+ * sheen（背景丝光）：表面 = 顶部丝光渐变 + 主题基色，覆盖所有主题的表面复合值。
+ * 参数（高光色 / 各表面强度）为主题无关默认值，主题或宿主可按需覆盖——
+ * 例如浅色主题改用暗色高光：--ux-sheen-hi: 13 17 23; --ux-sheen-canvas: 0.02;
+ * 光泽强度按层级深度分级：浮层 > 面板/功能带 > 画布 > 凹陷近乎哑光。
+ * 依赖 background: 简式消费（仓库既有约定），令牌值 = 逗号分隔的 image + color。
+ */
+[data-ux-fx~="sheen"] {
+  /* 参数：高光色（空格分隔 RGB）+ 各表面高光强度；
+     总强度 --ux-sheen-strength（0~n，宿主/演示滑块可调）等比缩放各表面强度 */
+  --ux-sheen-hi: 255 255 255;
+  --ux-sheen-strength: 1;
+  --ux-sheen-canvas: 0.04;
+  --ux-sheen-panel: 0.06;
+  --ux-sheen-overlay: 0.09;
+  --ux-sheen-sunken: 0.025;
+
+  /* 可复用表面纹理图（面板级，供宿主/演示自定义表面时叠加） */
+  --ux-sheen-img: linear-gradient(
+    180deg,
+    rgb(var(--ux-sheen-hi) / calc(var(--ux-sheen-panel) * var(--ux-sheen-strength))),
+    rgb(var(--ux-sheen-hi) / 0) 46%
+  );
+
+  /* 表面复合：丝光渐变 + 主题基色 */
+  --ux-bg: linear-gradient(180deg, rgb(var(--ux-sheen-hi) / calc(var(--ux-sheen-canvas) * var(--ux-sheen-strength))), rgb(var(--ux-sheen-hi) / 0) 58%),
+    var(--ux-bg-base);
+  --ux-bg-panel: linear-gradient(180deg, rgb(var(--ux-sheen-hi) / calc(var(--ux-sheen-panel) * var(--ux-sheen-strength))), rgb(var(--ux-sheen-hi) / 0) 46%),
+    var(--ux-bg-panel-base);
+  --ux-bg-sunken: linear-gradient(180deg, rgb(var(--ux-sheen-hi) / calc(var(--ux-sheen-sunken) * var(--ux-sheen-strength))), rgb(var(--ux-sheen-hi) / 0) 64%),
+    var(--ux-bg-sunken-base);
+  --ux-bg-overlay: linear-gradient(180deg, rgb(var(--ux-sheen-hi) / calc(var(--ux-sheen-overlay) * var(--ux-sheen-strength))), rgb(var(--ux-sheen-hi) / 0) 40%),
+    var(--ux-bg-overlay-base);
+  --ux-band-bg: linear-gradient(180deg, rgb(var(--ux-sheen-hi) / calc(var(--ux-sheen-panel) * var(--ux-sheen-strength))), rgb(var(--ux-sheen-hi) / 0) 46%),
+    var(--ux-band-bg-base);
+}
+
+/**
+ * metal（金属质感）：表面叠加「镜面高光 + 拉丝纹理」，质感接近拉丝金属。
+ * 参数（宿主/主题可覆盖）：
+ *  - --ux-metal-hi：高光色（空格分隔 RGB，默认白；浅色主题可改暗色高光）
+ *  - --ux-metal-canvas/panel/overlay/sunken：各表面镜面高光强度
+ *  - --ux-metal-brush：拉丝条纹强度
+ * 与 sheen 同为表面纹理类特效，二选一（本块在后，同时启用时 metal 生效）；
+ * 可与 frost 叠加（frost 在本块之后，浮层转为半透明磨砂并保留背板模糊）。
+ */
+[data-ux-fx~="metal"] {
+  --ux-metal-hi: 255 255 255;
+  --ux-metal-canvas: 0.08;
+  --ux-metal-panel: 0.06;
+  --ux-metal-overlay: 0.11;
+  --ux-metal-sunken: 0.03;
+  --ux-metal-brush: 0.05;
+
+  /* 可复用表面纹理图（面板级，供宿主/演示自定义表面时叠加） */
+  --ux-metal-img: linear-gradient(180deg, rgb(var(--ux-metal-hi) / var(--ux-metal-panel)), rgb(var(--ux-metal-hi) / 0) 30%),
+    repeating-linear-gradient(180deg, rgb(var(--ux-metal-hi) / var(--ux-metal-brush)) 0 1px, rgb(var(--ux-metal-hi) / 0) 1px 3px);
+
+  /* 表面 = 镜面高光（顶部渐隐）+ 拉丝条纹（1px 亮带 2px 间隔）+ 主题基色 */
+  --ux-bg: linear-gradient(180deg, rgb(var(--ux-metal-hi) / var(--ux-metal-canvas)), rgb(var(--ux-metal-hi) / 0) 30%),
+    repeating-linear-gradient(180deg, rgb(var(--ux-metal-hi) / var(--ux-metal-brush)) 0 1px, rgb(var(--ux-metal-hi) / 0) 1px 3px),
+    var(--ux-bg-base);
+  --ux-bg-panel: linear-gradient(180deg, rgb(var(--ux-metal-hi) / var(--ux-metal-panel)), rgb(var(--ux-metal-hi) / 0) 30%),
+    repeating-linear-gradient(180deg, rgb(var(--ux-metal-hi) / var(--ux-metal-brush)) 0 1px, rgb(var(--ux-metal-hi) / 0) 1px 3px),
+    var(--ux-bg-panel-base);
+  --ux-bg-sunken: linear-gradient(180deg, rgb(var(--ux-metal-hi) / var(--ux-metal-sunken)), rgb(var(--ux-metal-hi) / 0) 30%),
+    var(--ux-bg-sunken-base);
+  --ux-bg-overlay: linear-gradient(180deg, rgb(var(--ux-metal-hi) / var(--ux-metal-overlay)), rgb(var(--ux-metal-hi) / 0) 30%),
+    repeating-linear-gradient(180deg, rgb(var(--ux-metal-hi) / var(--ux-metal-brush)) 0 1px, rgb(var(--ux-metal-hi) / 0) 1px 3px),
+    var(--ux-bg-overlay-base);
+  --ux-band-bg: linear-gradient(180deg, rgb(var(--ux-metal-hi) / var(--ux-metal-panel)), rgb(var(--ux-metal-hi) / 0) 30%),
+    repeating-linear-gradient(180deg, rgb(var(--ux-metal-hi) / var(--ux-metal-brush)) 0 1px, rgb(var(--ux-metal-hi) / 0) 1px 3px),
+    var(--ux-band-bg-base);
+}
+
+/**
+ * frost（磨砂玻璃）：浮层表面转为半透明磨砂玻璃。
+ * 参数（宿主/主题可覆盖）：
+ *  - --ux-frost-opacity：不透明度 0~1（默认 0.72）
+ *  - --ux-frost-blur：背板模糊半径（默认 14px）
+ *  - --ux-frost-saturate：色彩增强系数（默认 1.35）
+ * 表面：仅浮层（--ux-bg-overlay）半透明化，画布/面板保持不透明保证可读性；
+ * 需要背板模糊的元素由组件标注 data-ux-fx-surface，本层统一注入 backdrop-filter。
+ * 与 sheen 并存时按文件顺序生效（本块在后，覆盖 --ux-bg-overlay）。
+ */
+[data-ux-fx~="frost"] {
+  --ux-frost-opacity: 0.72;
+  --ux-frost-blur: 14px;
+  --ux-frost-saturate: 1.35;
+
+  --ux-bg-overlay: color-mix(
+    in srgb,
+    var(--ux-bg-overlay-base) calc(var(--ux-frost-opacity) * 100%),
+    transparent
+  );
+}
+
+[data-ux-fx~="frost"] [data-ux-fx-surface] {
+  backdrop-filter: blur(var(--ux-frost-blur)) saturate(var(--ux-frost-saturate));
+  -webkit-backdrop-filter: blur(var(--ux-frost-blur)) saturate(var(--ux-frost-saturate));
+}
+
+/**
+ * 主题切换过渡：applyTheme 在切换瞬间于 html 上设置 data-theme-transition，
+ * 全元素颜色类属性按 --ux-dur-slow 过渡（比照 CSS Transitions 规则，过渡定义
+ * 取自 after-change style，故与颜色变更同帧即可生效）；超时后由 @ux/tokens 摘除，
+ * 不污染日常 hover/按压等交互动效。prefers-reduced-motion 下不播放。
+ */
+[data-theme-transition],
+[data-theme-transition] *,
+[data-theme-transition] *::before,
+[data-theme-transition] *::after {
+  transition:
+    background-color var(--ux-dur-slow) var(--ux-ease-out),
+    background-image var(--ux-dur-slow) var(--ux-ease-out),
+    border-color var(--ux-dur-slow) var(--ux-ease-out),
+    color var(--ux-dur-slow) var(--ux-ease-out),
+    fill var(--ux-dur-slow) var(--ux-ease-out),
+    stroke var(--ux-dur-slow) var(--ux-ease-out),
+    box-shadow var(--ux-dur-slow) var(--ux-ease-out) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme-transition],
+  [data-theme-transition] *,
+  [data-theme-transition] *::before,
+  [data-theme-transition] *::after {
+    transition: none !important;
+  }
 }

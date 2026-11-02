@@ -134,6 +134,7 @@ defineExpose({ open: () => setOpen(true), close })
       <div
         ref="panelEl"
         class="ux-cmdk"
+        data-ux-fx-surface
         role="dialog"
         aria-modal="true"
         :aria-label="tr(titleKey, '命令面板')"

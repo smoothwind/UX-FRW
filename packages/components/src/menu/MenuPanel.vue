@@ -177,6 +177,7 @@ defineExpose({ getEl: () => rootEl.value })
   <div
     ref="rootEl"
     class="ux-menu"
+    data-ux-fx-surface
     :class="{ 'ux-menu--sub': submenu, 'is-flip': flip }"
     role="menu"
     tabindex="-1"

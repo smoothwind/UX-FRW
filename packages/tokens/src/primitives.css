@@ -31,6 +31,16 @@
   --ux-navy-900: #151a24;
   --ux-navy-950: #10141c;
 
+  /* 黑暗主题背景体系（silk 系）：中性冷调墨黑，表面落差更大以呈现丝滑光泽 */
+  --ux-silk-300: #7e828a;
+  --ux-silk-500: #4b4f57;
+  --ux-silk-600: #33363d;
+  --ux-silk-700: #24262b;
+  --ux-silk-800: #17181c;
+  --ux-silk-850: #111215;
+  --ux-silk-900: #0b0c0e;
+  --ux-silk-950: #060709;
+
   /* 品牌色 indigo（MdReader 主题色系） */
   --ux-indigo-200: #b6c3ff;
   --ux-indigo-300: #91a7ff;
