@@ -62,8 +62,9 @@
 ┌─────────────────────────────────────────────────────────┐
 │  业务应用（PersonalDb / MdReader / 未来新项目）              │
 ├─────────────────────────────────────────────────────────┤
-│  @ux/patterns   复合模式：CommandPalette / SettingsShell  │
-│                 EmptyState / ErrorState / TourGuide       │
+│  @ux/patterns   复合模式：CommandPalette / SettingsShell / │
+│                 EmptyState / ErrorState / TourGuide /     │
+│                 LogPanel / UxDataTable / UxSplash         │
 ├─────────────────────────────────────────────────────────┤
 │  @ux/shell      布局壳：AppShell / TitleBar /              │
 │                 DockWorkbench / StatusBar                 │
@@ -153,8 +154,8 @@ Tier 3 组件层 component    --ux-btn-height / --ux-input-height / --ux-tab-hei
 | 行高 | `--ux-lh-tight / normal / relaxed` | 1.3 / 1.5 / 1.7 | |
 | 窗体 | `--ux-titlebar-h` 32 / `--ux-menubar-h` 26 / `--ux-toolbar-h` 42 / `--ux-statusbar-h` 26 px | | 直接来自 PDB 实测值 |
 | 面板 | `--ux-panel-header-h` 28 / `--ux-panel-min-w` 200 / `--ux-panel-max-w` 560 px | | PDB 停靠面板实测 |
-| z 阶梯 | `--ux-z-local` 20 → `z-dock` 900 → `z-pop` 960 → `z-top` 999 → `z-modal` 2000 → `z-menu` 2100 → `z-dropdown` 2200 → `z-tour` 2600 | | MdReader 阶梯原样采纳；新增浮层必须登记新档，禁止内联数字 |
-| 动效 | `--ux-dur-fast` 120ms / `--ux-dur-normal` 160ms / `--ux-ease-out` | | 全局动效时长；`prefers-reduced-motion` 下一律禁用 |
+| z 阶梯 | `--ux-z-local` 20 → `z-dock` 900 → `z-pop` 960 → `z-top` 999 → `z-modal` 2000 → `z-menu` 2100 → `z-dropdown` 2200 → `z-tour` 2600 → `z-toast` 2700 → `z-splash` 2800 | | MdReader 阶梯原样采纳；新增浮层必须登记新档，禁止内联数字 |
+| 动效 | `--ux-dur-fast` 120ms / `--ux-dur-normal` 160ms / `--ux-dur-slow` 240ms / `--ux-dur-splash` 760ms / `--ux-ease-out` / `--ux-ease-out-strong` | | 全局动效时长；`prefers-reduced-motion` 下一律禁用 |
 
 ### 4.3 主题切换机制（两项目方案的并集）
 
@@ -173,7 +174,7 @@ function applyTheme(theme: 'light' | 'dark' | 'dark-silk' | 'system'): void {
 ```
 
 - **dark-silk（黑暗主题）**：第三主题，叠加 `.dark.dark-silk` 双类。主题只声明表面**基色**（`--ux-bg-*-base`，silk 墨黑阶）、文本/边框/阴影（更强明度落差 + rim light 阴影），交互主色与功能色继承 `.dark`（indigo 不变）；平台通道（Electron/Tauri）解析为 `dark`。
-- **视觉特效层（`data-ux-fx`，主题无关）**：空格分隔的效果列表，挂载于 `html`，通过 `applyTheme(theme, { fx })` 或直接操作属性启用。已登记两个特效，参数化、可叠加：
+- **视觉特效层（`data-ux-fx`，主题无关）**：空格分隔的效果列表，挂载于 `html`，通过 `applyTheme(theme, { fx })` 或直接操作属性启用。已登记三个特效，参数化、可叠加：
   - **sheen（背景丝光）**：所有主题表面 = 顶部丝光渐变 + 主题基色；参数 `--ux-sheen-hi`（高光色）、`--ux-sheen-strength`（总强度 0~n，滑块/宿主可调，等比缩放各表面）、`--ux-sheen-{canvas|panel|overlay|sunken}`（各表面强度，浅色主题可改暗色高光）。
   - **metal（金属质感）**：表面 = 镜面高光渐变 + 拉丝纹理（`repeating-linear-gradient` 1px 亮带）+ 主题基色；参数 `--ux-metal-hi`（高光色）、`--ux-metal-{canvas|panel|overlay|sunken}`（镜面强度）、`--ux-metal-brush`（拉丝强度）。与 sheen 同为表面纹理类，二选一（同开时后者生效）。
   - **frost（磨砂玻璃）**：浮层（`--ux-bg-overlay`）半透明化 + `backdrop-filter: blur()`；参数 `--ux-frost-opacity`（不透明度 0~1，默认 0.72）、`--ux-frost-blur`、`--ux-frost-saturate`；组件在浮层根元素标注 `data-ux-fx-surface`，特效层统一注入模糊。
@@ -337,7 +338,7 @@ interface Platform {
 - M4 已落地：`UxAppShell`（titlebar/menubar/body/statusbar 插槽）、`UxTitleBar`（窗控自 `PlatformAdapter.windowControls`）、`UxActivityBar`、`UxDockWorkbench`（统一面板渲染 + 拖拽遮罩：边缘热区停靠 / 中央悬浮，VSCode 约定）、`UxPanel`（可拖拽头部 + 停靠⇄悬浮/最小化/关闭）、`UxFloatPanel`（标题栏拖动 + 右下 resize + z 置焦）、`UxStatusBar`、`UxSplitter`（指针拖拽 + 键盘 ←↑↓→/Home/End，`role=separator`）；生命周期含面板归属/尺寸/开合/让位/`lastZone`/拖拽交换（交换语义）/悬浮几何/最小化层叠/防抖持久化。
 - P1 补充（提炼自 PersonalDb SPEC-UI-24/25/26）：功能带令牌 `--ux-band-bg` / `--ux-band-border`（菜单栏/标题栏/工具栏/页签栏/面板头/状态栏统一带底 + 边线，「带=chrome、内容=画布」层次）；`UxPanelToolbar` 三段式（`#lead` 视图切换 / `#monitor` 监视过滤 / `#actions` 动作状态 + `.ux-sep`/`.ux-spacer` 原子类）；`UxActivityBar` 增加 `badge`（未读徽标）/`pinned`（常驻主区）/`item.active`（多面板可见），Rail 承担「面板开关 + 唤回」语义（点击事件由宿主 `useDockLayout.toggle` 承接）。
 - 启动白屏对策（PDB 验证）：可选 Splash 窗口 + `app_ready` 切换，封装为 `createUxKit()` 的选项。
-- **稳定标注**（便于用户描述定位 / 引导锚点 / E2E 选择器）：所有布局壳与模式组件根带 `data-ux="<part>"`（如 `appshell`/`titlebar`/`activitybar`/`dock`/`panel`/`panel-toolbar`/`float`/`splitter`/`splitpane`/`tabs`/`statusbar`/`empty`/`error`/`settings`/`tour`/`data-table`），关键子区域带 `data-ux-part="<zone>"`（如 `titlebar-left`/`titlebar-right`/`window-controls`/`menubar`/`dock-left`/`dock-right`/`dock-bottom`/`dock-center`/`drop-overlay`/`floats`/`minimize-stack`/`panel-head`/`panel-body`/`toolbar-lead`/`toolbar-monitor`/`toolbar-actions`/`statusbar-left`/`statusbar-right`/`pane-first`/`pane-second`/`settings-nav`/`settings-content`/`table-head`/`table-body`），页签额外带 `data-ux-tab-id`。值稳定且语义化，TourGuide `target` 可直接引用，业务无需自建 `data-tour` 锚点。
+- **稳定标注**（便于用户描述定位 / 引导锚点 / E2E 选择器）：所有布局壳与模式组件根带 `data-ux="<part>"`（如 `appshell`/`titlebar`/`activitybar`/`dock`/`panel`/`panel-toolbar`/`float`/`splitter`/`splitpane`/`tabs`/`statusbar`/`empty`/`error`/`settings`/`tour`/`data-table`/`splash`），关键子区域带 `data-ux-part="<zone>"`（如 `titlebar-left`/`titlebar-right`/`window-controls`/`menubar`/`dock-left`/`dock-right`/`dock-bottom`/`dock-center`/`drop-overlay`/`floats`/`minimize-stack`/`panel-head`/`panel-body`/`toolbar-lead`/`toolbar-monitor`/`toolbar-actions`/`statusbar-left`/`statusbar-right`/`pane-first`/`pane-second`/`settings-nav`/`settings-content`/`table-head`/`table-body`），页签额外带 `data-ux-tab-id`。值稳定且语义化，TourGuide `target` 可直接引用，业务无需自建 `data-tour` 锚点。
 - 重型面板一律 `defineAsyncComponent`，构建层分包。
 
 ### 6.5 @ux/patterns（复合模式组件）
@@ -350,6 +351,7 @@ interface Platform {
 | `SettingsShell` | 左分类导航（aria-current）+ 右内容卡片 + footnote「即时生效」提示 + 响应式窄屏横排；预设方案机制 |
 | `TourGuide` | 聚光遮罩 + 卡片智能定位 + 键盘导航 + localStorage 记忆 + 不可见锚点剔除；`auto=false` 支持纯按钮触发；锚点默认复用组件稳定标注（`data-ux` / `data-ux-part`） |
 | `LogPanel` ✅ | 活动日志：级别过滤（全部/错误/警告/信息，复用 UxSegmented）+ 计数 chip + 自动滚动（上翻暂停）+ 行展开完整详情 + 清空；数据由 `useActivityLog` 环形缓冲提供（SPEC-UI-23 日志面板） |
+| `UxSplash` ✅ | 启动页出场：亮点聚点 → SVG 描边旋转扫出窗体（亮点经 `getPointAtLength` 骑在描边头部，同一参数驱动天然同步）→ 内容落位 → 整体淡出；`waiting` 模式亮点沿轮廓巡游等待宿主 `finish()`；`minDuration` 最短展示；Esc 跳过；`prefers-reduced-motion` 直达落位；收场调用 `PlatformAdapter.closeSplash` 关闭宿主原生启动窗 |
 | `WelcomePane` | 1-2-3 步骤引导卡（首启无数据时） |
 | `AppMenuBridge` | Electron/Tauri 原生菜单 ⇄ 命令注册表双向桥接（菜单触发命令；命令的 shortcut 变化回写菜单显示） |
 
@@ -551,6 +553,7 @@ ux.mount('#app')
 | **M5 模式组件** | ✅ EmptyState/ErrorState/SettingsShell/TourGuide/UxDataTable + `useVirtualRows` + `looksLikeConnError` | 三态完备演示；10 万行虚拟滚动流畅（26 行 DOM）、排序/右键/双击复制、Tour 键盘+记忆 全部通过 |
 | **M6 迁移试点** | MdReader 接入 UxKit（替换 10 处按钮样式、ContextMenu、TourGuide、TabBar） | 功能等价 + 包体积不增 |
 | **M7 完整迁移** | PersonalDb 接入（EP 渐进替换：先 Dialog/Toast/ContextMenu，后表格与树） | 视觉统一到 UxKit 令牌 |
+| **M8 主题扩展 + 特效层 + 启动页** | ✅ dark-silk 第三主题（三通道同步 + 240ms 颜色过渡 + reduced-motion 降级）+ `data-ux-fx` 主题无关视觉特效通道（sheen 丝光 / metal 金属 / frost 磨砂，参数化可叠加）+ `UxSplash` 启动页 + `PlatformAdapter.closeSplash` | playground 三主题切换带过渡、特效开关与滑块、Splash 普通/等待就绪演示；e2e（含 a11y 黑暗主题分区）全覆盖 |
 
 ---
 

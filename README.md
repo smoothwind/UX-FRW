@@ -14,12 +14,12 @@
 
 | 包 | 职责 | 状态 |
 |----|------|------|
-| `@ux/tokens` | 三层设计令牌（primitives / semantic / layout）+ TS 主题工具 | ✅ M1 |
+| `@ux/tokens` | 三层设计令牌（primitives / semantic / layout）+ TS 主题工具（三主题：浅色 / 暗色 / 黑暗 dark-silk + 主题无关视觉特效通道 `data-ux-fx`） | ✅ M1/M8 |
 | `@ux/composables` | headless 逻辑（useFocusTrap / useOverflowPosition / useDismiss / useDockLayout） | ✅ M2/M4 |
 | `@ux/services` | Command / Shortcut / Preferences / I18n / Platform | ✅ M3/M4 |
 | `@ux/components` | 原子组件（Button / Input / Dialog / ContextMenu / Toast / Icon…） | ✅ M2 |
 | `@ux/shell` | 工作台布局壳（AppShell / TitleBar / DockWorkbench / Panel / FloatPanel / ActivityBar / StatusBar / Splitter） | ✅ M4 |
-| `@ux/patterns` | 复合模式（CommandPalette / EmptyState / ErrorState / SettingsShell / TourGuide / UxDataTable） | ✅ M3/M5 |
+| `@ux/patterns` | 复合模式（CommandPalette / EmptyState / ErrorState / SettingsShell / TourGuide / UxDataTable / LogPanel / UxSplash） | ✅ M3/M5/M8 |
 
 `apps/playground`：组件演示与验收场景（check-tokens 的管辖范围）。
 
@@ -27,7 +27,7 @@
 
 ```bash
 pnpm install
-pnpm dev              # 启动 playground（令牌 / 原子组件 / 系统服务 / 布局壳 四 Tab）
+pnpm dev              # 启动 playground（令牌 / 原子组件 / 系统服务 / 布局壳 / 复合模式 五 Tab）
 pnpm check            # 全部红线校验（下面四项串联）
 pnpm check:tokens     # 令牌纪律：R1 禁裸色值 / R2 间距走令牌 / R3 禁字面量 z/圆角/字号/阴影 / R4 行级选中禁实心主色
 pnpm check:icons      # 图标纪律：语义/形状唯一 + 易困惑组合黑名单
@@ -49,7 +49,7 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 
 | 组件 / 函数 | 说明 |
 |-------------|------|
-| `UxIcon` | 语义唯一图标（`obj-* / act-* / st-*` 注册表，30 个起步）；`label` 供读屏 |
+| `UxIcon` | 语义唯一图标（`obj-* / act-* / st-* / file-*` 四族注册表，84 个）；`label` 供读屏 |
 | `UxButton` | variant：primary/secondary/ghost/danger；size：sm/md/lg；`:loading`；仅图标必须给 `label` |
 | `UxInput` | 自动 `id` + `label` 关联；`hint`/`error`/`disabled` 态；`aria-invalid` |
 | `UxKbd` | 快捷键展示 |
@@ -90,10 +90,12 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 | `UxTree`（components） | 树形控件（APG Tree View）：↑↓/←→（展开·进子级·回父级）/Home/End/Enter/首字母 + roving tabindex；`role=tree/treeitem` + `aria-level/expanded/selected`；搜索过滤（命中保留祖先链并强制展开）；懒加载（`lazyLoad` 结果缓存于组件内部，loading 态）；右键 `node-contextmenu`（业务用 `openContextMenuAt` 承接）、双击 `node-dblclick` 上报（`{ node, event }`；双击目录仍切换展开，业务可据此「打开」）；拖拽防守式校验（`canDrop` + 内建禁拖自身/自身子树，before/after/inside 三区投放指示）；`status` 三态红点/灰化 + `badge` 计数角标（99+ 封顶）；`data-ux="tree"` |
 | `useActivityLog`（composables） | 活动日志环形缓冲（会话内存）：`limit` 上限、`unreadErrors` 未读错误累计、`markOpened` 清零、`clear`；配 `LogPanel` |
 | `LogPanel`（patterns） | 活动日志面板：级别过滤（全部/错误/警告/信息）+ 计数 chip + 自动滚动（上翻暂停）+ 行展开完整详情 + 清空 |
+| `UxSplash`（patterns） | 启动页：亮点聚点 → SVG 描边旋转扫出窗体 → 内容落位 → 整体淡出四阶段出场；`waiting` 巡游等宿主 `finish()`、`minDuration` 最短展示、Esc 跳过、reduced-motion 直达；收场调 `PlatformAdapter.closeSplash` 关闭原生启动窗 |
 | `openContextMenuAt(x, y, items)`（components） | 坐标版右键菜单（虚拟滚动/画布场景） |
 | 稳定标注 `data-ux` / `data-ux-part` / `data-ux-tab-id`（shell + patterns） | 所有布局壳/模式组件根与关键区域带稳定语义属性，作为 TourGuide 锚点、E2E 选择器与「用户描述定位」的统一约定（如 `[data-ux="titlebar"]`、`[data-ux-part="dock-left"]`、`[data-ux-part="statusbar-right"]`） |
 | `UxSplitter` | 分隔条：指针拖拽（4px 宽 + 6px 命中区）+ 键盘（←↑↓→ / Shift 加速 / Home / End）+ `role=separator` |
-| `setPlatformAdapter` / `getPlatformAdapter` / `createWebWindowControls`（services） | 宿主适配：注入 Electron/Tauri 窗控；内置浏览器模拟适配器供预览 |
+| `setPlatformAdapter` / `getPlatformAdapter` / `createWebWindowControls`（services） | 宿主适配：注入 Electron/Tauri 窗控 + `closeSplash`（UxSplash 收场时关闭原生启动窗）；内置浏览器模拟适配器供预览 |
+| `applyTheme` + `FX_SHEEN` / `FX_FROST` / `FX_METAL`（tokens） | 三主题切换（`light` / `dark` / `dark-silk` / `system`，三通道同步 + 240ms 颜色过渡）；`fx` 选项显式叠加主题无关视觉特效——sheen 丝光（`--ux-sheen-strength` 可调）/ metal 金属拉丝 / frost 磨砂（`--ux-frost-opacity` 可调，浮层 backdrop-blur） |
 
 > 图标按钮配套约定：仅图标按钮必须给 `label`（aria，红线 14），并建议用 `UxTooltip` 补充文字说明；截断文本用 `UxTooltip` 呈现全文。**单状态单图标**（红线 13）：同一按钮/触发器在同一状态下最多呈现一个图标，图标与 loading、展开箭头互斥。
 >
@@ -112,7 +114,7 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 
 **图标纪律**（check-icons，随 UxIcon 落地）：
 
-7. **禁止不同语义使用相同图标**——iconId ↔ 语义一对一注册（`obj-*` 对象 / `act-*` 动作 / `st-*` 状态），放大镜只能=查找，软盘只能=保存
+7. **禁止不同语义使用相同图标**——iconId ↔ 语义一对一注册（`obj-*` 对象 / `act-*` 动作 / `st-*` 状态 / `file-*` 文件类型），放大镜只能=查找，软盘只能=保存
 8. **禁止易困惑图标**——`×` 只作关闭/清除（删除必须垃圾桶+danger 色）、箭头不得一箭两义、`+/-` 只作增减、近形图标禁止同屏异义；图标达意不足必须配文字 tooltip + aria-label
 
 **快捷键纪律**（check-shortcuts，随服务层落地）：
@@ -127,7 +129,7 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 
 单元测试（vitest + happy-dom）覆盖不到「真实浏览器里的布局、滚动、焦点与指针命中」，这部分由 Playwright 在 playground 上验证：
 
-- **组织**：`e2e/` 下按主题拆分——`playground.spec.ts`（外壳 / 分区 / 主题 / 语言持久化 / 无控制台错误）、`keyboard.spec.ts`（Ctrl+K 面板、菜单按钮、页签方向键）、`overlays.spec.ts`（浮层开合与外部点击、对话框焦点陷阱、通知）、`data-table.spec.ts`（10 万行虚拟滚动、列头排序）、`tour.spec.ts`（首次访问自动导览、键盘推进、完成记忆）、`a11y.spec.ts`（axe-core：浅色主页面 / 组件分区、暗色组件分区、命令面板均无 serious/critical 违规）。
+- **组织**：`e2e/` 下按主题拆分——`playground.spec.ts`（外壳 / 五分区 / 主题切换与黑暗持久化 / 视觉特效（丝光·金属·磨砂·滑块）/ UxSplash / 语言持久化 / 无控制台错误）、`keyboard.spec.ts`（Ctrl+K 面板、菜单按钮、页签方向键）、`overlays.spec.ts`（浮层开合与外部点击、对话框焦点陷阱、通知）、`data-table.spec.ts`（10 万行虚拟滚动、列头排序）、`tour.spec.ts`（首次访问自动导览、键盘推进、完成记忆）、`a11y.spec.ts`（axe-core：浅色主页面 / 组件分区、暗色、黑暗主题组件分区、命令面板均无 serious/critical 违规）。
 - **无障碍门槛**：`a11y.spec.ts` 只阻断 `serious` / `critical` 级违规（当前覆盖 color-contrast 等规则）；令牌层已按 WCAG AA（≥4.5:1）校准功能色前景（`--ux-*-fg`）与 `--ux-fg-subtle`，新增配色须保持该基线。
 - **选择器约定**：一律走 `data-ux` / `data-ux-part` 稳定锚点（对应设计文档 §6.3 的 `form`/`slot`/`state`/`a11y` 契约），不依赖样式类名与文案；playground 自身同样补齐锚点：导航 `data-ux="pg-nav"`、分区按钮 `data-ux-tab`、主题按钮 `data-ux-theme`、语言按钮 `data-ux-locale`、内容区 `data-ux="pg-body"` + `data-ux-section`。
 - **首次访问导览**：`playwright.config.ts` 用 `storageState` 预置 `uxkit.playground.tour=1`，避免 PatternsDemo 的 TourGuide 自动全屏启动（遮罩会拦截点击，`onReflow` 会在滚动时反复 `scrollIntoView` 让元素永不稳定）；导览自身行为由 `tour.spec.ts` 显式清除标记后单独覆盖。
@@ -176,9 +178,11 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 
 ## 主题切换
 ```ts
-import { applyTheme, getToken } from '@ux/tokens'
+import { applyTheme, FX_SHEEN, getToken } from '@ux/tokens'
 
-applyTheme('dark')                       // 三通道同步：data-color-mode + .dark + color-scheme
-applyTheme('system', { syncPlatform })   // 跟随系统，并回写 Electron nativeTheme / Tauri set_theme
-getToken('--ux-accent')                  // JS 场景运行时读令牌（图表/画布），禁止 JS 硬编码颜色
+applyTheme('dark')                        // 三通道同步：data-color-mode + .dark + color-scheme
+applyTheme('dark-silk')                   // 第三主题「黑暗」：data-color-mode=dark-silk + .dark/.dark-silk 双类（平台通道归入 dark）
+applyTheme('light', { fx: [FX_SHEEN] })   // 视觉特效通道与主题解耦：任意主题可显式叠加丝光/金属/磨砂（dark-silk 默认携带 sheen）
+applyTheme('system', { syncPlatform })    // 跟随系统，并回写 Electron nativeTheme / Tauri set_theme
+getToken('--ux-accent')                   // JS 场景运行时读令牌（图表/画布），禁止 JS 硬编码颜色
 ```
