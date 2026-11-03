@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, useSlots, watch } from 'vue'
 import { UxIcon, openContextMenu } from '@ux/components'
+import type { MenuItem } from '@ux/components'
 import { tryUseI18n } from '@ux/services'
 import type { UxTabDef } from '../types'
 
@@ -13,6 +14,8 @@ const props = defineProps<{
   activeId: string
   /** 无障碍名称（红线 10） */
   label?: string
+  /** 页签右键自定义项：以 tabId 为参（闭包捕获当前页签），拼在默认关闭组之前并加分隔线 */
+  contextItems?: (tabId: string) => MenuItem[]
 }>()
 
 const emit = defineEmits<{
@@ -23,6 +26,10 @@ const emit = defineEmits<{
   closeLeft: [id: string]
   closeAll: []
   reorder: [fromId: string, toIndex: number]
+  /** 拖拽开始：dataTransfer 已写入 application/x-ux-tab（跨容器拖出页签） */
+  dragstart: [id: string]
+  /** 拖拽结束（无论成败，宿主借此清理跨容器拖拽状态） */
+  dragend: [id: string]
 }>()
 
 const i18n = tryUseI18n()
@@ -59,10 +66,30 @@ function onDrop(index: number): void {
   if (from) emit('reorder', from, index)
 }
 
+/** MIME 常量：跨容器页签拖拽互操作约定（宿主 drop 侧读取同一值） */
+const TAB_MIME = 'application/x-ux-tab'
+
+function onDragStart(e: DragEvent, id: string): void {
+  dragFromId.value = id
+  if (e.dataTransfer) {
+    e.dataTransfer.setData(TAB_MIME, id)
+    e.dataTransfer.effectAllowed = 'move'
+  }
+  emit('dragstart', id)
+}
+
+function onDragEnd(id: string): void {
+  resetDrag()
+  emit('dragend', id)
+}
+
 function onContext(e: MouseEvent, id: string): void {
   e.preventDefault()
   emit('select', id)
+  const custom = props.contextItems?.(id) ?? []
   openContextMenu(e, [
+    ...custom,
+    ...(custom.length > 0 ? [{ id: `${id}:custom-sep`, separator: true } satisfies MenuItem] : []),
     { id: 'close', label: tr('shell.tabs.close', '关闭'), run: () => emit('close', id) },
     { id: 'close-others', label: tr('shell.tabs.closeOthers', '关闭其他'), run: () => emit('closeOthers', id) },
     { id: 'close-right', label: tr('shell.tabs.closeRight', '关闭右侧'), run: () => emit('closeRight', id) },
@@ -127,10 +154,10 @@ defineExpose({ focusTab })
       :title="tab.subtitle ? `${tab.title} · ${tab.subtitle}` : tab.title"
       @click="select(tab.id)"
       @auxclick.middle="tab.closable !== false && emit('close', tab.id)"
-      @dragstart="dragFromId = tab.id"
+      @dragstart="onDragStart($event, tab.id)"
       @dragover.prevent="dragOverIndex = i"
       @drop.prevent="onDrop(i)"
-      @dragend="resetDrag"
+      @dragend="onDragEnd(tab.id)"
       @contextmenu="onContext($event, tab.id)"
     >
       <span v-if="tab.accent" class="ux-tabs__accent" :style="{ background: tab.accent }" aria-hidden="true" />

@@ -92,4 +92,10 @@ describe('UxSplitter', () => {
     expect(lastEmitted(wrapper)).toBe(440)
     window.dispatchEvent(new MouseEvent('pointerup'))
   })
+
+  it('双击：重置到行程中点', async () => {
+    const wrapper = mountSplitter({ modelValue: 795 })
+    await wrapper.trigger('dblclick')
+    expect(lastEmitted(wrapper)).toBe((120 + 800) / 2)
+  })
 })

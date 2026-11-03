@@ -28,6 +28,26 @@ let themeTransitionTimer: ReturnType<typeof setTimeout> | undefined
 /** 跟随系统偏好时监听的媒体查询 */
 const SYSTEM_QUERY = '(prefers-color-scheme: dark)'
 
+/** 主题定义：宿主可遍历生成主题菜单/命令，无需自行维护清单 */
+export interface UxThemeDef {
+  id: UxTheme
+  /** 英文兜底文案（宿主应经 i18n 覆盖） */
+  label: string
+  /** 解析后是否为暗色（system 跟随系统，此处为默认估计，实际以 resolveTheme 运行时结果为准） */
+  dark: boolean
+}
+
+/**
+ * 内置主题清单，与 resolveTheme/applyTheme 同源维护：新增主题值须同步更新这三处。
+ * 顺序即宿主菜单/命令的建议展示顺序（system 置尾）。
+ */
+export const UX_THEMES: readonly UxThemeDef[] = [
+  { id: 'light', label: 'Light', dark: false },
+  { id: 'dark', label: 'Dark', dark: true },
+  { id: 'dark-silk', label: 'Dark Silk', dark: true },
+  { id: 'system', label: 'System', dark: false },
+]
+
 export function resolveTheme(theme: UxTheme): ResolvedTheme {
   if (theme === 'system') return window.matchMedia(SYSTEM_QUERY).matches ? 'dark' : 'light'
   return theme === 'light' ? 'light' : 'dark'

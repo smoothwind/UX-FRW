@@ -24,6 +24,11 @@ function commit(value: number): void {
   emit('update:modelValue', clamp(value))
 }
 
+/** 双击分隔条：重置到行程中点（与 Home/End 键盘两极行为互补的业界惯例） */
+function onDblClick(): void {
+  commit((props.min + props.max) / 2)
+}
+
 function onPointerDown(e: PointerEvent): void {
   e.preventDefault()
   const el = e.currentTarget as HTMLElement
@@ -80,6 +85,7 @@ function onKeydown(e: KeyboardEvent): void {
     :aria-valuemax="max"
     :aria-label="label"
     @pointerdown="onPointerDown"
+    @dblclick="onDblClick"
     @keydown="onKeydown"
   />
 </template>

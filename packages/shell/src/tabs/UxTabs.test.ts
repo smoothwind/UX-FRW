@@ -156,4 +156,41 @@ describe('UxTabs', () => {
     const tabs = tabsOf(wrapper)
     expect(document.activeElement).toBe(tabs[2].element)
   })
+
+  it('拖出互操作：dragstart 写 dataTransfer 并上报 dragstart/dragend', async () => {
+    const wrapper = mountTabs()
+    const tabs = tabsOf(wrapper)
+    const store = new Map<string, string>()
+    const transfer = {
+      setData: (k: string, v: string): void => void store.set(k, v),
+      getData: (k: string): string => store.get(k) ?? '',
+    }
+    const event = new Event('dragstart', { bubbles: true }) as Event & { dataTransfer: typeof transfer }
+    Object.defineProperty(event, 'dataTransfer', { value: transfer })
+
+    await tabs[0].element.dispatchEvent(event)
+    expect(store.get('application/x-ux-tab')).toBe('a')
+    expect(wrapper.emitted('dragstart')).toEqual([['a']])
+
+    await tabs[0].trigger('dragend')
+    expect(wrapper.emitted('dragend')).toEqual([['a']])
+  })
+
+  it('contextItems：自定义项置于关闭组之前并加分隔线', async () => {
+    const wrapper = mountTabs(items, 'a', {
+      props: {
+        items,
+        activeId: 'a',
+        contextItems: (id: string) => [{ id: `move-${id}`, label: '移动到另一窗格', run: (): void => {} }],
+      },
+    } as never)
+    const tabs = tabsOf(wrapper)
+    await tabs[1].trigger('contextmenu')
+
+    const menuItems = vi.mocked(openContextMenu).mock.calls.at(-1)![1] as Array<{ id: string; separator?: boolean }>
+    expect(menuItems[0].id).toBe('move-b')
+    expect(menuItems[1].separator).toBe(true)
+    expect(menuItems.some((i) => i.id === 'close')).toBe(true)
+    expect(menuItems.findIndex((i) => i.id === 'move-b')).toBeLessThan(menuItems.findIndex((i) => i.id === 'close'))
+  })
 })
