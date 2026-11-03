@@ -5,6 +5,8 @@ export { default as SettingsShell } from './settings-shell/SettingsShell.vue'
 export { default as TourGuide } from './tour-guide/TourGuide.vue'
 export { default as LogPanel } from './log-panel/LogPanel.vue'
 export { default as UxDataTable } from './data-table/UxDataTable.vue'
+export { default as UxConfigList } from './config-list/UxConfigList.vue'
+export type { ConfigListEntry, ConfigListFacet, ConfigListGroup } from './config-list/types'
 export { default as UxSplash } from './splash/UxSplash.vue'
 
 export { looksLikeConnError } from './error-state/looks-like-conn-error'

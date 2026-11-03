@@ -46,6 +46,7 @@ test.describe('playground 外壳', () => {
     await page.locator('[data-ux-tab="patterns"]').click()
     await expect(body).toHaveAttribute('data-ux-section', 'patterns')
     await expect(page.locator('[data-ux="data-table"]')).toBeVisible()
+    await expect(page.locator('[data-ux="config-list"]')).toBeVisible()
 
     await page.locator('[data-ux-tab="tokens"]').click()
     await expect(body).toHaveAttribute('data-ux-section', 'tokens')

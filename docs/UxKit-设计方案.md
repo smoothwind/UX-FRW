@@ -303,6 +303,7 @@ interface Platform {
 | `UxTooltip` ✅ | 120ms hover 意图延迟 + 焦点即显 + Esc 关闭 + `useOverflowPosition` 视口翻转；`role=tooltip` + `aria-describedby`；图标按钮配套 |
 | `UxSegmented` ✅ | 分段单选：`role=radiogroup` + roving tabindex + ←→/↑↓/Home/End；size `sm/md`；禁用项跳过；选中=主色淡底（提炼自 PersonalDb SPEC-UI-24/27/28） |
 | `UxBadge / UxChip` ✅ | 计数/圆点角标（`max` 封顶、可包裹触发元素）；状态胶囊（`tone` + `dot`，`*-subtle` 底） |
+| `UxFilterChips` ✅ | 多选筛选药丸：`role=group` + 逐项 `aria-pressed`（空集合 = 全部）；选中 = subtle 底 + accent-fg（同 UxSegmented 惯例）；sm/md 两档；提炼自 PersonalDb SQL 模板设置页的种类筛选（el-select multiple 折叠标签的替代） |
 | `UxDropdown` ✅ | 菜单按钮（APG menubutton）：`aria-haspopup=menu` + `aria-expanded`；点击 / ↓ / Enter / Space 打开，Esc 关闭并归还焦点，Tab 只进出一次，外部点击关闭，`checkable` 项激活不关闭；复用 `MenuPanel`（全类型项 + 子菜单），定位 `useOverflowPosition`，层级 `--ux-z-dropdown`；`v-model:open` 可选受控（详见 §6.6） |
 | `UxPopover` ✅ | 通用锚定浮层（非菜单类）：默认插槽=触发元素（点击开合，`trigger="manual"` 纯 API）+ `#content` 插槽；`useOverflowPosition` 视口翻转 + 钳制 + `matchTriggerWidth`；外部点击 / Esc 关闭（可分别开关）；`role`/`ariaLabel`/`focusOnOpen`；`v-model:open` 可选受控 + expose `open()/close()/toggle()` |
 | `UxToastHost` | aria-live、四语义色、可点击动作按钮、notifyOnce 集成 |
@@ -346,11 +347,12 @@ interface Platform {
 | 模式 | 规格 |
 |------|------|
 | `CommandPalette` | Ctrl+K（ShortcutService 保留键）；渲染自命令注册表 + 宿主注入的动态条目（如"全部连接"）；模糊过滤 + ↑↓/Enter + 底部 UxKbd 提示条 |
-| `EmptyState` | icon + title + hint + action 插槽；全应用唯一空态组件，禁止散写 |
+| `EmptyState` | icon + title + hint + action 插槽；全应用唯一空态组件，禁止散写；`filtered` 变体（icon 缺省时切换 `act-search` 搜索语义，配合「清除筛选」动作，供筛选过严的空态使用） |
 | `ErrorState` | 错误信息 + 分类动作（重试/重连/复制详情/查看日志），连接类错误启发式识别（PDB looksLikeConnError）；`summary` 一行可操作摘要 + 原始详情默认折叠·可展开（原始文本入日志，SPEC-CONN-1） |
 | `SettingsShell` | 左分类导航（aria-current）+ 右内容卡片 + footnote「即时生效」提示 + 响应式窄屏横排；预设方案机制 |
 | `TourGuide` | 聚光遮罩 + 卡片智能定位 + 键盘导航 + localStorage 记忆 + 不可见锚点剔除；`auto=false` 支持纯按钮触发；锚点默认复用组件稳定标注（`data-ux` / `data-ux-part`） |
 | `LogPanel` ✅ | 活动日志：级别过滤（全部/错误/警告/信息，复用 UxSegmented）+ 计数 chip + 自动滚动（上翻暂停）+ 行展开完整详情 + 清空；数据由 `useActivityLog` 环形缓冲提供（SPEC-UI-23 日志面板） |
+| `UxConfigList` ✅ | 配置目录化编辑器（提炼自 PersonalDb SQL 模板设置页改版）：分组折叠（组头 disclosure `aria-expanded`/`aria-controls` + 完整 aria-label「名称 + 条数 + 覆盖数」）+ facet 多选（UxFilterChips）+ 覆盖状态（UxSegmented）+ 搜索（key/用途/值三路）+ 筛选反馈条（criteria × 匹配数 + 清除）+ 空态语义区分（filtered 变体 + 清除动作）+ 脏跟踪（未保存计数）+ 批量保存/恢复（确认归宿主，保存仅携带非空覆盖）；展开状态记忆：`storageKey` → createPreferences 版本化存储，默认展开「有覆盖」的组、无覆盖展开首组；条目 usage 为主标题、key 降级 meta 行（可读性优先），facet 筛选生效时隐藏 tag 徽标降噪 |
 | `UxSplash` ✅ | 启动页出场：亮点聚点 → SVG 描边旋转扫出窗体（亮点经 `getPointAtLength` 骑在描边头部，同一参数驱动天然同步）→ 内容落位 → 整体淡出；`waiting` 模式亮点沿轮廓巡游等待宿主 `finish()`；`minDuration` 最短展示；Esc 跳过；`prefers-reduced-motion` 直达落位；收场调用 `PlatformAdapter.closeSplash` 关闭宿主原生启动窗 |
 | `WelcomePane` | 1-2-3 步骤引导卡（首启无数据时） |
 | `AppMenuBridge` | Electron/Tauri 原生菜单 ⇄ 命令注册表双向桥接（菜单触发命令；命令的 shortcut 变化回写菜单显示） |

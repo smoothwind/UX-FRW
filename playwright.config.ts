@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
-const BASE_URL = 'http://localhost:5173'
+/** 本地 5173 被其他项目 dev server 占用时可用 PW_BASE_URL 指到备用端口（reuseExistingServer 会复用） */
+const BASE_URL = process.env.PW_BASE_URL ?? 'http://localhost:5173'
 
 export default defineConfig({
   testDir: './e2e',

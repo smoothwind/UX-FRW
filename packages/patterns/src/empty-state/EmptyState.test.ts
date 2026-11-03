@@ -24,4 +24,15 @@ describe('EmptyState', () => {
     expect(wrapper.find('.ux-empty__action').exists()).toBe(false)
     expect(wrapper.find('.ux-empty--compact').exists()).toBe(true)
   })
+
+  it('filtered 变体：icon 缺省时用 act-search，显式 icon 优先', () => {
+    const filtered = mount(EmptyState, { props: { title: '无匹配项', filtered: true } })
+    expect(filtered.find('.ux-empty--filtered').exists()).toBe(true)
+    expect(filtered.find('svg').attributes('data-icon')).toBe('act-search')
+
+    const explicit = mount(EmptyState, {
+      props: { title: '无匹配项', icon: 'obj-database', filtered: true },
+    })
+    expect(explicit.find('svg').attributes('data-icon')).toBe('obj-database')
+  })
 })

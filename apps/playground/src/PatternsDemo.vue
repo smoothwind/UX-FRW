@@ -9,8 +9,12 @@ import {
   LogPanel,
   SettingsShell,
   TourGuide,
+  UxConfigList,
   UxDataTable,
   UxSplash,
+  type ConfigListEntry,
+  type ConfigListFacet,
+  type ConfigListGroup,
   type DataTableColumn,
   type SettingsCategory,
 } from '@ux/patterns'
@@ -95,6 +99,69 @@ function onRowCopy(row: number): void {
   void navigator.clipboard
     .writeText(JSON.stringify(bigRows[row]))
     .then(() => notify({ type: 'success', message: t('patterns.dt.rowCopied') }))
+}
+
+/* ---------- UxConfigList（SQL 模板场景演示） ---------- */
+const clistGroups = computed<ConfigListGroup[]>(() => [
+  { id: 'paging', label: t('patterns.clist.groupPaging') },
+  { id: 'preview', label: t('patterns.clist.groupPreview') },
+  { id: 'catalog', label: t('patterns.clist.groupCatalog') },
+])
+const clistFacets = computed<ConfigListFacet[]>(() => [
+  { value: 'mysql', label: 'MySQL' },
+  { value: 'oracle', label: 'Oracle' },
+])
+const clistEntries = computed<ConfigListEntry[]>(() => [
+  {
+    key: 'paged.mysql',
+    group: 'paging',
+    usage: t('patterns.clist.ePagedMysql'),
+    builtin: 'SELECT * FROM ( {sql} ) pdb_p LIMIT {offset}, {limit}',
+    placeholders: ['sql', 'offset', 'limit'],
+    facet: 'mysql',
+    tag: 'MySQL',
+  },
+  {
+    key: 'paged.oracle',
+    group: 'paging',
+    usage: t('patterns.clist.ePagedOracle'),
+    builtin: 'SELECT * FROM ( SELECT 1 FROM DUAL ) pdb_p WHERE rn > {offset} AND rn <= {end}',
+    placeholders: ['sql', 'offset', 'end'],
+    facet: 'oracle',
+    tag: 'Oracle',
+  },
+  {
+    key: 'preview.mysql',
+    group: 'preview',
+    usage: t('patterns.clist.ePreviewMysql'),
+    builtin: 'SELECT * FROM {table} LIMIT {limit}',
+    placeholders: ['table', 'limit'],
+    facet: 'mysql',
+  },
+  {
+    key: 'catalog.oracle.tables',
+    group: 'catalog',
+    usage: t('patterns.clist.eCatalogOracle'),
+    builtin: 'SELECT table_name FROM all_tables WHERE owner = {owner}',
+    placeholders: ['owner'],
+    facet: 'oracle',
+  },
+])
+const clistDraft = ref<Record<string, string>>({})
+const clistSaving = ref(false)
+
+function saveConfig(values: Record<string, string>): void {
+  clistSaving.value = true
+  window.setTimeout(() => {
+    clistDraft.value = { ...clistDraft.value, ...values }
+    clistSaving.value = false
+    notify({ type: 'success', message: t('patterns.clist.saved') })
+  }, 400)
+}
+
+function resetConfig(): void {
+  clistDraft.value = {}
+  notify({ type: 'info', message: t('patterns.clist.resetDone') })
 }
 
 /* ---------- TourGuide ---------- */
@@ -267,6 +334,24 @@ function onSplashDone(): void {
           :label="t('patterns.dt.label')"
           @cell-context="onCellContext"
           @row-copy="onRowCopy"
+        />
+      </div>
+    </section>
+
+    <section class="pg-card">
+      <h3>UxConfigList</h3>
+      <p class="pg-note">{{ t('patterns.clist.hint') }}</p>
+      <div class="pt-stage pt-stage--tall">
+        <UxConfigList
+          :entries="clistEntries"
+          :groups="clistGroups"
+          :facets="clistFacets"
+          v-model="clistDraft"
+          storage-key="uxkit.playground.clist"
+          :saving="clistSaving"
+          :label="t('patterns.clist.label')"
+          @save="saveConfig"
+          @reset="resetConfig"
         />
       </div>
     </section>
