@@ -25,5 +25,14 @@ export type { Preferences, PreferencesOptions } from './preferences'
 export { createI18n, provideI18n, useI18n, tryUseI18n } from './i18n'
 export type { I18nInstance, I18nOptions, MessageTree } from './i18n'
 
-export { setPlatformAdapter, getPlatformAdapter, createWebWindowControls } from './platform'
-export type { PlatformAdapter, WindowControls } from './platform'
+export { setPlatformAdapter, getPlatformAdapter, createWebWindowControls, createWebWindowPlacement } from './platform'
+export type {
+  PlatformAdapter,
+  WindowControls,
+  WindowPlacement,
+  DesiredWindowBounds,
+  DisplayMetricsChangedEvent,
+} from './platform'
+
+export { checkViewportHealth, installViewportHealthWatch } from './viewport'
+export type { ViewportHealthReport, ViewportHealthWatchOptions } from './viewport'
