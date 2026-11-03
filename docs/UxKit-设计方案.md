@@ -64,7 +64,8 @@
 ├─────────────────────────────────────────────────────────┤
 │  @ux/patterns   复合模式：CommandPalette / SettingsShell / │
 │                 EmptyState / ErrorState / TourGuide /     │
-│                 LogPanel / UxDataTable / UxSplash         │
+│                 LogPanel / UxDataTable / UxSplash /       │
+│                 UxConfigList                              │
 ├─────────────────────────────────────────────────────────┤
 │  @ux/shell      布局壳：AppShell / TitleBar /              │
 │                 DockWorkbench / StatusBar                 │

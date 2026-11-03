@@ -17,9 +17,9 @@
 | `@ux/tokens` | 三层设计令牌（primitives / semantic / layout）+ TS 主题工具（三主题：浅色 / 暗色 / 黑暗 dark-silk + 主题无关视觉特效通道 `data-ux-fx`） | ✅ M1/M8 |
 | `@ux/composables` | headless 逻辑（useFocusTrap / useOverflowPosition / useDismiss / useDockLayout） | ✅ M2/M4 |
 | `@ux/services` | Command / Shortcut / Preferences / I18n / Platform | ✅ M3/M4 |
-| `@ux/components` | 原子组件（Button / Input / Dialog / ContextMenu / Toast / Icon…） | ✅ M2 |
+| `@ux/components` | 原子组件（Button / Input / Dialog / ContextMenu / Toast / Icon / Segmented / FilterChips…） | ✅ M2 |
 | `@ux/shell` | 工作台布局壳（AppShell / TitleBar / DockWorkbench / Panel / FloatPanel / ActivityBar / StatusBar / Splitter） | ✅ M4 |
-| `@ux/patterns` | 复合模式（CommandPalette / EmptyState / ErrorState / SettingsShell / TourGuide / UxDataTable / LogPanel / UxSplash） | ✅ M3/M5/M8 |
+| `@ux/patterns` | 复合模式（CommandPalette / EmptyState / ErrorState / SettingsShell / TourGuide / UxDataTable / LogPanel / UxSplash / UxConfigList） | ✅ M3/M5/M8 |
 
 `apps/playground`：组件演示与验收场景（check-tokens 的管辖范围）。
 
@@ -54,6 +54,7 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 | `UxInput` | 自动 `id` + `label` 关联；`hint`/`error`/`disabled` 态；`aria-invalid` |
 | `UxKbd` | 快捷键展示 |
 | `UxSegmented` | 分段单选：`role=radiogroup` + roving tabindex + ←→/↑↓/Home/End；size `sm/md`；禁用项跳过；选中主色淡底 |
+| `UxFilterChips` | 多选筛选药丸：`role=group` + 逐项 `aria-pressed`（空集合 = 全部）；选中 subtle 底 + accent-fg；sm/md；可禁用项；复用 `SegmentedOption` |
 | `UxTooltip` | 120ms hover 延迟 + 焦点即显 + Esc 关闭 + 视口翻转；`role=tooltip` + `aria-describedby` |
 | `UxBadge` / `UxChip` | 计数/圆点角标（`max` 封顶、可包裹触发元素）；状态胶囊（`tone` + `dot`） |
 | `UxDialog` | `v-model:open`；focus trap + Esc + 遮罩 + aria-modal + 焦点归还 |
@@ -81,11 +82,12 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 | `UxTabs` | 页签栏：tablist/tab 语义 + 中键关闭 + dirty 圆点（hover 换关闭钮）+ 拖拽排序（插入指示线）+ 右键批量关闭 + ←→/Home/End/Delete 键盘；`item.status` 三态（on/lost 红/off 灰化）+ `subtitle` 双行 + `accent` 标识色点 + `#actions` 右侧动作区插槽（页签列表/分屏控件，图标化） |
 | `UxSplitPane` | 分屏容器：`v-model:ratio`（默认 20%–80% 钳制）+ 第一/第二窗格插槽，复用 UxSplitter（指针+键盘） |
 | `UxTabList` | 页签列表 popover（页签栏动作区）：过滤输入 + 选项（标识色点/图标/标题/副标题/关闭）+ 当前项高亮；↑↓/Enter/Esc + 视口翻转定位 |
-| `EmptyState`（patterns） | 全应用唯一空态：icon + title + hint + action 插槽 + compact 尺寸 |
+| `EmptyState`（patterns） | 全应用唯一空态：icon + title + hint + action 插槽 + compact 尺寸；`filtered` 变体（icon 缺省时切 `act-search` 搜索语义，配合「清除筛选」动作，供筛选过严的空态） |
 | `ErrorState`（patterns） | `role=alert`；`looksLikeConnError` 启发式自动区分 重试/重连；`summary` 一行可操作摘要 + 原始详情折叠展开；复制详情（clipboard+toast）；可选查看日志 |
 | `SettingsShell`（patterns） | 左分类导航（`aria-current` + ↑↓/Home/End）+ 右内容插槽 + footnote「即时生效」；窄屏横排 |
 | `TourGuide`（patterns） | 聚光遮罩（锚点外扩 6px）+ 无锚点整屏暗化居中；不可见锚点剔除；←→/Enter/Esc；storageKey 记忆；expose `start()`；`auto=false` 关闭自动启动（纯按钮触发） |
 | `UxDataTable`（patterns） | 10 万行虚拟滚动（useVirtualRows 固定行高窗口）；表头排序（null 恒排首、保持原始行号、`aria-sort`）；单元格右键坐标 + 双击复制行 |
+| `UxConfigList`（patterns） | 配置目录化编辑器：分组折叠（disclosure aria）+ facet 多选（UxFilterChips）+ 覆盖状态筛选 + 三路搜索 + 筛选反馈条（条件×匹配数+清除）+ 空态语义区分 + 脏跟踪 + 批量保存/恢复（保存仅携带非空覆盖）；展开状态经 `storageKey` → createPreferences 记忆，默认展开有覆盖的组；条目 usage 主标题、key 降级 meta（可读性优先） |
 | `useVirtualRows`（composables） | 固定行高虚拟窗口：overscan + ResizeObserver 视口测量 + rAF 滚动节流 |
 | `UxTree`（components） | 树形控件（APG Tree View）：↑↓/←→（展开·进子级·回父级）/Home/End/Enter/首字母 + roving tabindex；`role=tree/treeitem` + `aria-level/expanded/selected`；搜索过滤（命中保留祖先链并强制展开）；懒加载（`lazyLoad` 结果缓存于组件内部，loading 态）；右键 `node-contextmenu`（业务用 `openContextMenuAt` 承接）、双击 `node-dblclick` 上报（`{ node, event }`；双击目录仍切换展开，业务可据此「打开」）；拖拽防守式校验（`canDrop` + 内建禁拖自身/自身子树，before/after/inside 三区投放指示）；`status` 三态红点/灰化 + `badge` 计数角标（99+ 封顶）；`data-ux="tree"` |
 | `useActivityLog`（composables） | 活动日志环形缓冲（会话内存）：`limit` 上限、`unreadErrors` 未读错误累计、`markOpened` 清零、`clear`；配 `LogPanel` |
@@ -129,7 +131,7 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 
 单元测试（vitest + happy-dom）覆盖不到「真实浏览器里的布局、滚动、焦点与指针命中」，这部分由 Playwright 在 playground 上验证：
 
-- **组织**：`e2e/` 下按主题拆分——`playground.spec.ts`（外壳 / 五分区 / 主题切换与黑暗持久化 / 视觉特效（丝光·金属·磨砂·滑块）/ UxSplash / 语言持久化 / 无控制台错误）、`keyboard.spec.ts`（Ctrl+K 面板、菜单按钮、页签方向键）、`overlays.spec.ts`（浮层开合与外部点击、对话框焦点陷阱、通知）、`data-table.spec.ts`（10 万行虚拟滚动、列头排序）、`tour.spec.ts`（首次访问自动导览、键盘推进、完成记忆）、`a11y.spec.ts`（axe-core：浅色主页面 / 组件分区、暗色、黑暗主题组件分区、命令面板均无 serious/critical 违规）。
+- **组织**：`e2e/` 下按主题拆分——`playground.spec.ts`（外壳 / 五分区 / 主题切换与黑暗持久化 / 视觉特效（丝光·金属·磨砂·滑块）/ UxSplash / 语言持久化 / 无控制台错误）、`keyboard.spec.ts`（Ctrl+K 面板、菜单按钮、页签方向键）、`overlays.spec.ts`（浮层开合与外部点击、对话框焦点陷阱、通知）、`data-table.spec.ts`（10 万行虚拟滚动、列头排序）、`config-list.spec.ts`（UxConfigList 渲染/展开记忆/筛选反馈条）、`tour.spec.ts`（首次访问自动导览、键盘推进、完成记忆）、`a11y.spec.ts`（axe-core：浅色主页面 / 组件分区、暗色、黑暗主题组件分区、命令面板均无 serious/critical 违规）。
 - **无障碍门槛**：`a11y.spec.ts` 只阻断 `serious` / `critical` 级违规（当前覆盖 color-contrast 等规则）；令牌层已按 WCAG AA（≥4.5:1）校准功能色前景（`--ux-*-fg`）与 `--ux-fg-subtle`，新增配色须保持该基线。
 - **选择器约定**：一律走 `data-ux` / `data-ux-part` 稳定锚点（对应设计文档 §6.3 的 `form`/`slot`/`state`/`a11y` 契约），不依赖样式类名与文案；playground 自身同样补齐锚点：导航 `data-ux="pg-nav"`、分区按钮 `data-ux-tab`、主题按钮 `data-ux-theme`、语言按钮 `data-ux-locale`、内容区 `data-ux="pg-body"` + `data-ux-section`。
 - **首次访问导览**：`playwright.config.ts` 用 `storageState` 预置 `uxkit.playground.tour=1`，避免 PatternsDemo 的 TourGuide 自动全屏启动（遮罩会拦截点击，`onReflow` 会在滚动时反复 `scrollIntoView` 让元素永不稳定）；导览自身行为由 `tour.spec.ts` 显式清除标记后单独覆盖。
