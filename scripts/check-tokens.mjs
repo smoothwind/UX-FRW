@@ -10,6 +10,8 @@
  * R4  行级选中禁止铺实心主色：行/列表项/表格行（`*__row` / `tr` / `role=row|option|treeitem|…`）
  *     只用 `--ux-accent-subtle` 底 + `--ux-accent-fg` 字；`--ux-bg-selected`（实心主色）
  *     保留给控件级选中（按钮/页签/分段控件）。对齐 UxTree / UxSegmented 既有惯例。
+ * R5  backdrop-filter 禁止裸值（blur()/saturate() 等），必须消费 --ux-material-* /
+ *     --ux-frost-* 材质与特效令牌（改进提案 P2-1 修订版，设计方案 §4.5）。
  *
  * 实现要点：先剥离 var(...) 引用，再对剩余字面量判定，避免变量引用被误报。
  */
@@ -39,6 +41,9 @@ const SPACING_PROP_RE =
 
 const SIZE_PROP_RE =
   /\b(z-index|border-radius|font-size|box-shadow)\s*:\s*([^;}]+)/gi
+
+/* R5：backdrop-filter 只准消费 --ux-material-* / --ux-frost-*（var() 引用先剥离再判定） */
+const BACKDROP_PROP_RE = /(?:-webkit-)?backdrop-filter\s*:\s*([^;}]+)/gi
 
 const R1_RE = /#[0-9a-fA-F]{3,8}\b|\b(rgba?|hsla?)\(\s*[^)]*\)/
 
@@ -72,6 +77,21 @@ const rules = [
         if (!value) continue
         if (KEYWORD_VALUES.test(value)) continue
         return true
+      }
+      return false
+    },
+  },
+  {
+    code: 'R5',
+    label: 'R5 背板模糊必须走材质/特效令牌',
+    test: (code) => {
+      BACKDROP_PROP_RE.lastIndex = 0
+      let m
+      while ((m = BACKDROP_PROP_RE.exec(code))) {
+        const value = stripVars(m[2]).trim()
+        if (!value || KEYWORD_VALUES.test(value)) continue
+        // 剥掉 var() 后残留 blur()/saturate() 等裸函数 = 绕过材质通道的裸值
+        if (/(blur|saturate|brightness|contrast)\s*\(/i.test(value)) return true
       }
       return false
     },

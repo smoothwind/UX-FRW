@@ -100,6 +100,14 @@ function setTheme(next: UxTheme): void {
   prefs.patch({ theme: next })
 }
 
+// 常驻材质通道（P2-1 修订版）：独立于 fx 特效开关，挂 html 根属性
+const materialOn = ref(false)
+function toggleMaterial(): void {
+  materialOn.value = !materialOn.value
+  if (materialOn.value) document.documentElement.setAttribute('data-ux-material', 'glass')
+  else document.documentElement.removeAttribute('data-ux-material')
+}
+
 const stopWatch = watchSystemTheme(() => {
   if (theme.value === 'system') setTheme('system')
 })
@@ -229,6 +237,19 @@ onUnmounted(stopShortcuts)
           :[fxSlider.fxAttr]="''"
           @input="fxSlider.set(Number(($event.target as HTMLInputElement).value))"
         />
+        <button
+          class="pg-btn"
+          :class="{ 'is-active': materialOn }"
+          type="button"
+          data-ux-material-toggle
+          :aria-pressed="materialOn"
+          @click="toggleMaterial"
+        >
+          {{ t('theme.material') }}
+        </button>
+      </div>
+      <div v-if="materialOn" class="pg-material-demo" data-ux-material-surface data-ux="pg-material-demo">
+        {{ t('theme.materialPreview') }}
       </div>
       <div class="pg-themes" role="group" aria-label="Theme">
         <button
@@ -302,6 +323,15 @@ onUnmounted(stopShortcuts)
 .pg-fx-opacity {
   width: 96px;
   accent-color: var(--ux-accent);
+}
+
+.pg-material-demo {
+  margin-top: var(--ux-sp-2);
+  padding: var(--ux-sp-3);
+  font-size: var(--ux-fs-sm);
+  color: var(--ux-fg);
+  border: 1px solid var(--ux-border);
+  border-radius: var(--ux-radius-lg);
 }
 
 .pg-themes {

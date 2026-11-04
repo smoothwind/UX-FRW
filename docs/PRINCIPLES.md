@@ -88,6 +88,7 @@
 | `check:tokens` R2 | 间距 >4px 走 `--ux-sp-*` | 规则 1 |
 | `check:tokens` R3 | 禁字面量 z-index / 圆角 / 字号 / 阴影 | 规则 1 |
 | `check:tokens` R4 | 行级选中禁 `--ux-bg-selected`，只准 `accent-subtle` + `accent-fg` | 规则 18（配合 1） |
+| `check:tokens` R5 | `backdrop-filter` 禁裸值，只准 `--ux-material-*` / `--ux-frost-*`（材质通道 §4.5） | 规则 1 |
 | `check:icons` | iconId ↔ 语义一对一 + 易困惑组合黑名单 | 规则 13、14 |
 | `check:shortcuts` | 键位唯一占用（错误）+ 保留键位（警告） | 规则 15 |
 | `check:i18n` | 各语言包叶子 key 完全对齐 | 规则 16 |

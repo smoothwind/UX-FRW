@@ -29,7 +29,7 @@
 pnpm install
 pnpm dev              # 启动 playground（令牌 / 原子组件 / 系统服务 / 布局壳 / 复合模式 五 Tab）
 pnpm check            # 全部红线校验（下面四项串联）
-pnpm check:tokens     # 令牌纪律：R1 禁裸色值 / R2 间距走令牌 / R3 禁字面量 z/圆角/字号/阴影 / R4 行级选中禁实心主色
+pnpm check:tokens     # 令牌纪律：R1 禁裸色值 / R2 间距走令牌 / R3 禁字面量 z/圆角/字号/阴影 / R4 行级选中禁实心主色 / R5 背板模糊走材质令牌
 pnpm check:icons      # 图标纪律：语义/形状唯一 + 易困惑组合黑名单
 pnpm check:shortcuts  # 快捷键：键位唯一占用（错误）+ 保留键位（警告）
 pnpm check:i18n       # 国际化：同目录所有语言包叶子 key 完全对齐

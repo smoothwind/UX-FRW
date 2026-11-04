@@ -4,7 +4,7 @@
 > 自动生成于构建时，事实源是 `packages/tokens/src/*.css`；本文只是按「层 × 选择器」展开的只读视图。
 > 消费规则（哪层给谁用、暗色只翻语义层）见 [PRINCIPLES.md](../PRINCIPLES.md) 与设计方案 §4。
 
-合计 241 个令牌。
+合计 252 个令牌。
 
 ## Tier 1 · 基础层（primitives，业务代码禁用）
 
@@ -230,6 +230,37 @@
 | `--ux-frost-opacity` | `0.72` |  |
 | `--ux-frost-blur` | `14px` |  |
 | `--ux-frost-saturate` | `1.35` |  |
+
+### @media (prefers-reduced-motion: reduce) → :root
+
+| 令牌 | 值 | 备注 |
+|------|----|------|
+| `--ux-material-tint` | `color-mix(in srgb, var(--ux-bg-overlay-base) 62%, transparent)` |  |
+| `--ux-material-border` | `color-mix(in srgb, var(--ux-border) 60%, transparent)` |  |
+| `--ux-material-highlight` | `color-mix(in srgb, var(--ux-gray-0) 40%, transparent)` |  |
+
+### @media (prefers-reduced-motion: reduce) → .dark
+
+| 令牌 | 值 | 备注 |
+|------|----|------|
+| `--ux-material-tint` | `color-mix(in srgb, var(--ux-bg-overlay-base) 66%, transparent)` |  |
+| `--ux-material-border` | `color-mix(in srgb, var(--ux-gray-0) 12%, transparent)` |  |
+| `--ux-material-highlight` | `color-mix(in srgb, var(--ux-gray-0) 8%, transparent)` |  |
+
+### @media (prefers-reduced-motion: reduce) → .dark.dark-silk
+
+| 令牌 | 值 | 备注 |
+|------|----|------|
+| `--ux-material-tint` | `color-mix(in srgb, var(--ux-bg-overlay-base) 60%, transparent)` |  |
+| `--ux-material-border` | `color-mix(in srgb, var(--ux-silk-300) 28%, transparent)` |  |
+| `--ux-material-highlight` | `color-mix(in srgb, var(--ux-gray-0) 10%, transparent)` |  |
+
+### @media (prefers-reduced-motion: reduce) → [data-ux-material~="glass"]
+
+| 令牌 | 值 | 备注 |
+|------|----|------|
+| `--ux-material-blur` | `14px` |  |
+| `--ux-material-saturate` | `1.35` |  |
 
 ---
 

@@ -20,7 +20,9 @@
     "sheenStrength": "丝光强度",
     "metal": "金属",
     "frost": "磨砂",
-    "frostOpacity": "磨砂不透明度"
+    "frostOpacity": "磨砂不透明度",
+    "material": "玻璃材质",
+    "materialPreview": "常驻玻璃材质表面（data-ux-material，独立于特效开关）"
   },
   "commands": {
     "palette": {

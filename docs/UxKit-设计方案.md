@@ -195,6 +195,29 @@ JS 需要主题色的场景（图表/画布）**运行时读令牌**（`getCompu
 - **强制**：`check-tokens` 的 **R4** 按选择器判定——行级选择器上出现 `background: var(--ux-bg-selected)` 直接失败（`tokens-exempt` 可豁免，仅限命名含 `row` 但确属控件级的特例）。
 - **对比度**：行级前景必须用 `--ux-accent-fg`（浅色 indigo-700 / 暗色 indigo-300），保证 subtle 底上 ≥4.5:1；实心主色底必须配 `--ux-fg-on-accent`，禁止用 `--ux-fg` 等正文色。
 
+### 4.5 常驻材质通道（data-ux-material，改进提案 P2-1 修订版）
+
+**定位**：`data-ux-fx` 是可开关的视觉增强特效（opt-in）；`data-ux-material` 是**基础表面形态**
+语义——抽屉面板/浮窗「恒为玻璃」这类常驻材质不依赖特效开关。两者共用底层实现
+（backdrop-filter + 半透明表面）但参数独立，**不新建平行 `--ux-glass-*` token 层**
+（避免与 fx 层形成第二套重叠语义）。
+
+**用法**：宿主在 html（或任意容器）挂 `data-ux-material="glass"`，需要玻璃表面的元素标注
+`data-ux-material-surface` 即获得材质（背景 tint + 受光高光渐变 + 描边 + 背板模糊）。
+颜色 token 三主题齐备且全部由既有令牌 color-mix 派生（零裸值）：
+`--ux-material-tint / -border / -highlight`；参数主题无关：`--ux-material-blur / -saturate`
+（宿主可覆盖）。与 fx frost 可叠加（各自 backdrop-filter 参数独立，不互相覆盖）。
+
+**降级路径**（成文为验收标准）：
+
+1. 不支持 `backdrop-filter` 的环境：`@supports` 回退不透明 `--ux-bg-overlay`（不做伪模糊）；
+2. 宿主窗口不支持 OS 透明（`applyWindowMaterial` 传 `'none'`，§11.5）：CSS 材质仍工作，
+   半透明 tint 叠在不透明窗口底上呈浅蒙层效果；
+3. `prefers-reduced-motion` 无关（材质为静态，无动效）。
+
+**CI**：`check-tokens` **R5**——`backdrop-filter` 禁止裸值（剥掉 var() 后残留
+`blur()/saturate()` 等函数即失败），只准消费 `--ux-material-*` / `--ux-frost-*`。
+
 ---
 
 ## 五、UX 设计规范（PRINCIPLES.md 骨架，18 条硬规则）

@@ -324,3 +324,65 @@
     transition: none !important;
   }
 }
+
+/**
+ * ===== 常驻材质通道（material，改进提案 P2-1 修订版）=====
+ * data-ux-material = 空格分隔的材质列表，挂载于 html（或任意容器）。
+ * 与 data-ux-fx 的分工：fx = 可开关的视觉增强特效（opt-in，如 sheen/metal/frost）；
+ * material = 基础表面形态语义（常驻，如抽屉面板/浮窗恒为玻璃）——不随特效开关消失。
+ * 与 frost 复用同一实现路径（backdrop-filter + 半透明表面）但参数独立
+ * （--ux-material-* 与 --ux-frost-* 互不覆盖），不新建平行 --ux-glass-* 层。
+ *
+ * glass（玻璃材质）：宿主把元素标注 data-ux-material-surface 即获得玻璃表面；
+ * 颜色 token 三主题齐备（由 primitives / 语义基色派生，零裸值），参数主题无关。
+ *
+ * 降级路径（设计方案 §4.5）：
+ *  1. 不支持 backdrop-filter 的环境：@supports 回退为不透明 --ux-bg-overlay；
+ *  2. 宿主窗口不支持 OS 透明（PlatformAdapter applyWindowMaterial 传 'none'）：
+ *     CSS 材质仍工作——半透明 tint 叠在不透明窗口底上呈浅蒙层效果；
+ *  3. reduced-motion 无关（材质为静态，无动效）。
+ */
+
+/* 材质颜色（三主题齐备，全部由既有令牌派生） */
+:root {
+  --ux-material-tint: color-mix(in srgb, var(--ux-bg-overlay-base) 62%, transparent);
+  --ux-material-border: color-mix(in srgb, var(--ux-border) 60%, transparent);
+  --ux-material-highlight: color-mix(in srgb, var(--ux-gray-0) 40%, transparent);
+}
+
+.dark {
+  --ux-material-tint: color-mix(in srgb, var(--ux-bg-overlay-base) 66%, transparent);
+  --ux-material-border: color-mix(in srgb, var(--ux-gray-0) 12%, transparent);
+  --ux-material-highlight: color-mix(in srgb, var(--ux-gray-0) 8%, transparent);
+}
+
+.dark.dark-silk {
+  --ux-material-tint: color-mix(in srgb, var(--ux-bg-overlay-base) 60%, transparent);
+  --ux-material-border: color-mix(in srgb, var(--ux-silk-300) 28%, transparent);
+  --ux-material-highlight: color-mix(in srgb, var(--ux-gray-0) 10%, transparent);
+}
+
+/* 材质参数（主题无关；宿主可覆盖） */
+[data-ux-material~="glass"] {
+  --ux-material-blur: 14px;
+  --ux-material-saturate: 1.35;
+}
+
+/* 表面注入：标注 data-ux-material-surface 的元素获得玻璃材质 */
+[data-ux-material~="glass"] [data-ux-material-surface] {
+  background:
+    linear-gradient(180deg, var(--ux-material-highlight), transparent 40%),
+    var(--ux-material-tint);
+  border-color: var(--ux-material-border);
+  backdrop-filter: blur(var(--ux-material-blur)) saturate(var(--ux-material-saturate));
+  -webkit-backdrop-filter: blur(var(--ux-material-blur)) saturate(var(--ux-material-saturate));
+}
+
+/* 降级：无 backdrop-filter 支持时回退不透明表面（不做伪模糊） */
+@supports not (backdrop-filter: blur(1px)) {
+  [data-ux-material~="glass"] [data-ux-material-surface] {
+    background: var(--ux-bg-overlay);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

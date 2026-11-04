@@ -60,6 +60,8 @@ UxKit 目前处于「M5 后、M6/M7 前」的预采纳状态：规格与实现�
 - 三主题各给一套值（`.dark` 下玻璃参数需单独调校），并在 `check-tokens.mjs` 增加 R5：玻璃属性（backdrop-filter 等）禁止裸值
 
 > **评审批注（2026-11-02）**：现状描述需修正——`data-ux-fx` 已是**主题无关**的特效通道（非「主题内特例」，浅色主题挂 sheen 有 e2e 用例背书），且 frost 特效已参数化 backdrop-filter（`--ux-frost-blur/saturate/opacity`）+ `data-ux-fx-surface` 浮层标注机制。真实缺口是「**常驻材质语义** vs 可开关特效」之别（抽屉面板恒为玻璃，不是 opt-in 增强）。**修订后方向**：并入现有 fx 层做设计评审——将 frost 参数升格为常驻材质通道（或新增 `data-ux-material`），不再平行新建 `--ux-glass-*` 层，避免与 fx 层形成第二套重叠语义（同「表面纹理类互斥」问题，sheen/metal 已处理过一轮）。降级策略与 R5 检查器建议保留，价值不变。
+>
+> **落地标注（2026-11-04）**：已按修订方向实施——新增 `data-ux-material="glass"` 常驻材质通道（与 `data-ux-fx` 平行的独立语义，共用实现路径、参数互不覆盖），颜色 token 三主题齐备且全部由既有令牌派生；`data-ux-material-surface` 标注注入 + `@supports` 降级（设计方案 §4.5 成文）；`check-tokens` 新增 **R5**（backdrop-filter 禁裸值）。
 
 ### P2-2 OS 集成模式沉淀（扩充 §11 平台接入指南）
 

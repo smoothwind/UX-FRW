@@ -20,7 +20,9 @@
     "sheenStrength": "Sheen intensity",
     "metal": "Metal",
     "frost": "Frost",
-    "frostOpacity": "Frost opacity"
+    "frostOpacity": "Frost opacity",
+    "material": "Glass material",
+    "materialPreview": "Persistent glass surface (data-ux-material, independent of effect toggles)"
   },
   "commands": {
     "palette": {
