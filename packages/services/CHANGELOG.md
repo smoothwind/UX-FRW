@@ -1,5 +1,24 @@
 # @ux/services
 
+## 0.2.0
+
+### Minor Changes
+
+- 152c6f0: 新增 `UxSplash` 启动页模式组件：亮点聚点 → SVG 描边旋转扫出窗体（亮点经 `getPointAtLength` 精确骑在描边头部）→ 内容落位 → 整体淡出，四阶段出场 1000ms，全程 transform/opacity 无布局抖动。`waiting` 模式亮点沿轮廓巡游等待宿主 `finish()`；`minDuration` 保证最短展示；Esc 跳过；`prefers-reduced-motion` 直达内容落位。
+  
+  - `@ux/services`：`PlatformAdapter` 新增可选 `closeSplash()`，UxSplash 收场时关闭宿主原生启动窗（Electron/Tauri 注入，web 无需实现）。
+  - `@ux/tokens`：新增令牌 `--ux-z-splash`（2800，z 阶梯最高层）、`--ux-dur-splash`（760ms）、`--ux-ease-out-strong`。
+  - Playground：模式组件分区新增 UxSplash 演示（普通 / 等待就绪两种形态）。
+- 8947464: 新增多显示器/混合 DPI 窗口摆放契约与视口健康自检：
+  
+  - `PlatformAdapter` 新增可选 `windowPlacement`（`placeToCursorDisplay` 按光标所在屏钳制 workArea 并居中 / `resyncBounds` 强制 WebView2 重同步边界 / `onDisplayMetricsChanged` 订阅显示器指标变化），web 适配器 `createWebWindowPlacement()` 为 no-op；主进程参考实现见 `docs/window-placement.md`
+  - 新增 `checkViewportHealth()` / `installViewportHealthWatch()`：dev 期检测“渲染视口比窗口宽”（窗口几何与渲染层失配的混合 DPI 典型症状）与文档水平溢出（扣除滚动条容差），把此类问题从“用户报 UI bug”提前到“开发期告警”
+
+### Patch Changes
+
+- Updated dependencies [5221b69]
+  - @ux/components@0.4.0
+
 ## 0.1.2
 
 ### Patch Changes
