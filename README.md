@@ -14,7 +14,7 @@
 
 | 包 | 职责 | 状态 |
 |----|------|------|
-| `@ux/tokens` | 三层设计令牌（primitives / semantic / layout）+ TS 主题工具（三主题：浅色 / 暗色 / 黑暗 dark-silk + 主题无关视觉特效通道 `data-ux-fx`） | ✅ M1/M8 |
+| `@ux/tokens` | 三层设计令牌（primitives / semantic / layout）+ TS 主题工具（三主题：浅色 / 暗色 / 黑暗 dark-silk + 主题无关视觉特效通道 `data-ux-fx` + 粗指针触控档） | ✅ M1/M8 |
 | `@ux/composables` | headless 逻辑（useFocusTrap / useOverflowPosition / useDismiss / useDockLayout） | ✅ M2/M4 |
 | `@ux/services` | Command / Shortcut / Preferences / I18n / Platform | ✅ M3/M4 |
 | `@ux/components` | 原子组件（Button / Input / Dialog / ContextMenu / Toast / Icon / Segmented / FilterChips…） | ✅ M2 |
@@ -52,6 +52,8 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 | `UxIcon` | 语义唯一图标（`obj-* / act-* / st-* / file-*` 四族注册表，84 个）；`label` 供读屏 |
 | `UxButton` | variant：primary/secondary/ghost/danger；size：sm/md/lg；`:loading`；仅图标必须给 `label` |
 | `UxInput` | 自动 `id` + `label` 关联；`hint`/`error`/`disabled` 态；`aria-invalid` |
+| `UxCheckbox` / `UxSwitch` | 原生 checkbox 底座（Space 切换零 JS）：Checkbox 半选（`indeterminate` 横杠）、Switch `role=switch`；label 关联 + `hint`/`error` + `aria-invalid` |
+| `UxTextarea` / `UxSelect` / `UxSlider` | Input 同构包装（`rows`/`maxlength`）；Select 原生 select 底座 + chevron 装饰（键盘/触屏行为零实现，默认插槽放 `option`）；Slider 原生 range + 填充轨道（`--ux-slider-fill`）+ `showValue`；控件高度统一消费 `--ux-control-h-*`（触控档自动提升 44px） |
 | `UxKbd` | 快捷键展示 |
 | `UxSegmented` | 分段单选：`role=radiogroup` + roving tabindex + ←→/↑↓/Home/End；size `sm/md`；禁用项跳过；选中主色淡底 |
 | `UxFilterChips` | 多选筛选药丸：`role=group` + 逐项 `aria-pressed`（空集合 = 全部）；选中 subtle 底 + accent-fg；sm/md；可禁用项；复用 `SegmentedOption` |

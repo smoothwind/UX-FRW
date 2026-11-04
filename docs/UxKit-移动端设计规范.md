@@ -57,7 +57,7 @@ CSS 媒体查询**不能消费 CSS 变量**（`@media (max-width: var(--x))` 无
 - 现有 720px 孤例**登记为历史特例**，限期迁移到 `--ux-bp-sm`（600px）；
 - CI 约束（R3 扩展）：媒体查询中的宽度字面量只允许出现在 `layout.css` 登记处与白名单（0、-1px 这类非断点值不受限）。
 
-### 3.2 触控目标令牌（coarse 指针一档切换）
+### 3.2 触控目标令牌（coarse 指针一档切换）（已落地：`packages/tokens/src/layout.css`）
 
 组件继续消费 `--ux-control-h-*`，**取值由根属性切换**——组件零改动：
 

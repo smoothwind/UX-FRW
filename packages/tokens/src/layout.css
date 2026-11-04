@@ -93,3 +93,12 @@
   --ux-font-family-mono:
     "Cascadia Code", "JetBrains Mono", Consolas, "Courier New", monospace;
 }
+
+/* 触控档（docs/UxKit-移动端设计规范.md §3.2）：粗指针设备控件高度整档提升，组件零改动 */
+@media (pointer: coarse) {
+  :root {
+    --ux-control-h-sm: 36px;
+    --ux-control-h-md: 44px;
+    --ux-control-h-lg: 48px;
+  }
+}

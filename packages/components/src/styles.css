@@ -183,6 +183,300 @@
   color: var(--ux-danger-fg);
 }
 
+/* ===== UxCheckbox / UxSwitch ===== */
+.ux-checkbox,
+.ux-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ux-sp-2);
+  box-sizing: border-box;
+  min-height: var(--ux-control-h-md);
+  font-size: var(--ux-fs-lg);
+  color: var(--ux-fg);
+  cursor: pointer;
+}
+
+.ux-checkbox--disabled,
+.ux-switch--disabled {
+  color: var(--ux-fg-subtle);
+  cursor: not-allowed;
+}
+
+/* 原生 input 只承载语义与焦点，视觉交给相邻元素（键盘 Space 切换免实现） */
+.ux-checkbox__input,
+.ux-switch__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.ux-checkbox__box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  background: var(--ux-bg);
+  border: 1px solid var(--ux-border-strong);
+  border-radius: var(--ux-radius-sm);
+  transition:
+    background-color var(--ux-dur-fast) var(--ux-ease-out),
+    border-color var(--ux-dur-fast) var(--ux-ease-out);
+}
+
+.ux-checkbox__input:checked + .ux-checkbox__box,
+.ux-checkbox__input:indeterminate + .ux-checkbox__box {
+  background: var(--ux-accent);
+  border-color: var(--ux-accent);
+}
+
+/* 对勾：旋转边框（不占图标注册表语义） */
+.ux-checkbox__input:checked + .ux-checkbox__box::after {
+  content: '';
+  width: 8px;
+  height: 4px;
+  margin-top: calc(var(--ux-sp-1) / -2);
+  border-left: 2px solid var(--ux-fg-on-accent);
+  border-bottom: 2px solid var(--ux-fg-on-accent);
+  transform: rotate(-45deg);
+}
+
+/* 半选：横杠 */
+.ux-checkbox__input:indeterminate + .ux-checkbox__box::after {
+  content: '';
+  width: 8px;
+  height: 2px;
+  background: var(--ux-fg-on-accent);
+}
+
+.ux-checkbox__input:focus-visible + .ux-checkbox__box {
+  outline: var(--ux-focus-width) solid var(--ux-focus-ring);
+  outline-offset: 1px;
+}
+
+.ux-switch__track {
+  position: relative;
+  box-sizing: border-box;
+  width: 32px;
+  height: 16px;
+  flex: none;
+  background: var(--ux-bg-sunken);
+  border: 1px solid var(--ux-border-strong);
+  border-radius: var(--ux-radius-full);
+  transition:
+    background-color var(--ux-dur-fast) var(--ux-ease-out),
+    border-color var(--ux-dur-fast) var(--ux-ease-out);
+}
+
+.ux-switch__thumb {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 12px;
+  height: 12px;
+  background: var(--ux-fg-muted);
+  border-radius: var(--ux-radius-full);
+  transition:
+    transform var(--ux-dur-fast) var(--ux-ease-out),
+    background-color var(--ux-dur-fast) var(--ux-ease-out);
+}
+
+.ux-switch__input:checked + .ux-switch__track {
+  background: var(--ux-accent);
+  border-color: var(--ux-accent);
+}
+
+.ux-switch__input:checked + .ux-switch__track .ux-switch__thumb {
+  transform: translateX(16px);
+  background: var(--ux-fg-on-accent);
+}
+
+.ux-switch__input:focus-visible + .ux-switch__track {
+  outline: var(--ux-focus-width) solid var(--ux-focus-ring);
+  outline-offset: 1px;
+}
+
+.ux-checkbox--disabled .ux-checkbox__box,
+.ux-switch--disabled .ux-switch__track {
+  opacity: 0.5;
+}
+
+/* ===== UxTextarea ===== */
+.ux-textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--ux-sp-1) var(--ux-sp-2);
+  font: inherit;
+  font-size: var(--ux-fs-lg);
+  line-height: var(--ux-lh-normal);
+  color: var(--ux-fg);
+  background: var(--ux-bg);
+  border: 1px solid var(--ux-border);
+  border-radius: var(--ux-radius-sm);
+  resize: vertical;
+  transition: border-color var(--ux-dur-fast) var(--ux-ease-out);
+}
+
+.ux-textarea::placeholder {
+  color: var(--ux-fg-subtle);
+}
+
+.ux-textarea:hover:not(:disabled) {
+  border-color: var(--ux-border-strong);
+}
+
+.ux-textarea:focus {
+  outline: var(--ux-focus-width) solid var(--ux-focus-ring);
+  outline-offset: 0;
+  border-color: var(--ux-accent);
+}
+
+.ux-textarea--invalid {
+  border-color: var(--ux-danger);
+}
+
+.ux-textarea:disabled {
+  background: var(--ux-bg-sunken);
+  color: var(--ux-fg-subtle);
+  cursor: not-allowed;
+}
+
+/* ===== UxSelect ===== */
+.ux-select__wrap {
+  position: relative;
+  display: grid;
+}
+
+.ux-select {
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--ux-control-h-md);
+  padding: 0 calc(var(--ux-sp-2) + var(--ux-sp-4)) 0 var(--ux-sp-2);
+  font: inherit;
+  font-size: var(--ux-fs-lg);
+  color: var(--ux-fg);
+  background: var(--ux-bg);
+  border: 1px solid var(--ux-border);
+  border-radius: var(--ux-radius-sm);
+  cursor: pointer;
+  transition: border-color var(--ux-dur-fast) var(--ux-ease-out);
+}
+
+.ux-select:hover:not(:disabled) {
+  border-color: var(--ux-border-strong);
+}
+
+.ux-select:focus {
+  outline: var(--ux-focus-width) solid var(--ux-focus-ring);
+  outline-offset: 0;
+  border-color: var(--ux-accent);
+}
+
+.ux-select--invalid {
+  border-color: var(--ux-danger);
+}
+
+.ux-select:disabled {
+  background: var(--ux-bg-sunken);
+  color: var(--ux-fg-subtle);
+  cursor: not-allowed;
+}
+
+.ux-select__chevron {
+  position: absolute;
+  top: 50%;
+  right: var(--ux-sp-2);
+  display: inline-flex;
+  translate: 0 -50%;
+  color: var(--ux-fg-muted);
+  pointer-events: none;
+}
+
+/* ===== UxSlider ===== */
+.ux-slider__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ux-slider__value {
+  color: var(--ux-fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ux-slider {
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--ux-control-h-md);
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ux-slider:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ux-slider:focus {
+  outline: var(--ux-focus-width) solid var(--ux-focus-ring);
+  outline-offset: 2px;
+}
+
+.ux-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  background: linear-gradient(
+    to right,
+    var(--ux-accent) var(--ux-slider-fill, 0%),
+    var(--ux-bg-sunken) var(--ux-slider-fill, 0%)
+  );
+  border: 1px solid var(--ux-border);
+  border-radius: var(--ux-radius-full);
+}
+
+.ux-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: calc(var(--ux-sp-1) * -1.5); /* 居中于 6px 轨道盒（4px 高 + 上下各 1px 边框） */
+  background: var(--ux-accent);
+  border: 2px solid var(--ux-bg);
+  border-radius: var(--ux-radius-full);
+  transition: transform var(--ux-dur-fast) var(--ux-ease-out);
+}
+
+.ux-slider:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+
+.ux-slider::-moz-range-track {
+  height: 4px;
+  background: linear-gradient(
+    to right,
+    var(--ux-accent) var(--ux-slider-fill, 0%),
+    var(--ux-bg-sunken) var(--ux-slider-fill, 0%)
+  );
+  border: 1px solid var(--ux-border);
+  border-radius: var(--ux-radius-full);
+}
+
+.ux-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--ux-accent);
+  border: 2px solid var(--ux-bg);
+  border-radius: var(--ux-radius-full);
+}
+
 /* ===== UxKbd ===== */
 .ux-kbd {
   display: inline-flex;

@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import {
   UxBadge,
   UxButton,
+  UxCheckbox,
   UxChip,
   UxDialog,
   UxDropdown,
@@ -12,6 +13,10 @@ import {
   UxMenuBar,
   UxPopover,
   UxSegmented,
+  UxSelect,
+  UxSlider,
+  UxSwitch,
+  UxTextarea,
   UxTooltip,
   UxTree,
   iconIds,
@@ -28,6 +33,17 @@ import {
 
 const name = ref('')
 const dialogOpen = ref(false)
+
+// 表单控件组演示
+const cbAgree = ref(false)
+const cbIndeterminate = ref(true)
+const cbDisabled = ref(true)
+const cbError = ref(false)
+const swWrap = ref(true)
+const swDisabled = ref(true)
+const remark = ref('')
+const dbKind = ref('mysql')
+const concurrency = ref(4)
 
 const wrapText = ref(true)
 const showGrid = ref(false)
@@ -277,6 +293,34 @@ function fakeError(): void {
         <UxInput v-model="name" label="校验失败" error="名称不能为空" />
         <UxInput v-model="name" label="禁用" disabled />
         <UxInput v-model="name" label="密码" type="password" placeholder="••••••" />
+      </div>
+    </section>
+
+    <section class="pg-card">
+      <h2>UxCheckbox / UxSwitch</h2>
+      <div class="row">
+        <UxCheckbox v-model="cbAgree" label="同步启用" hint="跟随主开关联动" />
+        <UxCheckbox v-model="cbIndeterminate" label="半选" indeterminate />
+        <UxCheckbox v-model="cbDisabled" label="禁用" disabled />
+        <UxCheckbox v-model="cbError" label="校验失败" error="至少选择一项" />
+      </div>
+      <div class="row">
+        <UxSwitch v-model="swWrap" label="自动换行" />
+        <UxSwitch v-model="swDisabled" label="禁用" disabled />
+      </div>
+      <p class="pg-note">原生 checkbox 底座：Space 切换免实现；Checkbox 支持半选（横杠）；Switch 为 role=switch；触控档下命中区自动提升到 44px。</p>
+    </section>
+
+    <section class="pg-card">
+      <h2>UxTextarea / UxSelect / UxSlider</h2>
+      <div class="grid-2">
+        <UxTextarea v-model="remark" label="备注" placeholder="多行文本…" hint="支持任意文本" />
+        <UxSelect v-model="dbKind" label="数据库" hint="原生 select 底座：键盘与触屏行为零实现">
+          <option value="mysql">MySQL</option>
+          <option value="oracle">Oracle</option>
+          <option value="pg">PostgreSQL</option>
+        </UxSelect>
+        <UxSlider v-model="concurrency" label="并发数" :min="1" :max="16" show-value hint="←→/Home/End 键盘步进为原生行为" />
       </div>
     </section>
 

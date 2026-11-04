@@ -297,7 +297,7 @@ interface Platform {
 | 组件 | 关键规格 |
 |------|---------|
 | `UxButton` | variant: `primary / secondary / ghost / danger`；size: `sm(24) / md(28) / lg(32)`；`:loading` 内建；icon-only 必须传 aria-label（类型强制） |
-| `UxInput / UxTextarea / UxSelect / UxSwitch / UxCheckbox / UxSlider` | 统一 28px 高度、focus ring 走 `--ux-focus-ring`、错误态 + 描述文案插槽 |
+| `UxInput / UxTextarea / UxSelect / UxSwitch / UxCheckbox / UxSlider` ✅ | 六件全部交付；统一消费 `--ux-control-h-*`（`pointer: coarse` 触控档整档提升 36/44/48）、focus ring 走 `--ux-focus-ring`、错误态（`aria-invalid`）+ hint/error 描述；Checkbox=原生 input + 半选、Switch=`role=switch`、Select=原生 select 底座（键盘/触屏零实现）、Slider=原生 range + 填充轨道（`--ux-slider-fill`） |
 | `UxDialog` | 内建 focus trap、aria-modal、Esc 关闭、遮罩点击可配置、Promise 化 `open()` 返回结果（脑图窗口模式）；**动作按钮一律放 `#footer` 插槽**（框架统一 flex 右对齐 + `--ux-sp-2` 间距 + 上边框分隔，见 §11.3），禁止在 body 内自造按钮容器 |
 | `UxContextMenu` | 单例（`openContextMenu(e, items)` / `openContextMenuAt(x, y, items)`）+ Teleport + 防溢出 + 右键/Shift+F10 触发 + ↑↓/←→/Home/End/Enter/Space/Esc/首字母导航 + 分隔线/danger/disabled + 子菜单/复选/单选/分组标题（`menuitemcheckbox`/`menuitemradio`）；内容驱动自命令数组（详见 §6.6） |
 | `UxMenuBar` | 工具菜单栏（`role=menubar`）：roving tabindex + ←→ 切顶级项 + ↓/↑/Enter/Space 展开子菜单 + 首字母跳转 + 与命令注册表联动（详见 §6.6） |
