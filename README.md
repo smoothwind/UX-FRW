@@ -6,7 +6,7 @@
 统一桌面交互框架（组件库）。提炼自 `PersonalDb` 与 `MdReader` 两个桌面项目验证过的 UX 模式，
 结合业界方案（Fluent 2 / shadcn / VSCode Workbench / Primer）设计。
 
-完整设计方案见 [docs/UxKit-设计方案.md](docs/UxKit-设计方案.md)。
+完整设计方案见 [docs/UxKit-设计方案.md](docs/UxKit-设计方案.md)；规范速查与 CI 对照见 [docs/PRINCIPLES.md](docs/PRINCIPLES.md)，存量应用增量接入见 [docs/MIGRATION.md](docs/MIGRATION.md)。
 
 在线预览（playground 由 GitHub Actions 发布到 Pages）：<https://smoothwind.github.io/UX-FRW/>
 

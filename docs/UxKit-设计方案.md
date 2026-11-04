@@ -116,8 +116,8 @@ D:\CodeRepos\UX-FRW\            ← 仓库名即 UX-FRW（UxKit）
 │   ├── check-shortcuts.mjs     # 快捷键冲突检测（含与浏览器/编辑器保留键位比对）
 │   └── check-commands.mjs      # 命令引用完整性（组件里用到的 commandId 必须已注册或声明）
 └── docs/
-    ├── PRINCIPLES.md           # UX 设计规范（本文第五节扩展版）
-    └── MIGRATION.md            # 两项目迁移指引
+    ├── PRINCIPLES.md           # UX 设计规范导读（速查 + CI 对照；事实源 = 本文 §1/§2/§5）
+    └── MIGRATION.md            # 增量接入指南（tokens → composables → components+services → shell/patterns）
 ```
 
 ---
@@ -198,6 +198,8 @@ JS 需要主题色的场景（图表/画布）**运行时读令牌**（`getCompu
 ---
 
 ## 五、UX 设计规范（PRINCIPLES.md 骨架，18 条硬规则）
+
+> 导读：[docs/PRINCIPLES.md](./PRINCIPLES.md) 提供本节速查表与 CI 检查器对照；本节为规则全文与唯一事实源，两处表述冲突时以本节为准。
 
 1. **令牌优先**：一切颜色/字号/间距/圆角/阴影/层级来自语义令牌；`check-tokens` CI 强制（R1 禁裸 hex、R2 间距走令牌、R3 禁字面量 z/圆角/字号/阴影）。数据可视化等"数据配色"用 `tokens-exempt` 注释豁免。
 2. **命令驱动**：任何可触发动作（菜单项/工具栏按钮/快捷键/右键菜单项/命令面板条目）必须注册为 `Command { id, title, icon?, shortcut?, when?, run() }`；UI 控件只负责触发命令，不自带逻辑。→ 一处注册，四类入口同时可用（VSCode 模式，根治 PDB 三处菜单重复与 MdReader 无面板问题）。
