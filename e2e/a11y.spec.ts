@@ -11,6 +11,9 @@ async function expectNoSeriousViolations(page: Page, label: string): Promise<voi
 }
 
 test.describe('无障碍（axe-core）', () => {
+  // axe analyze 在负载高的本机（并行构建/多 MCP 常驻）可能拖过默认 30s，放宽到 90s
+  test.setTimeout(90_000)
+
   test('主页面（tokens 分区）无 serious/critical 问题', async ({ page }) => {
     await page.goto('/')
     await expect(page.locator('[data-ux="pg-nav"]')).toBeVisible()

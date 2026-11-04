@@ -61,6 +61,8 @@ test.describe('playground 外壳', () => {
     await expect.poll(() => readPref(page, 'theme')).toBe('dark')
 
     await page.reload()
+    // 先等应用完成启动（App setup 内 setTheme 同步恢复偏好），慢机器上直接断言属性会跑在挂载前
+    await expect(page.locator('[data-ux="pg-nav"]')).toBeVisible({ timeout: 15_000 })
     await expect(page.locator('html')).toHaveAttribute('data-color-mode', 'dark')
 
     await page.locator('[data-ux-theme="light"]').click()
@@ -94,6 +96,7 @@ test.describe('playground 外壳', () => {
     expect(bgImage).toContain('linear-gradient')
 
     await page.reload()
+    await expect(page.locator('[data-ux="pg-nav"]')).toBeVisible({ timeout: 15_000 })
     await expect(html).toHaveAttribute('data-color-mode', 'dark-silk')
     await expect(html).toHaveClass(/dark-silk/)
 
@@ -238,6 +241,7 @@ test.describe('playground 外壳', () => {
     await expect.poll(() => readPref(page, 'locale')).toBe('en')
 
     await page.reload()
+    await expect(page.locator('[data-ux="pg-nav"]')).toBeVisible({ timeout: 15_000 })
     await expect(page.locator('[data-ux-locale="en"]')).toHaveClass(/is-active/)
 
     await page.locator('[data-ux-locale="zh-CN"]').click()
