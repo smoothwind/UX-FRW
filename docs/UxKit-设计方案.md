@@ -562,6 +562,47 @@ ux.mount('#app')
 | **M7 完整迁移** | PersonalDb 接入（EP 渐进替换：先 Dialog/Toast/ContextMenu，后表格与树） | 视觉统一到 UxKit 令牌 |
 | **M8 主题扩展 + 特效层 + 启动页** | ✅ dark-silk 第三主题（三通道同步 + 240ms 颜色过渡 + reduced-motion 降级）+ `data-ux-fx` 主题无关视觉特效通道（sheen 丝光 / metal 金属 / frost 磨砂，参数化可叠加）+ `UxSplash` 启动页 + `PlatformAdapter.closeSplash` | playground 三主题切换带过渡、特效开关与滑块、Splash 普通/等待就绪演示；e2e（含 a11y 黑暗主题分区）全覆盖 |
 
+### 消费者模式晋升流程（consumer-proven → @ux/*）
+
+框架的组件/模式源自 PersonalDb / MdReader（§1.1）；自 M6/M7 起新消费者（如 TigerNote）
+验证过的模式经本流程反向沉淀，避免业务侧长期手搓平行实现（改进提案 P1-3）。
+提名与评审的消费者侧入口见 CONTRIBUTING.md；本节为流程的事实源。
+
+**晋升目标按形态归类**：原子控件 → `@ux/components`（多为既有组件的变体）；
+行为逻辑 → `@ux/composables`；复合模式 → `@ux/patterns`。
+
+**提名条件**（满足全部才收候选）：
+
+1. 真实消费者中已上线，且同类需求出现 ≥2 次（复用信号）或明显是通用型缺口；
+2. 证据链具体可核：文件位置 + 关键代码段（格式参照改进提案「附 · 证据索引」）；
+3. 样式全部可映射到语义令牌——**不允许为晋升新建平行 token 层**（P2-1 批注结论：
+   材质类需求并入 `data-ux-fx` 通道评审，不另起 `--ux-glass-*`）；
+4. a11y 基线不缺：键盘可达 + aria 语义（对照 §5 规则 8/10）。
+
+**评审清单**（逐条过，全过即「过评」，进入排期）：
+
+| # | 清单项 | 判据 |
+|---|--------|------|
+| 1 | 归类与既有件关系 | 变体（挂既有组件 prop）/ 新组件 / 新 pattern；与 §6.x 清单不重叠 |
+| 2 | API 泛化度 | 剥离业务特有字段（如便签 id、提醒时间格式）；prop 面收窄到框架语义 |
+| 3 | 规格成文 | §6.x 表格补行 + `data-ux` 锚点 + 键盘契约（APG 对齐） |
+| 4 | 令牌合规 | 全部样式可落地为语义令牌 / fx 通道参数，`check-tokens` 可强制 |
+| 5 | 测试计划 | 单测覆盖 + e2e 锚点用例；降级路径（reduced-motion 等）有用例 |
+| 6 | 体积影响 | `pnpm size` 预算可容纳（超预算需在评审时给抵扣方案） |
+
+**晋升步骤**（过评后的工程动作，与常规交付同门禁）：
+规格入 §6 → 实现（headless 逻辑进 composables，样式只消费语义令牌）→
+playground 演示 + e2e → `pnpm verify` 全绿 → changeset → README 交付表勾选。
+晋升合入后，来源消费者应**删除本地手搓实现改用框架件**（下一版本随 changeset 提示）；
+框架侧后续破坏性变更按 changeset 语义版本约定执行。
+
+**候选档案**（已过评待排期）：
+
+| 候选 | 来源证据 | 晋升目标 | 评审结论 | 排期依赖 |
+|------|---------|---------|---------|---------|
+| `UxCheckbox` glass 变体 | TigerNote `DrawerWindow.vue`（`.tree-check` 系列，手搓玻璃复选框） | `@ux/components` 变体 | 过评：归类=变体、键盘已原生（P1-1 五件套底座）、a11y 齐 | 材质常驻通道设计评审（P2-1 修订版：frost 参数升格或 `data-ux-material`）通过后实施 |
+| 提醒徽标 + 弹层 | TigerNote `NoteCard.vue`（`reminderText` / `.pop.reminder`，含 `prefers-reduced-motion` 降级） | `@ux/patterns` 新模式 | 过评：归类=新 pattern、弹层关闭逻辑可换 `useDismiss` + `useConfirm`（P1-2 已落地）、徽标克制性需对照规则 18 复核 | 排期 M6 前后；无阻塞依赖 |
+
 ---
 
 ## 十、风险与对策

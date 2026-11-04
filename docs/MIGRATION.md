@@ -125,4 +125,4 @@ import { CommandPalette, SettingsShell, TourGuide, UxDataTable, UxSplash } from 
 
 - **实际接入**：阶段 1（tokens only）——便签卡片 / 抽屉面板大量消费 `--ux-fg-*`、`--ux-accent-*`、`--ux-control-h-*` 语义令牌。
 - **反哺**：改进提案 P1–P3 的全部证据来源；P1-1 表单控件组、P2-2 OS 集成模式（§11.5–11.7）均源自其踩坑与手搓替代。
-- **建议路线**：阶段 2 优先 `useDismiss` + `useFocusTrap`（替换 `NoteCard.vue` 手写的弹层关闭逻辑）；阶段 3 优先 `UxCheckbox` / `UxSwitch`（替换 `DrawerWindow.vue` 手搓玻璃复选框；glass 变体为 P1-3 晋升候选）。
+- **建议路线**：阶段 2 优先 `useDismiss` + `useFocusTrap`（替换 `NoteCard.vue` 手写的弹层关闭逻辑）；阶段 3 优先 `UxCheckbox` / `UxSwitch`（替换 `DrawerWindow.vue` 手搓玻璃复选框；glass 变体为 P1-3 晋升候选，流程见设计方案 §9 与 CONTRIBUTING.md）。
