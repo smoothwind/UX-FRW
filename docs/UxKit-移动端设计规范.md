@@ -1,7 +1,8 @@
 # UxKit 移动端设计规范（规划稿）
 
 > 规划日期：2026-11-04
-> 状态：**规划（待评审）**
+> 状态：**规划（待评审）**；基础层已先行落地（见下）
+> 已落地切片（2026-11-04）：**§3.1 断点登记制**（layout.css `--ux-bp-*` + `@ux/tokens` `BP` 双源）、**§3.3 安全区令牌**（`--ux-safe-*`，playground header/body 已消费）、**§3.4 视口状态通道**（`data-ux-viewport`，`applyViewport` / `resolveViewport`）、**playground 移动入口**（窄屏收缩：页签横向滚动 + 副标题隐藏 + safe-area + 触控点击区；e2e `mobile.spec.ts` 390×844 触屏断言）。其余章节待评审后排期。
 > 定位：UxKit 是「统一桌面交互框架」，本规范定义同一套令牌 / 组件 / 布局壳**响应式收缩到手机与平板 WebView** 的适配轨道。核心主张：**移动不是第二套组件库，而是语义令牌在窄视口 + 粗指针下的取值切换与交互范式映射**。
 > 编号协调：`UxKit-改进提案.md` P2-1 已为玻璃检查保留 CI R5，本规范占用 R6（触控目标），互不冲突。
 > 宿主假设：优先场景是 WebView 内嵌（Tauri iOS/Android、Electron 不适用移动、纯移动浏览器），桌面工作台形态完全不受影响。
@@ -40,7 +41,7 @@
 
 ## 三、令牌层扩展（@ux/tokens）
 
-### 3.1 断点登记制
+### 3.1 断点登记制（已落地：layout.css `--ux-bp-*` + `@ux/tokens` `BP` 双源）
 
 CSS 媒体查询**不能消费 CSS 变量**（`@media (max-width: var(--x))` 无效），断点必须双源登记：
 
@@ -75,7 +76,7 @@ CSS 媒体查询**不能消费 CSS 变量**（`@media (max-width: var(--x))` 无
 
 实施注意：`UxDataTable` 虚拟滚动（`useVirtualRows`）依赖**固定行高**，行高令牌切换时组件需重算窗口（监听令牌值变化或由 viewport 通道触发 remeasure——已有 ResizeObserver，需补行高变化路径）。
 
-### 3.3 安全区令牌
+### 3.3 安全区令牌（已落地：layout.css `--ux-safe-*`，playground 已消费）
 
 ```css
 :root {
@@ -88,7 +89,7 @@ CSS 媒体查询**不能消费 CSS 变量**（`@media (max-width: var(--x))` 无
 
 配套要求：宿主页面 `<meta name="viewport" content="..., viewport-fit=cover">`；壳层（§5）的底栏/顶栏消费这些令牌。部分 Android WebView `env()` 不可靠——由 §8 的 `safeAreaInsets` 宿主上报兜底（运行时覆写同名令牌，与 PreferencesService 注入偏好同一机制）。
 
-### 3.4 视口状态通道 `data-ux-viewport`
+### 3.4 视口状态通道 `data-ux-viewport`（已落地：`applyViewport` / `resolveViewport` + `BP`）
 
 与 `data-color-mode` / `data-ux-fx` 同构的根属性通道，空格分隔：
 

@@ -10,6 +10,8 @@ export {
   tintContrast,
 } from './tints'
 export type { TintContrastCheck, TintContrastReport, TintDefinition } from './tints'
+export { BP, VIEWPORT_ATTR, applyViewport, resolveViewport } from './viewport'
+export type { ViewportState, ViewportTier } from './viewport'
 
 /** 文档根元素上的主题标记（Primer 约定） */
 export const THEME_ATTR = 'data-color-mode'

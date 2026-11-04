@@ -26,6 +26,20 @@
   --ux-fw-medium: 500;
   --ux-fw-semibold: 600;
 
+  /* 断点登记（docs/UxKit-移动端设计规范.md §3.1）：文档性登记——CSS 媒体查询
+     不能消费 CSS 变量，JS 事实源是 @ux/tokens 的 BP 常量（双源同值，改这里必同步）。
+     sm=手机横排收缩边界 / md=平板双栏可用 / lg=桌面完整形态 */
+  --ux-bp-sm: 600px;
+  --ux-bp-md: 960px;
+  --ux-bp-lg: 1280px;
+
+  /* 安全区（§3.3）：刘海屏/手势条遮挡规避；配套 viewport-fit=cover。
+     部分安卓 WebView env() 不可靠，由宿主 safeAreaInsets 上报覆写兜底 */
+  --ux-safe-top: env(safe-area-inset-top, 0px);
+  --ux-safe-right: env(safe-area-inset-right, 0px);
+  --ux-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --ux-safe-left: env(safe-area-inset-left, 0px);
+
   /* 间距：4px 网格（Fluent 约定） */
   --ux-sp-1: 4px;
   --ux-sp-2: 8px;

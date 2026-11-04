@@ -381,4 +381,52 @@ onUnmounted(stopShortcuts)
 .pg-body:has(.sl) {
   max-width: 1120px;
 }
+
+/* ===== 移动入口（playground 窄屏收缩，只收缩不增强）=====
+   收缩边界 = 断点登记 --ux-bp-sm（600px，layout.css；媒体查询无法消费 CSS 变量，
+   字面量 599.98px 为登记值的媒体查询写法，改登记必同步此处）。
+   根属性通道 data-ux-viewport 由 @ux/tokens applyViewport 维护（e2e 断言用）。 */
+@media (max-width: 599.98px) {
+  .pg-header {
+    flex-wrap: wrap;
+    row-gap: var(--ux-sp-2);
+    padding-top: calc(var(--ux-sp-3) + var(--ux-safe-top));
+    padding-left: calc(var(--ux-sp-4) + var(--ux-safe-left));
+    padding-right: calc(var(--ux-sp-4) + var(--ux-safe-right));
+  }
+
+  .pg-sub {
+    display: none;
+  }
+
+  /* 页签收缩为横向滚动条（触控可滑），保持全部五个分区可达 */
+  .pg-tabs {
+    order: 10;
+    width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding-bottom: var(--ux-sp-1);
+  }
+
+  .pg-fx {
+    order: 11;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .pg-themes {
+    order: 12;
+    margin-left: 0;
+  }
+
+  .pg-body {
+    padding: var(--ux-sp-3);
+    padding-bottom: calc(var(--ux-sp-3) + var(--ux-safe-bottom));
+  }
+
+  /* 触屏点击区：按钮最小高度对齐触控档 --ux-control-h-sm（36px） */
+  .pg-btn {
+    min-height: var(--ux-control-h-sm);
+  }
+}
 </style>
