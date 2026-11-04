@@ -26,7 +26,8 @@
     "check:shortcuts": "node scripts/check-shortcuts.mjs",
     "check:i18n": "node scripts/check-i18n.mjs",
     "check:commands": "node scripts/check-commands.mjs",
-    "check": "node scripts/check-tokens.mjs && node scripts/check-icons.mjs && node scripts/check-shortcuts.mjs && node scripts/check-i18n.mjs && node scripts/check-commands.mjs"
+    "check": "node scripts/check-tokens.mjs && node scripts/check-icons.mjs && node scripts/check-shortcuts.mjs && node scripts/check-i18n.mjs && node scripts/check-commands.mjs",
+    "verify": "pnpm check && pnpm typecheck && pnpm lint && vitest run --no-file-parallelism && playwright test --workers=1"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
