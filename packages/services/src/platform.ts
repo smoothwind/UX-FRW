@@ -17,6 +17,10 @@ export interface PlatformAdapter {
   closeSplash?: () => void
   /** 提供后支持按显示器摆放窗口（多显示器/混合 DPI）；web 可用 createWebWindowPlacement 占位 */
   windowPlacement?: WindowPlacement
+  /** 提供后支持原生窗口材质（亚克力/Mica/模糊）；Tauri/Electron 各自实现，web 无需实现（§11.5） */
+  applyWindowMaterial?(options: WindowMaterialOptions): Promise<void>
+  /** 提供后宿主注册 OS 通知身份（Windows AUMID）；应在宿主启动早期调用一次（§11.6） */
+  registerToastIdentity?(options: ToastIdentityOptions): Promise<void>
 }
 
 let current: PlatformAdapter | null = null
@@ -55,6 +59,35 @@ export function createWebWindowControls(): WindowControls {
       return () => document.removeEventListener('fullscreenchange', handler)
     },
   }
+}
+
+// ---------- 窗口材质与 OS 通知身份（宿主扩展位） ----------
+
+/**
+ * 原生窗口材质参数（亚克力/Mica/模糊）。宿主各自实现底层调用：
+ * Tauri 走 window effects，Electron 走 setBackgroundMaterial + 透明窗口；
+ * 降级路径与 DWM 圆角约束见 docs/UxKit-设计方案.md §11.5。
+ */
+export interface WindowMaterialOptions {
+  /** 材质档位；'none' 显式关闭——不支持透明材质环境的统一降级出口 */
+  effect: 'acrylic' | 'mica' | 'blur' | 'none'
+  /** 材质 tint 色（CSS 颜色值）；仅 acrylic 档语义生效，宿主换算为系统 tint */
+  tint?: string
+  /** 深浅语义：主题切换时宿主应重新调用以同步系统材质明暗参数 */
+  dark?: boolean
+}
+
+/**
+ * OS 通知身份（Windows AUMID）。不注册的后果见 §11.6：
+ * dev/便携构建的通知来源显示宿主进程名（如 "Windows PowerShell"），安装版静默失败。
+ */
+export interface ToastIdentityOptions {
+  /** 应用通知标识（Windows AUMID，反向域名如 'com.example.app'） */
+  id: string
+  /** 通知中心展示名 */
+  displayName: string
+  /** 通知图标（file:/// 绝对路径或安装目录相对路径）；可省略 */
+  iconUri?: string
 }
 
 // ---------- 窗口摆放（多显示器 / 混合 DPI） ----------

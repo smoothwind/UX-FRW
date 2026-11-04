@@ -32,6 +32,8 @@ export type {
   WindowPlacement,
   DesiredWindowBounds,
   DisplayMetricsChangedEvent,
+  WindowMaterialOptions,
+  ToastIdentityOptions,
 } from './platform'
 
 export { checkViewportHealth, installViewportHealthWatch } from './viewport'

@@ -288,6 +288,8 @@ interface Platform {
   dragDropEnabled(flag: boolean): void      // Windows/WebView2 特例：禁原生拖放防吞 HTML5 DnD
   openExternal(url: string): void
   logError(e: unknown): void                // 落盘 userData/logs/
+  applyWindowMaterial(o: WindowMaterialOptions): Promise<void>  // §11.5 原生窗口材质（可选扩展位）
+  registerToastIdentity(o: ToastIdentityOptions): Promise<void> // §11.6 Windows AUMID 通知身份（可选扩展位）
   // ... 全部能力显式声明，未声明的能力 = 编译期不可用
 }
 ```
@@ -629,3 +631,56 @@ ux.mount('#app')
 - [ ] `UxTabs` / `UxPanel / UxDockWorkbench` 拖拽在 Tauri(Windows) 下的指针兜底。
 - [ ] `useDropProxy` composable：把「指针手势 → 拖拽语义」提炼为可复用 headless 逻辑，
       供业务自定义可拖拽列表使用。
+
+### 11.5 DWM 圆角与亚克力材质（Windows，TigerNote 实测）
+
+**现象**：无框窗口以 accent 亚克力 backdrop 铺满时，若对直角窗口用 `SetWindowRgn`
+裁圆角，**裁剪不生效**——角部仍是 backdrop，且与窗外桌面像素不连续。原因：区域
+裁剪作用于窗口自身绘制，而亚克力由 DWM 合成层绘制，先于窗口裁剪。
+
+**正确做法**：把圆角交给 DWM 合成层整体裁剪（Tauri，windows crate）：
+
+```rust
+use windows::Win32::Graphics::Dwm::{
+    DwmSetWindowAttribute, DWMWA_WINDOW_CORNER_PREFERENCE, DWMWCP_ROUND,
+};
+// 一次性设置即可；合成层裁剪，亚克力一并被圆角覆盖
+DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, &DWMWCP_ROUND, 4);
+```
+
+CSS 侧圆角半径与系统圆角对齐（约 8px 逻辑像素）。材质参数经 PlatformAdapter
+扩展位 `applyWindowMaterial({ effect: 'acrylic' | 'mica' | 'blur' | 'none', tint?,
+dark? })` 由宿主实现（Tauri 走 window effects，Electron 走
+`setBackgroundMaterial('acrylic')` + 透明窗口），主题切换时带 `dark` 重调一次。
+
+**降级路径**：
+
+1. Win10 忽略 `DWMWA_WINDOW_CORNER_PREFERENCE`（保持直角即可；**勿**自绘伪圆角
+   盖在 backdrop 上——与窗外桌面的连续性问题依旧存在）；
+2. 不支持窗口透明的宿主环境回退不透明 `--ux-bg-*`，材质档位统一传 `'none'`；
+3. 透明化后 WebView 背景必须为透明，浮层面板改用半透明表面样式，否则材质不可见。
+
+### 11.6 Toast 通知身份（Windows AUMID）
+
+**现象**：dev / 便携运行时的系统通知来源显示 "Windows PowerShell"（notify-rust
+默认 `POWERSHELL_APP_ID`）；未注册 AUMID 的**安装版静默失败**——通知不出、无报错。
+
+**正确做法**：启动早期注册应用通知身份，发送时显式指定同一 AUMID：
+
+1. 写注册表 `HKCU\Software\Classes\AppUserModelId\<AUMID>`：`DisplayName`
+   （通知中心展示名）+ `IconUri`（通知图标，file:/// 路径）；
+2. 通知构造显式传 AUMID（Tauri：`tauri-winrt-notification::Toast::new(AUMID)`）。
+
+框架侧经 PlatformAdapter 扩展位 `registerToastIdentity({ id, displayName,
+iconUri? })` 在宿主启动流程调用一次；web / macOS / Linux 宿主无需实现该扩展位。
+
+### 11.7 多显示器坐标校验（窗口位置落盘前）
+
+**现象**：窗口位置记忆直接落盘 x/y，拔掉显示器后恢复到已不存在的屏幕区域——
+应用「消失在屏外」（托盘无窗、Alt+Tab 有窗），只能删配置自救。
+
+**正确做法**：位置落盘**前**校验窗口矩形与任一显示器可见区域有足够交集（如
+交集面积 ≥ 窗口面积 25%，或至少 100×100 逻辑像素），不满足则回退默认位置或
+光标所在屏居中；下次启动恢复时**再校验一次**（两次会话间显示器拓扑可能已变）。
+运行期摆放与失配自愈的完整契约见 `@ux/services` 的 `WindowPlacement` 与
+`docs/window-placement.md`（`placeToCursorDisplay` 已按光标所在屏钳制）。
