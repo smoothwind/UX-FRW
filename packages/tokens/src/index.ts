@@ -1,6 +1,15 @@
 import type { ApplyThemeOptions, ResolvedTheme, UxTheme } from './types'
 
 export type { ApplyThemeOptions, ResolvedTheme, UxTheme } from './types'
+export {
+  TINT_AA_RATIO,
+  checkTintContrast,
+  listTints,
+  registerTint,
+  resetTints,
+  tintContrast,
+} from './tints'
+export type { TintContrastCheck, TintContrastReport, TintDefinition } from './tints'
 
 /** 文档根元素上的主题标记（Primer 约定） */
 export const THEME_ATTR = 'data-color-mode'

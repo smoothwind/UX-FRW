@@ -218,6 +218,34 @@ JS 需要主题色的场景（图表/画布）**运行时读令牌**（`getCompu
 **CI**：`check-tokens` **R5**——`backdrop-filter` 禁止裸值（剥掉 var() 后残留
 `blur()/saturate()` 等函数即失败），只准消费 `--ux-material-*` / `--ux-frost-*`。
 
+### 4.6 着色表面色板（tinted surface，改进提案 P2-3 设计评审先行）
+
+**需求来源**：便签/卡片类应用的「同族着色表面」——如 TigerNote 便签 6 色可切换，
+每色一组 `paper / paper-deep / fg / paper-o`，与亚克力 tint 同源。中性表面
+（`--ux-bg/panel/sunken/overlay`）无法承载。
+
+**结构约定**（token 层只定义结构，**色值由消费者运行时注册**，避免业务配色绕过
+CI R1「裸色值禁止」与「dark 适配仅限 semantic.css」两条红线）：
+
+| 变量 | 语义 |
+|------|------|
+| `--ux-tint-{name}-surface` | 常规表面（便签/卡片底色） |
+| `--ux-tint-{name}-deep` | 深色变体（按下态 / 凹陷区 / 页脚） |
+| `--ux-tint-{name}-fg` | 正文前景（对 surface / deep / opaque 均需 AA） |
+| `--ux-tint-{name}-opaque` | 不透明副选/强调底（选中态 chip） |
+
+**注册 API（`@ux/tokens`，已实现）**：`registerTint(name, light, dark?)`——
+
+- 注入 `:root` 与 `.dark` 两套变量（单 `<style data-ux-tints>` 管理块；dark 缺省复用 light，
+  仅当浅深两套都达 AA 时才建议省略）；
+- **注册即强制 AA 校验**（WCAG 2.1，`fg` 对 `surface / deep / opaque` 三对 ≥ 4.5:1），
+  不达标直接抛错并携带各对比对数值；`{ validate: false }` 可显式跳过（责任自负）；
+- 同名重复注册覆盖（热更新 / 主题编辑器场景）；配套 `tintContrast(fg, bg)`（单对计算）、
+  `checkTintContrast(tint)`（报告式全量校验）、`listTints()` 枚举。
+
+**消费惯例**：样式一律 `var(--ux-tint-x-surface, var(--ux-bg-panel))` 带语义回退——
+未注册的 tint 自动落回中性表面，不裸悬空变量。
+
 ---
 
 ## 五、UX 设计规范（PRINCIPLES.md 骨架，18 条硬规则）

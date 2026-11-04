@@ -14,7 +14,7 @@
 
 | 包 | 职责 | 状态 |
 |----|------|------|
-| `@ux/tokens` | 三层设计令牌（primitives / semantic / layout）+ TS 主题工具（三主题：浅色 / 暗色 / 黑暗 dark-silk + 主题无关视觉特效通道 `data-ux-fx` + 粗指针触控档） | ✅ M1/M8 |
+| `@ux/tokens` | 三层设计令牌（primitives / semantic / layout）+ TS 主题工具（三主题 + `data-ux-fx` 特效通道 + `data-ux-material` 常驻材质通道 + 着色表面注册 `registerTint`（AA 强制）+ 粗指针触控档） | ✅ M1/M8 + P2-1/P2-3 |
 | `@ux/composables` | headless 逻辑（useFocusTrap / useOverflowPosition / useDismiss / useHoverIntent / useTabs / useVirtualRows / useActivityLog / useNotify / useConfirm 等） | ✅ M2/M4 + P1-2 |
 | `@ux/services` | Command / Shortcut / Preferences / I18n / Platform | ✅ M3/M4 |
 | `@ux/components` | 原子组件（Button / Input / Dialog / ContextMenu / Toast / Icon / Segmented / FilterChips…） | ✅ M2 |

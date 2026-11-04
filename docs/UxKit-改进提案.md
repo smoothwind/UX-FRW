@@ -81,6 +81,8 @@ TigerNote 在 Windows 上踩到三个可复用结论，建议以「模式 + 代�
 
 **建议**：设计 `--ux-tint-*` 方案（如 `--ux-tint-{name}-surface/-deep/-fg/-opaque`），token 层只定义结构，具体色值由消费者注册（避免 CI R1「dark 适配仅限 semantic.css」被绕过）；给出注册 API 与对比度校验工具（fg 对 surface 的 AA 检查）。
 
+> **落地标注（2026-11-04）**：设计稿入设计方案 §4.6；AA 校验工具已实现——`@ux/tokens` 新增 `registerTint(name, light, dark?)`（注册即强制 fg 对 surface/deep/opaque 三对 ≥4.5:1，不达标抛错）+ `tintContrast` / `checkTintContrast` / `listTints`，13 条单测覆盖。
+
 ### P2-4 增量接入指南（补写 MIGRATION.md）
 
 **现状**：`MIGRATION.md` 被 §3 引用但不存在；现有使用方式（§8）面向新项目整体套壳（UxAppShell workbench）。
