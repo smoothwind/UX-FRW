@@ -113,7 +113,9 @@ const appCommands: Command[] = [
     icon: 'act-save',
     shortcut: 'Ctrl+E',
     category: 'Data',
-    run: () => notify({ type: 'success', message: i18n.t('toast.exported') }),
+    run: () => {
+      notify({ type: 'success', message: i18n.t('toast.exported') })
+    },
   },
   {
     id: 'data.reveal',
@@ -121,7 +123,9 @@ const appCommands: Command[] = [
     icon: 'act-external-link',
     shortcut: 'Ctrl+Shift+E',
     category: 'Data',
-    run: () => notify({ type: 'info', message: i18n.t('toast.revealed') }),
+    run: () => {
+      notify({ type: 'info', message: i18n.t('toast.revealed') })
+    },
   },
   {
     id: 'data.reload',
@@ -129,7 +133,9 @@ const appCommands: Command[] = [
     icon: 'act-retry',
     shortcut: 'Alt+R',
     category: 'Data',
-    run: () => notify({ type: 'info', message: i18n.t('toast.reloaded') }),
+    run: () => {
+      notify({ type: 'info', message: i18n.t('toast.reloaded') })
+    },
   },
   {
     id: 'data.delete',
@@ -138,12 +144,15 @@ const appCommands: Command[] = [
     shortcut: 'Ctrl+Shift+D',
     category: 'Data',
     danger: true,
-    run: () =>
+    run: () => {
       notify({
         type: 'danger',
         message: i18n.t('toast.deleted'),
-        action: { label: '撤销', run: () => notify('已撤销') },
-      }),
+        action: { label: '撤销', run: () => {
+          notify('已撤销')
+        } },
+      })
+    },
   },
   {
     id: 'view.resetDensity',

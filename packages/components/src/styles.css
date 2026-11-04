@@ -711,6 +711,10 @@
   pointer-events: auto;
 }
 
+.ux-toast--clickable {
+  cursor: pointer;
+}
+
 .ux-toast__icon {
   margin-top: var(--ux-sp-1);
 }

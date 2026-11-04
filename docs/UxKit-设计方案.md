@@ -241,8 +241,8 @@ JS 需要主题色的场景（图表/画布）**运行时读令牌**（`getCompu
 | `useDockLayout()` | 四区停靠状态机：面板位置/尺寸/拖拽交换/悬浮几何/z 层叠/最小化条，localStorage 防抖持久化（M4 已落地：归属/尺寸/开合/让位/lastZone/拖拽交换/悬浮几何+置焦/最小化层叠/持久化） | PDB `layout.ts`（312 行完整状态机） |
 | `useTabs()` | 页签数组 + activeId + dirty + 恢复快照（IndexedDB KV）+ 中键关闭 + 拖拽排序（M4 已落地：headless 状态机 + 快照导入导出 API，介质由业务决定；dedupe 去重激活/close 邻位激活/cycle 循环/move 下标修正/max 上限+guardClose 守卫） | 两项目 TabBar 合并 |
 | `useDragSort(list)` | HTML5 DnD 封装：drag-over 插入指示线 + drop 校验后置（防守式：allow 恒真 + 落点校验 + 循环防护） | PDB 树拖拽经验 + MdReader 标签排序 |
-| `useConfirm()` | Promise 化确认框，`{ok, cancel}` 语义，Esc=cancel | MdReader |
-| `useNotify()` | toast 队列 + `notifyOnce(key, 5s)` 去重 + 点击回调 + aria-live | PDB notify.ts |
+| `useConfirm()` | Promise 化确认框（headless 状态机）：`confirm()` 返回 `Promise<boolean>`，Esc=取消；新请求顶替未结算旧请求按取消结算；组件卸载防 await 悬挂；视图用 UxDialog 组装或自绘（P1-2 已落地） | MdReader |
+| `useNotify()` | toast 队列（headless，实例级：每窗口/每 Vue app 一份）+ `notifyOnce(key, windowMs=5000)` 去重 + 主体 `onClick` 点击回调 + duration<=0 常驻；渲染容器 aria-live=polite / 条目 role=status；UxToastHost 为官方渲染端（核心下沉至此，P1-2 已落地） | PDB notify.ts |
 | `useTour()` | `data-tour` 锚点 + 聚光遮罩（`box-shadow: 0 0 0 9999px`）+ 卡片定位翻转 + 键盘导航 + 剔除不可见锚点 | 两项目引导合并 |
 | `useTocObserver()` | MutationObserver + 防抖提取标题 + 滚动定位 | MdReader |
 | `useSearchText(root, scroller)` | TreeWalker 查找 + 三模式（大小写/整词/正则）+ 倒序批量替换 | MdReader useSearch |

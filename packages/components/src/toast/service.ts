@@ -1,52 +1,28 @@
-import { ref } from 'vue'
+import { useNotify, type NotifyOptions, type NotifyRecord, type NotifyType } from '@ux/composables'
 
-export type ToastType = 'info' | 'success' | 'warning' | 'danger'
+// 通知队列核心（状态 + notifyOnce 去重 + 自动消失）已下沉到 @ux/composables 的
+// useNotify（改进提案 P1-2：与 ToastHost 渲染解耦，无组件包场景可独立使用）。
+// 本文件只保留组件包的模块级单例转发：ToastHost 渲染 toastState.toasts。
 
-export interface ToastOptions {
-  type?: ToastType
-  message: string
-  /** 毫秒；<=0 表示不自动消失，默认 4000 */
-  duration?: number
-  action?: { label: string; run: () => void }
-}
+export type ToastType = NotifyType
+export type ToastOptions = NotifyOptions
+export type ToastRecord = NotifyRecord
 
-export interface ToastRecord extends ToastOptions {
-  id: number
-  type: ToastType
-}
+const api = useNotify()
 
-/**
- * 模块级单例通知状态。ToastHost 负责渲染，
- * 任意组件可直接调用 notify / notifyOnce，无需层级依赖。
- */
 export const toastState = {
-  toasts: ref<ToastRecord[]>([]),
+  toasts: api.toasts,
 }
-
-const onceMap = new Map<string, number>()
-let seq = 0
 
 export function dismissToast(id: number): void {
-  toastState.toasts.value = toastState.toasts.value.filter((t) => t.id !== id)
+  api.dismiss(id)
 }
 
-export function notify(options: ToastOptions | string): void {
-  const opts = typeof options === 'string' ? { message: options } : options
-  const id = ++seq
-  toastState.toasts.value.push({
-    id,
-    type: opts.type ?? 'info',
-    message: opts.message,
-    action: opts.action,
-  })
-  const duration = opts.duration ?? 4000
-  if (duration > 0) window.setTimeout(() => dismissToast(id), duration)
+export function notify(options: ToastOptions | string): number {
+  return api.notify(options)
 }
 
 /** 同类通知 5 秒窗口内只出现一次（防多来源轰炸） */
-export function notifyOnce(key: string, options: ToastOptions | string): void {
-  const now = Date.now()
-  if (now - (onceMap.get(key) ?? 0) < 5000) return
-  onceMap.set(key, now)
-  notify(options)
+export function notifyOnce(key: string, options: ToastOptions | string): number | null {
+  return api.notifyOnce(key, options)
 }

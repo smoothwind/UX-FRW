@@ -15,7 +15,7 @@
 | 包 | 职责 | 状态 |
 |----|------|------|
 | `@ux/tokens` | 三层设计令牌（primitives / semantic / layout）+ TS 主题工具（三主题：浅色 / 暗色 / 黑暗 dark-silk + 主题无关视觉特效通道 `data-ux-fx` + 粗指针触控档） | ✅ M1/M8 |
-| `@ux/composables` | headless 逻辑（useFocusTrap / useOverflowPosition / useDismiss / useDockLayout） | ✅ M2/M4 |
+| `@ux/composables` | headless 逻辑（useFocusTrap / useOverflowPosition / useDismiss / useHoverIntent / useTabs / useVirtualRows / useActivityLog / useNotify / useConfirm 等） | ✅ M2/M4 + P1-2 |
 | `@ux/services` | Command / Shortcut / Preferences / I18n / Platform | ✅ M3/M4 |
 | `@ux/components` | 原子组件（Button / Input / Dialog / ContextMenu / Toast / Icon / Segmented / FilterChips…） | ✅ M2 |
 | `@ux/shell` | 工作台布局壳（AppShell / TitleBar / DockWorkbench / Panel / FloatPanel / ActivityBar / StatusBar / Splitter） | ✅ M4 |
@@ -65,7 +65,8 @@ pnpm changeset        # 记录本次改动（发版流程，见「发版流程�
 | `UxMenuBar` | 工具菜单栏：`role=menubar` + roving tabindex + ←→ 切顶级项 + ↓/Enter/Space 展开 + Home/End/首字母；下拉复用 `MenuPanel`（含子菜单/复选/单选）；Esc 关闭并归还焦点 |
 | `UxDropdown` | 菜单按钮（APG menubutton）：`aria-haspopup=menu` + `aria-expanded`；点击 / ↓ / Enter / Space 打开、Esc 关闭并归还焦点、Tab 只进出一次、外部点击关闭、`checkable` 项激活不关闭；复用 `MenuPanel`（全类型项/子菜单），层级 `--ux-z-dropdown`；`v-model:open` 可选受控；`matchTriggerWidth` 对齐触发按钮 |
 | `UxPopover` | 通用锚定浮层：默认插槽=触发元素（点击开合，或 `trigger="manual"` 纯 API）；`#content` 插槽=浮层内容；`useOverflowPosition` 视口翻转 + 钳制；外部点击 / Esc 关闭（可分别开关）；`role`/`ariaLabel`/`focusOnOpen`/`matchTriggerWidth`；`v-model:open` 可选受控 + expose `open()/close()/toggle()` |
-| `UxToastHost` + `notify()` / `notifyOnce(key, ...)` | aria-live 通知 + 5 秒去重 + 可点击动作 |
+| `UxToastHost` + `notify()` / `notifyOnce(key, ...)` | aria-live 通知 + 5 秒去重 + 可点击动作 + 主体 `onClick`（动作按钮不冒泡触发）；headless 核心为 `useNotify`（composables，实例级队列，无组件包可独立用） |
+| `useConfirm`（composables） | Promise 化确认框 headless 状态机：`confirm()` 返回 `Promise<boolean>`、Esc=取消、新请求顶替未结算旧请求、卸载防悬挂；视图可用 `UxDialog` 组装 |
 | `useFocusTrap` / `useOverflowPosition` / `useDismiss` / `useHoverIntent` | headless 逻辑，可独立用于任意浮层（`useHoverIntent`：hover 意图延迟走廊 ~120ms） |
 | `CommandPalette`（patterns） | Ctrl+K 命令面板：注册表实时联动 + 过滤 + ↑↓/Enter/Esc + combobox aria |
 | `registerCommand` / `runCommand` / `getAvailableCommands`（services） | 命令注册表：`when` 能力驱动显隐、`danger`、`category` |

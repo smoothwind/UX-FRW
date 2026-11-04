@@ -97,6 +97,33 @@ describe('UxToastHost', () => {
     wrapper.unmount()
   })
 
+  it('onClick：点击主体触发；点动作按钮不冒泡触发 onClick', async () => {
+    const wrapper = await mountHost()
+    const onClick = vi.fn()
+    const run = vi.fn()
+    notify({ message: '可点击', onClick, action: { label: '重试', run } })
+    await nextTick()
+    const toast = document.querySelector('.ux-toast') as HTMLElement
+    expect(toast.className).toContain('ux-toast--clickable')
+    toast.click()
+    await nextTick()
+    expect(onClick).toHaveBeenCalledTimes(1)
+    const btn = document.querySelector('.ux-toast__action') as HTMLButtonElement
+    btn.click()
+    await nextTick()
+    expect(run).toHaveBeenCalledTimes(1)
+    expect(onClick).toHaveBeenCalledTimes(1) // .stop 阻断冒泡，不重复触发
+    wrapper.unmount()
+  })
+
+  it('无 onClick 时不挂 clickable 类', async () => {
+    const wrapper = await mountHost()
+    notify('纯文本')
+    await nextTick()
+    expect(document.querySelector('.ux-toast')!.className).not.toContain('ux-toast--clickable')
+    wrapper.unmount()
+  })
+
   it('无动作时不渲染按钮', async () => {
     const wrapper = await mountHost()
     notify('纯文本')
