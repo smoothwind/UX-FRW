@@ -85,6 +85,7 @@ for (const [id, entry] of entries) {
 if (errors.length > 0) {
   console.error(`\n✗ check-icons 失败：${errors.length} 处违规\n`)
   for (const e of errors) console.error(`  ${e}\n`)
+  console.error('规则依据：红线 13/14（图标语义唯一 / 禁止易困惑图标）— docs/UxKit-设计方案.md §5 规则 13、14；速查见 docs/PRINCIPLES.md。')
   process.exit(1)
 }
 

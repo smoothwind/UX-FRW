@@ -43,6 +43,7 @@ pnpm size --check     # 体积红线：gzip 超预算（scripts/size-budget.json
 pnpm size --update    # 确认体积增长合理后刷新预算基准（随 PR 评审）
 pnpm test:e2e         # Playwright 端到端（含 axe-core 无障碍；自动拉起 playground，先跑一次 pnpm exec playwright install chromium）
 pnpm verify           # 一键全量门禁：check + typecheck + lint + 单测 + e2e（本机稳定化参数已内置：单测 --no-file-parallelism、e2e --workers=1）
+pnpm tokens:table     # 从 tokens CSS 自动生成令牌参考表（docs/generated/token-table.md，构建产物勿手改）
 pnpm changeset        # 记录本次改动（发版流程，见「发版流程」一节）
 ```
 

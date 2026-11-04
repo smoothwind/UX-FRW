@@ -229,6 +229,7 @@ if (violations.length > 0) {
     console.error(`    ${v.text}\n`)
   }
   console.error('修复方式：改用 var(--ux-*) 令牌；确属数据配色可加行内注释 tokens-exempt 豁免。')
+  console.error('规则依据：红线 1（令牌优先）— docs/UxKit-设计方案.md §5 规则 1；速查与 CI 对照见 docs/PRINCIPLES.md。')
   if (violations.some((v) => v.rule === 'R4')) {
     console.error('R4：行级选中（*__row / tr / role=row|option|treeitem|…）请改用 --ux-accent-subtle 底 + --ux-accent-fg 字。')
   }

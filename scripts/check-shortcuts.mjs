@@ -161,6 +161,7 @@ if (errors.length > 0) {
   console.error(`\n✗ check-shortcuts 失败：${errors.length} 处冲突\n`)
   for (const e of errors) console.error(`  ${e}\n`)
   console.error('修复方式：为命令分配独占键位；确需复用可加行内注释 shortcut-exempt 豁免。')
+  console.error('规则依据：红线 15（快捷键唯一占用）— docs/UxKit-设计方案.md §5 规则 15；速查见 docs/PRINCIPLES.md。')
   process.exit(1)
 }
 

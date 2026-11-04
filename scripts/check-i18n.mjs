@@ -104,6 +104,7 @@ if (errors.length > 0) {
   console.error(`\n✗ check-i18n 失败：${errors.length} 处不一致\n`)
   for (const e of errors) console.error(`  ${e}\n`)
   console.error('修复方式：补齐缺失的 key，确保所有语言包叶子 key 完全对齐。')
+  console.error('规则依据：红线 16（文案单一来源）— docs/UxKit-设计方案.md §5 规则 16；速查见 docs/PRINCIPLES.md。')
   process.exit(1)
 }
 

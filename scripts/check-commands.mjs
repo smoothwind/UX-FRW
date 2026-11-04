@@ -166,6 +166,7 @@ if (errors.length > 0) {
   for (const e of errors) console.error(`  ${e}\n`)
   console.error('修复方式：补齐命令注册（registerCommand / Command[] 声明），或修正引用 id；')
   console.error('命令 id 用常量时，请以 *_ID 命名以便静态识别。')
+  console.error('规则依据：红线 2/12（命令驱动 / 平台适配单接口）— docs/UxKit-设计方案.md §5 规则 2、12；速查见 docs/PRINCIPLES.md。')
   process.exit(1)
 }
 
