@@ -314,6 +314,33 @@
       "M9 18a3 3 0 1 0-6 0a3 3 0 0 0 6 0"
     ]
   },
+  "obj-clock": {
+    "category": "obj",
+    "semantic": "时钟/倒计时",
+    "paths": [
+      "M22 12a10 10 0 1 1-20 0a10 10 0 1 1 20 0",
+      "M12 6v6l4 2"
+    ]
+  },
+  "obj-chart": {
+    "category": "obj",
+    "semantic": "统计/用量图表",
+    "paths": [
+      "M3 3v16a2 2 0 0 0 2 2h16",
+      "M18 17V9",
+      "M13 17V5",
+      "M8 17v-3"
+    ]
+  },
+  "obj-history": {
+    "category": "obj",
+    "semantic": "运行历史/历史记录",
+    "paths": [
+      "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8",
+      "M3 3v5h5",
+      "M12 7v5l3.5 2"
+    ]
+  },
   "act-chevron-right": {
     "category": "act",
     "semantic": "展开子菜单",
