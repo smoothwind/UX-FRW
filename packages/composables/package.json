@@ -1,6 +1,6 @@
 {
   "name": "@ux/composables",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "UxKit headless 逻辑（零样式，可独立单测）",
   "type": "module",
   "exports": {
