@@ -633,6 +633,11 @@
   height: 16px;
 }
 
+/* 勾选态行首图标：accent 强调当前项（radio 导航菜单「当前视图」一眼可辨） */
+.ux-menu__lead-icon--checked {
+  color: var(--ux-accent);
+}
+
 .ux-menu__caret {
   width: 16px;
   height: 16px;

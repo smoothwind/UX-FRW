@@ -4,6 +4,7 @@ import { useHoverIntent } from '@ux/composables'
 import UxIcon from '../icon/UxIcon.vue'
 import UxKbd from '../kbd/UxKbd.vue'
 import { isCheckable, menuItemKind, type MenuItem, type MenuItemKind } from './types'
+import type { IconId } from '../icon/registry'
 
 defineOptions({ name: 'UxMenuPanel' })
 
@@ -35,6 +36,21 @@ const { schedule: scheduleHover, cancel: cancelHover } = useHoverIntent(120)
 
 function kind(it: MenuItem): MenuItemKind {
   return menuItemKind(it)
+}
+
+/**
+ * 行首图标（单状态单图标，红线 13——同一时刻行首只有一个图标）：
+ * - 勾选态：项有 icon → 继续显示自身 icon（accent 强调，选中态由 aria-checked
+ *   表达，2026-11-23 修复 radio 项 icon 被吞——标题栏导航菜单 7 项只显勾不显图标）；
+ *   无 icon → 勾选标记（旧行为，向后兼容）；
+ * - 未勾选/普通项：项 icon；都没有 → 空槽位（保持缩进对齐）。
+ */
+function leadIcon(it: MenuItem): IconId | null {
+  if (isCheckable(it)) {
+    if (it.checked) return it.icon ?? 'act-check'
+    return it.icon ?? null
+  }
+  return it.icon ?? null
 }
 
 function isNavigable(i: number): boolean {
@@ -203,8 +219,11 @@ defineExpose({ getEl: () => rootEl.value })
           @click="onRowClick(i)"
         >
           <span class="ux-menu__lead">
-            <UxIcon v-if="isCheckable(it) && it.checked" name="act-check" />
-            <UxIcon v-else-if="it.icon && !isCheckable(it)" :name="it.icon" />
+            <UxIcon
+              v-if="leadIcon(it)"
+              :name="leadIcon(it)!"
+              :class="{ 'ux-menu__lead-icon--checked': isCheckable(it) && it.checked }"
+            />
           </span>
           <span class="ux-menu__item-label">{{ it.label }}</span>
           <UxKbd v-if="it.shortcut" :keys="it.shortcut" class="ux-menu__kbd" />
