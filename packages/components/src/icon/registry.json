@@ -963,6 +963,25 @@
       "m15 10-3 2 3 2"
     ]
   },
+  "act-archive": {
+    "category": "act",
+    "semantic": "归档/收纳",
+    "paths": [
+      "M3 3h18a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z",
+      "M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8",
+      "M10 12h4"
+    ]
+  },
+  "act-unarchive": {
+    "category": "act",
+    "semantic": "取消归档/恢复",
+    "paths": [
+      "M3 3h18a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z",
+      "M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8",
+      "M12 16v-5",
+      "m9.5 13.5 2.5-2.5 2.5 2.5"
+    ]
+  },
   "act-pin": {
     "category": "act",
     "semantic": "固定/置顶",
