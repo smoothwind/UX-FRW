@@ -40,6 +40,18 @@ function runAction(t: ToastRecord): void {
             {{ t.action.label }}
           </button>
         </div>
+        <!-- 持久通知（duration <= 0）不自动消失：必须给手动退出口，否则
+             用户「不想要这个动作」时通知卡死屏幕直到重启。自动消失的不用
+             （关闭钮与自动消失语义冗余） -->
+        <button
+          v-if="t.duration != null && t.duration <= 0"
+          class="ux-toast__close"
+          type="button"
+          aria-label="关闭通知"
+          @click.stop="dismissToast(t.id)"
+        >
+          <UxIcon name="act-close" />
+        </button>
       </div>
     </div>
   </Teleport>

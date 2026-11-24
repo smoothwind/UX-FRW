@@ -741,6 +741,27 @@
   cursor: pointer;
 }
 
+/* 持久通知的关闭钮：subtle 色弱存在感，hover 提亮（与主体动作区分） */
+.ux-toast__close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: calc(var(--ux-sp-1) * -1) calc(var(--ux-sp-1) * -1) 0 0;
+  padding: var(--ux-sp-1);
+  font-size: var(--ux-fs-md);
+  color: var(--ux-fg-subtle);
+  background: none;
+  border: none;
+  border-radius: var(--ux-radius);
+  cursor: pointer;
+}
+
+.ux-toast__close:hover {
+  color: var(--ux-fg);
+  background: var(--ux-bg-hover);
+}
+
 .ux-toast--info {
   border-left-color: var(--ux-info);
 }

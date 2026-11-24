@@ -131,4 +131,28 @@ describe('UxToastHost', () => {
     expect(document.querySelector('.ux-toast__action')).toBeNull()
     wrapper.unmount()
   })
+
+  it('持久通知（duration <= 0）渲染关闭钮：点击关闭、不冒泡主体 onClick', async () => {
+    const wrapper = await mountHost()
+    const onClick = vi.fn()
+    notify({ message: '常驻且可关', duration: 0, onClick })
+    await nextTick()
+    const close = document.querySelector('.ux-toast__close') as HTMLButtonElement
+    expect(close).not.toBeNull()
+    expect(close.getAttribute('aria-label')).toBe('关闭通知')
+    close.click()
+    await nextTick()
+    expect(toastState.toasts.value).toHaveLength(0)
+    expect(onClick).not.toHaveBeenCalled() // .stop 阻断冒泡
+    wrapper.unmount()
+  })
+
+  it('自动消失通知（含缺省 duration）不渲染关闭钮', async () => {
+    const wrapper = await mountHost()
+    notify({ message: '默认' })
+    notify({ message: '显式时长', duration: 8000 })
+    await nextTick()
+    expect(document.querySelector('.ux-toast__close')).toBeNull()
+    wrapper.unmount()
+  })
 })

@@ -48,14 +48,17 @@ export function useNotify(): NotifyApi {
   function notify(options: NotifyOptions | string): number {
     const opts = typeof options === 'string' ? { message: options } : options
     const id = ++seq
+    const duration = opts.duration ?? 4000
     toasts.value.push({
       id,
       type: opts.type ?? 'info',
       message: opts.message,
       action: opts.action,
       onClick: opts.onClick,
+      // 持久性要随记录走：渲染端（ToastHost 关闭钮）需要区分「常驻」与
+      // 「自动消失」——此前 duration 只在本函数作用域用完即弃
+      duration,
     })
-    const duration = opts.duration ?? 4000
     if (duration > 0) window.setTimeout(() => dismiss(id), duration)
     return id
   }
