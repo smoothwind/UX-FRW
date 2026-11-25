@@ -1,8 +1,33 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { getToken, tokenNames } from '@ux/tokens'
 
 const accentLive = ref('')
+
+/* ===== 视口通道演示（data-ux-viewport 实时回显 + 三断点可视化，M9a 验收项） =====
+   playground 自己也不裸 matchMedia：与组件同一纪律，监听根属性变化回显。 */
+const viewportState = ref('（未启用）')
+let vpObserver: MutationObserver | null = null
+
+function readViewportAttr(): void {
+  viewportState.value = document.documentElement.getAttribute('data-ux-viewport') ?? '（未启用）'
+}
+
+onMounted(() => {
+  readViewportAttr()
+  vpObserver = new MutationObserver(readViewportAttr)
+  vpObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-ux-viewport'],
+  })
+})
+
+onBeforeUnmount(() => {
+  vpObserver?.disconnect()
+  vpObserver = null
+})
+
+const viewportTier = computed(() => viewportState.value.split(' ')[0] ?? '')
 
 const surfaces = [
   { name: '--ux-bg', desc: '应用主表面' },
@@ -99,6 +124,35 @@ onMounted(() => {
           </div>
         </div>
       </div>
+    </section>
+
+    <section class="pg-card" data-ux="pg-viewport-demo">
+      <h2>视口与移动基线</h2>
+      <p class="pg-note">
+        视口状态通道 <code>data-ux-viewport</code>（@ux/tokens <code>applyViewport</code> 维护）：
+        断点档 + 指针 + 方向，空格分隔。组件禁止裸 matchMedia（红线：视口判断唯一出口），
+        本演示与组件同一纪律——监听根属性回显。
+      </p>
+      <p class="vp-live">
+        通道值：<code data-ux="pg-viewport-value">{{ viewportState }}</code>
+        <span class="vp-coarse" data-ux="pg-viewport-coarse">粗指针触控档生效中</span>
+      </p>
+      <div class="vp-ruler" data-ux="pg-viewport-ruler" aria-hidden="true">
+        <div class="vp-seg vp-seg--sm" :class="{ 'is-hit': viewportTier === 'sm' }">
+          <code>sm &lt; 960</code><span>手机 / 收缩形态</span>
+        </div>
+        <div class="vp-seg vp-seg--md" :class="{ 'is-hit': viewportTier === 'md' }">
+          <code>md 960–1279</code><span>平板 / 双栏可用</span>
+        </div>
+        <div class="vp-seg vp-seg--lg" :class="{ 'is-hit': viewportTier === 'lg' }">
+          <code>lg ≥ 1280</code><span>桌面 / 完整形态</span>
+        </div>
+      </div>
+      <p class="pg-note">
+        命中档位高亮（与 CSS 媒体查询同源判定）。coarse 指针下控件高度 / 行高 / 输入字号
+        自动切触控档（<code>--ux-control-h-*</code> / <code>--ux-row-h</code> /
+        <code>--ux-input-fs</code> 16px），组件零改动；安全区经 <code>--ux-safe-*</code> 让位。
+      </p>
     </section>
 
     <section class="pg-card">
@@ -381,5 +435,82 @@ onMounted(() => {
 
 .z-table code {
   color: var(--ux-fg-muted);
+}
+
+/* ===== 视口演示 ===== */
+.vp-live {
+  margin: var(--ux-sp-3) 0;
+  font-size: var(--ux-fs-lg);
+}
+
+.vp-live code {
+  color: var(--ux-accent);
+  font-weight: var(--ux-fw-semibold);
+}
+
+/* coarse 徽标：pointer: coarse 下才出现（无宽度字面量，不涉断点登记） */
+.vp-coarse {
+  display: none;
+  margin-left: var(--ux-sp-3);
+  padding: 0 var(--ux-sp-2);
+  border-radius: var(--ux-radius-full);
+  background: var(--ux-accent-subtle);
+  color: var(--ux-accent-fg);
+  font-size: var(--ux-fs-sm);
+}
+
+@media (pointer: coarse) {
+  .vp-coarse {
+    display: inline-flex;
+  }
+}
+
+.vp-ruler {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--ux-sp-2);
+}
+
+.vp-seg {
+  display: grid;
+  gap: var(--ux-sp-1);
+  place-items: center;
+  min-height: var(--ux-control-h-lg);
+  padding: var(--ux-sp-2);
+  border: 1px solid var(--ux-border);
+  border-radius: var(--ux-radius-sm);
+  background: var(--ux-bg-sunken);
+  /* muted 而非 subtle：subtle 在 sunken 底上 4.42:1 差于 AA（axe 实测），muted 达标 */
+  color: var(--ux-fg-muted);
+  font-size: var(--ux-fs-sm);
+  transition:
+    background-color var(--ux-dur-fast) var(--ux-ease-out),
+    border-color var(--ux-dur-fast) var(--ux-ease-out);
+}
+
+/* 激活态只用 accent-subtle + accent-fg 配对（R4 同款）；不用 opacity 压灰——对比度会掉出 AA */
+.vp-seg.is-hit {
+  border-color: var(--ux-accent);
+  background: var(--ux-accent-subtle);
+  color: var(--ux-accent-fg);
+}
+
+/* 三断点高亮与通道判定同源：959.98/960/1279.98/1280 均为登记值（600/960/1280）的媒体查询写法 */
+@media (max-width: 959.98px) {
+  .vp-seg--sm {
+    border-color: var(--ux-border-strong);
+  }
+}
+
+@media (min-width: 960px) and (max-width: 1279.98px) {
+  .vp-seg--md {
+    border-color: var(--ux-border-strong);
+  }
+}
+
+@media (min-width: 1280px) {
+  .vp-seg--lg {
+    border-color: var(--ux-border-strong);
+  }
 }
 </style>

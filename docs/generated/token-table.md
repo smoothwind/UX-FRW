@@ -4,7 +4,7 @@
 > 自动生成于构建时，事实源是 `packages/tokens/src/*.css`；本文只是按「层 × 选择器」展开的只读视图。
 > 消费规则（哪层给谁用、暗色只翻语义层）见 [PRINCIPLES.md](../PRINCIPLES.md) 与设计方案 §4。
 
-合计 252 个令牌。
+合计 264 个令牌。
 
 ## Tier 1 · 基础层（primitives，业务代码禁用）
 
@@ -286,6 +286,13 @@
 | `--ux-fw-normal` | `400` |  |
 | `--ux-fw-medium` | `500` |  |
 | `--ux-fw-semibold` | `600` |  |
+| `--ux-bp-sm` | `600px` |  |
+| `--ux-bp-md` | `960px` |  |
+| `--ux-bp-lg` | `1280px` |  |
+| `--ux-safe-top` | `env(safe-area-inset-top, 0px)` |  |
+| `--ux-safe-right` | `env(safe-area-inset-right, 0px)` |  |
+| `--ux-safe-bottom` | `env(safe-area-inset-bottom, 0px)` |  |
+| `--ux-safe-left` | `env(safe-area-inset-left, 0px)` |  |
 | `--ux-sp-1` | `4px` |  |
 | `--ux-sp-2` | `8px` |  |
 | `--ux-sp-3` | `12px` |  |
@@ -311,6 +318,8 @@
 | `--ux-control-h-sm` | `24px` |  |
 | `--ux-control-h-md` | `28px` |  |
 | `--ux-control-h-lg` | `32px` |  |
+| `--ux-row-h` | `26px` |  |
+| `--ux-input-fs` | `var(--ux-fs-lg)` |  |
 | `--ux-z-local` | `20` | 组件内部局部堆叠 |
 | `--ux-z-dock` | `900` | 停靠面板/悬浮窗口 |
 | `--ux-z-pop` | `960` | 普通浮层（popover/tooltip） |
@@ -343,4 +352,7 @@
 | `--ux-control-h-sm` | `36px` |  |
 | `--ux-control-h-md` | `44px` |  |
 | `--ux-control-h-lg` | `48px` |  |
+| `--ux-row-h` | `40px` |  |
+| `--ux-fs-md` | `14px` |  |
+| `--ux-input-fs` | `16px` |  |
 

@@ -38,4 +38,24 @@ test.describe('移动入口（窄屏收缩 + 视口通道）', () => {
     await expect(page.locator('[data-ux="pg-body"]')).toBeVisible()
     expect(errors).toEqual([])
   })
+
+  test('M9a 演示卡：视口通道实时回显 + coarse 徽标随指针可见性 + 三断点可视化', async ({ page }) => {
+    await page.goto('/')
+    // 默认分区即 tokens
+    const demo = page.locator('[data-ux="pg-viewport-demo"]')
+    await expect(demo).toBeVisible()
+
+    // 通道值实时回显（applyViewport 维护，窄屏 + 竖屏）
+    await expect(page.locator('[data-ux="pg-viewport-value"]')).toHaveText(
+      /^sm (coarse|fine) portrait$/,
+    )
+
+    // coarse 徽标可见性跟随真实指针能力（不硬赌设备模拟档位）
+    const coarse = await page.evaluate(() => window.matchMedia('(pointer: coarse)').matches)
+    await expect(page.locator('[data-ux="pg-viewport-coarse"]')).toBeVisible({ visible: coarse })
+
+    // 断点可视化三段齐全
+    const segments = page.locator('[data-ux="pg-viewport-ruler"] .vp-seg')
+    await expect(segments).toHaveCount(3)
+  })
 })

@@ -2,7 +2,8 @@
 
 > 规划日期：2026-11-04
 > 状态：**规划（待评审）**；基础层已先行落地（见下）
-> 已落地切片（2026-11-04）：**§3.1 断点登记制**（layout.css `--ux-bp-*` + `@ux/tokens` `BP` 双源）、**§3.3 安全区令牌**（`--ux-safe-*`，playground header/body 已消费）、**§3.4 视口状态通道**（`data-ux-viewport`，`applyViewport` / `resolveViewport`）、**playground 移动入口**（窄屏收缩：页签横向滚动 + 副标题隐藏 + safe-area + 触控点击区；e2e `mobile.spec.ts` 390×844 触屏断言）。其余章节待评审后排期。
+> 已落地切片（2026-11-04）：**§3.1 断点登记制**（layout.css `--ux-bp-*` + `@ux/tokens` `BP` 双源）、**§3.3 安全区令牌**（`--ux-safe-*`，playground header/body 已消费）、**§3.4 视口状态通道**（`data-ux-viewport`，`applyViewport` / `resolveViewport`）、**playground 移动入口**（窄屏收缩：页签横向滚动 + 副标题隐藏 + safe-area + 触控点击区；e2e `mobile.spec.ts` 390×844 触屏断言）。
+> 已落地切片（2026-11-25，M9a 收尾）：**§3.2 触控档补全**（`--ux-row-h` 26/40px、`--ux-input-fs` 16px、coarse `--ux-fs-md: 14px`、`touch-action: manipulation` 全局基线；`useVirtualRows` 行高 getter + `UxDataTable` 令牌行高/`data-ux-viewport` 触发 remeasure）、**§3.5 字号与输入缩放**、**§8 `safeAreaInsets` 契约**（`PlatformAdapter.safeAreaInsets?()` + tokens `applySafeAreaInsets` 运行时覆写）、**§10 R3+（断点登记）/ R6（触控目标）检查器**（SettingsShell 720px 孤例已迁移）、**M9a 验收「移动演示页」**（TokensPanel 视口演示卡）。其余章节（§4 输入范式映射 / §5 壳层收缩 / §6 组件矩阵 / §8 其余三契约）待评审后排期。
 > 定位：UxKit 是「统一桌面交互框架」，本规范定义同一套令牌 / 组件 / 布局壳**响应式收缩到手机与平板 WebView** 的适配轨道。核心主张：**移动不是第二套组件库，而是语义令牌在窄视口 + 粗指针下的取值切换与交互范式映射**。
 > 编号协调：`UxKit-改进提案.md` P2-1 已为玻璃检查保留 CI R5，本规范占用 R6（触控目标），互不冲突。
 > 宿主假设：优先场景是 WebView 内嵌（Tauri iOS/Android、Electron 不适用移动、纯移动浏览器），桌面工作台形态完全不受影响。
@@ -58,7 +59,7 @@ CSS 媒体查询**不能消费 CSS 变量**（`@media (max-width: var(--x))` 无
 - 现有 720px 孤例**登记为历史特例**，限期迁移到 `--ux-bp-sm`（600px）；
 - CI 约束（R3 扩展）：媒体查询中的宽度字面量只允许出现在 `layout.css` 登记处与白名单（0、-1px 这类非断点值不受限）。
 
-### 3.2 触控目标令牌（coarse 指针一档切换）（已落地：`packages/tokens/src/layout.css`）
+### 3.2 触控目标令牌（coarse 指针一档切换）（已落地：layout.css 触控档 + `useVirtualRows` getter + DataTable remeasure）
 
 组件继续消费 `--ux-control-h-*`，**取值由根属性切换**——组件零改动：
 
@@ -75,8 +76,9 @@ CSS 媒体查询**不能消费 CSS 变量**（`@media (max-width: var(--x))` 无
 ```
 
 实施注意：`UxDataTable` 虚拟滚动（`useVirtualRows`）依赖**固定行高**，行高令牌切换时组件需重算窗口（监听令牌值变化或由 viewport 通道触发 remeasure——已有 ResizeObserver，需补行高变化路径）。
+（已落地：`useVirtualRows.rowHeight` 支持 getter；`UxDataTable` rowHeight 缺省消费 `--ux-row-h`，监听 `data-ux-viewport` 根属性变化重读令牌——D-5 红线内不裸 matchMedia。）
 
-### 3.3 安全区令牌（已落地：layout.css `--ux-safe-*`，playground 已消费）
+### 3.3 安全区令牌（已落地：layout.css `--ux-safe-*` + `applySafeAreaInsets` 覆写兜底，playground 已消费）
 
 ```css
 :root {
@@ -99,7 +101,7 @@ data-ux-viewport="sm coarse portrait"
 
 由 `applyViewport()`（tokens 包，与 `applyTheme` 并列）维护：`matchMedia` 监听断点 + `(pointer: coarse)` + `(orientation)`，rAF 节流写根属性。CSS 用属性选择器收缩布局（§5），e2e 用它断言。**任何组件不得自行 matchMedia**（红线：视口判断唯一出口）。
 
-### 3.5 字号与输入缩放
+### 3.5 字号与输入缩放（已落地：layout.css coarse 档 `--ux-fs-md: 14px` + `--ux-input-fs: 16px` + `touch-action: manipulation`）
 
 - `pointer: coarse` 下 `--ux-fs-md: 14px`、正文区 ≥15px；
 - **输入类控件字号 16px 硬基线**（触控下）：`--ux-input-fs: 16px`——低于 16px 的输入框聚焦时 iOS WebView 自动放大页面，视觉补丁不可靠，直接提字号；
@@ -204,6 +206,8 @@ export interface PlatformAdapter {
 - `onBack` 语义 = 「关闭最上层浮层，无浮层则上报宿主决定是否退出」——与 Esc 栈共用同一控制器；
 - Tauri 移动端：haptics 走官方插件、返回键走 `onBackPressed` 拦截；Electron 不实现（桌面）。
 
+> 落地进度：**`safeAreaInsets` 已落地**（2026-11-25）——`PlatformAdapter.safeAreaInsets?()` 契约 + `@ux/tokens` `applySafeAreaInsets` / `resetSafeAreaInsets` 运行时覆写 `--ux-safe-*`；playground main.ts 已接线（宿主上报 → 令牌覆写，web 无实现即 no-op）。`haptics` / `onBack` / `onKeyboardInset` 随 §4 长按菜单与浮层返回一起排期。
+
 ---
 
 ## 九、无障碍与动效基线
@@ -222,8 +226,8 @@ export interface PlatformAdapter {
 
 **CI 红线扩展**（check-tokens）：
 
-- **R6（触控目标）**：`pointer: coarse` 作用域内可交互元素高度声明必须消费 `--ux-control-h-*` / `--ux-row-h` 触控档，禁止 24/28/32px 字面量回潮；
-- **R3 扩展（断点登记）**：媒体查询宽度字面量只允许出现在 `layout.css` 登记处（§3.1）；
+- **R6（触控目标）**：`pointer: coarse` 作用域内可交互元素高度声明必须消费 `--ux-control-h-*` / `--ux-row-h` 触控档，禁止 24/28/32px 字面量回潮；（**已落地 2026-11-25**）
+- **R3 扩展（断点登记）**：媒体查询宽度字面量只允许出现在 `layout.css` 登记处（§3.1）；（**已落地为 R3+ 2026-11-25**：登记值 600/960/1280 及其 max-width 等价写法 599.98/959.98/1279.98 白名单 + `tokens-exempt` 行级豁免；SettingsShell 720px 孤例已迁移 599.98px）
 - 改进提案 P2-1 保留 R5（玻璃），与本规范编号已协调，落地顺序不分先后。
 
 **E2E 设备矩阵**（零额外安装成本——chromium 自带移动模拟）：
@@ -240,7 +244,7 @@ export interface PlatformAdapter {
 
 | 步骤 | 内容 | 验收 |
 |---|---|---|
-| **M9a 令牌与基线** | 断点/触控/安全区令牌 + `applyViewport()` + `data-ux-viewport` 通道 + R3 扩展 + R6 + 本规范冻结 | playground 加移动演示页：三断点/coarse 切换可视化；check 门禁扩展生效 |
+| **M9a 令牌与基线** | 断点/触控/安全区令牌 + `applyViewport()` + `data-ux-viewport` 通道 + R3 扩展 + R6 + 本规范冻结 | playground 加移动演示页：三断点/coarse 切换可视化；check 门禁扩展生效（**达成 2026-11-25**：演示卡见 playground TokensPanel；R3+/R6 已入 check-tokens；规范冻结除外——本稿仍为规划稿，其余章节待评审） |
 | **M9b 组件适配第一批** | 命中区补贴机制、按钮/输入/Dialog sheet/长按菜单/Tooltip 降级、Toast top、`mobile.spec.ts` | iPhone 13 + Pixel 7 模拟器全绿；桌面 30 e2e 不回归 |
 | **M9c 壳层收缩** | ActivityBar→底部条、DockWorkbench compact、FloatPanel sheet、Tabs 触控编排、PlatformAdapter 移动四契约 + TigerNote 试点 | TigerNote 手机端接入走查（便签列表 + 抽屉 + 编辑器）；windowPlacement 桌面路径零影响 |
 
