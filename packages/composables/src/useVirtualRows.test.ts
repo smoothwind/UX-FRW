@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import { useVirtualRows } from './useVirtualRows'
 
@@ -76,5 +76,46 @@ describe('useVirtualRows', () => {
     await wrapper.find('div').trigger('scroll')
     expect(api.startIndex.value).toBe(Math.floor((30 * 24) / 24) - 6)
     expect(api.endIndex.value).toBe(30)
+  })
+
+  it('行高 getter：值变化后窗口/占位按新行高重算（§3.2 coarse remeasure 路径）', async () => {
+    const heightRef = ref(24)
+    const TestComp = defineComponent({
+      setup() {
+        const api = useVirtualRows({ count: () => 1000, rowHeight: () => heightRef.value, overscan: 6 })
+        return { api, heightRef }
+      },
+      template: `<div :ref="setEl" @scroll="api.onScroll"></div>`,
+      methods: {
+        setEl(this: { api: ReturnType<typeof useVirtualRows> }, el: unknown) {
+          this.api.containerRef.value = el as HTMLElement | null
+        },
+      },
+    })
+    vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
+      cb(0)
+      return 1
+    })
+    vi.stubGlobal('cancelAnimationFrame', () => {})
+    vi.stubGlobal('ResizeObserver', ResizeObserverStub)
+
+    const wrapper = mount(TestComp)
+    const el = wrapper.element
+    fixedHeight(el, 480)
+    ResizeObserverStub.instances[ResizeObserverStub.instances.length - 1].trigger()
+
+    const api = wrapper.vm.api as ReturnType<typeof useVirtualRows>
+    expect(api.totalHeight.value).toBe(1000 * 24)
+
+    el.scrollTop = 2400
+    await wrapper.find('div').trigger('scroll')
+    expect(api.startIndex.value).toBe(Math.floor(2400 / 24) - 6)
+
+    // 令牌切档 24 → 40：getter 内的响应式依赖变化，窗口纯乘法重算
+    heightRef.value = 40
+    await Promise.resolve()
+    expect(api.startIndex.value).toBe(Math.floor(2400 / 40) - 6)
+    expect(api.padTop.value).toBe(api.startIndex.value * 40)
+    expect(api.totalHeight.value).toBe(1000 * 40)
   })
 })

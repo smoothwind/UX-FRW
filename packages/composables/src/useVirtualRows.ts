@@ -3,8 +3,8 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 export interface VirtualRowsOptions {
   /** 总行数（getter：内部为响应式计算，依赖会自动追踪） */
   count: () => number
-  /** 固定行高（px） */
-  rowHeight: number
+  /** 固定行高（px）；传 getter 可响应令牌切档（如 --ux-row-h 的 coarse 触控档，§3.2 remeasure 路径） */
+  rowHeight: number | (() => number)
   /** 视口上下额外渲染行数 */
   overscan?: number
 }
@@ -19,6 +19,9 @@ export function useVirtualRows(options: VirtualRowsOptions) {
   const viewport = ref(0)
   let observer: ResizeObserver | null = null
   let raf = 0
+
+  const rowHeight = (): number =>
+    typeof options.rowHeight === 'function' ? options.rowHeight() : options.rowHeight
 
   function measure(): void {
     viewport.value = containerRef.value?.clientHeight ?? 0
@@ -44,19 +47,19 @@ export function useVirtualRows(options: VirtualRowsOptions) {
 
   const startIndex = computed(() => {
     const over = options.overscan ?? 6
-    return Math.max(0, Math.floor(scrollTop.value / options.rowHeight) - over)
+    return Math.max(0, Math.floor(scrollTop.value / rowHeight()) - over)
   })
 
   const endIndex = computed(() => {
     const over = options.overscan ?? 6
-    const visible = Math.ceil(viewport.value / options.rowHeight) + 1
+    const visible = Math.ceil(viewport.value / rowHeight()) + 1
     return Math.min(options.count(), startIndex.value + visible + over * 2)
   })
 
   /** 顶部占位高度（把窗口推到滚动位置对应处） */
-  const padTop = computed(() => startIndex.value * options.rowHeight)
+  const padTop = computed(() => startIndex.value * rowHeight())
   /** 总内容高度（撑出真实滚动条） */
-  const totalHeight = computed(() => options.count() * options.rowHeight)
+  const totalHeight = computed(() => options.count() * rowHeight())
 
   return { containerRef, startIndex, endIndex, padTop, totalHeight, onScroll }
 }

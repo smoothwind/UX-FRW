@@ -4,6 +4,7 @@ import {
   getPlatformAdapter,
   setPlatformAdapter,
   type PlatformAdapter,
+  type SafeAreaInsets,
   type ToastIdentityOptions,
   type WindowMaterialOptions,
   type WindowPlacement,
@@ -82,5 +83,20 @@ describe('PlatformAdapter 扩展位（窗口材质 / 通知身份）', () => {
     await getPlatformAdapter()!.applyWindowMaterial!({ effect: 'none' })
     expect(applyWindowMaterial).toHaveBeenCalledWith({ effect: 'none' })
     setPlatformAdapter(null)
+  })
+})
+
+describe('PlatformAdapter.safeAreaInsets（移动端 §3.3/§8 env() 兜底）', () => {
+  it('宿主上报四边数值，注入方读取后经 applySafeAreaInsets 覆写令牌', async () => {
+    const safeAreaInsets = vi.fn<() => Promise<SafeAreaInsets>>()
+    safeAreaInsets.mockResolvedValue({ top: 47, right: 0, bottom: 34, left: 0 })
+    setPlatformAdapter({ name: 'tauri-android', safeAreaInsets })
+
+    const insets = await getPlatformAdapter()!.safeAreaInsets!()
+    expect(insets).toEqual({ top: 47, right: 0, bottom: 34, left: 0 })
+    expect(safeAreaInsets).toHaveBeenCalledTimes(1)
+
+    setPlatformAdapter(null)
+    expect(getPlatformAdapter()?.safeAreaInsets).toBeUndefined()
   })
 })

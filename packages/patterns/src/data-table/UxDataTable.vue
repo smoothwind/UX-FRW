@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { UxIcon, openContextMenu } from '@ux/components'
 import { useVirtualRows } from '@ux/composables'
 import { tryUseI18n } from '@ux/services'
@@ -10,12 +10,13 @@ const props = withDefaults(
     columns: DataTableColumn[]
     /** 行矩阵（引用切片，不投影拷贝） */
     rows: unknown[][]
+    /** 行高（px）；缺省消费 --ux-row-h（coarse 触控档整档提升，§3.2） */
     rowHeight?: number
     sortable?: boolean
     /** 无障碍名称（红线 10） */
     label?: string
   }>(),
-  { rowHeight: 28, sortable: true },
+  { sortable: true },
 )
 
 const emit = defineEmits<{
@@ -59,9 +60,53 @@ const sorted = computed(() => {
   })
 })
 
+/* ---------- 行高令牌模式（移动端规范 §3.2 实施注意：行高切档 remeasure 路径） ---------- */
+
+/** --ux-row-h 字面量（patterns 不依赖 @ux/tokens，字面量以常量收口） */
+const ROW_H_TOKEN = '--ux-row-h'
+/** 样式表未加载（隔离单测环境）时的兜底行高 = layout.css 桌面档 */
+const FALLBACK_ROW_H = 26
+
+/** 生效行高：显式 prop 优先（确定性消费方）；否则消费 --ux-row-h，随触控档切档 */
+const resolvedRowHeight = ref(props.rowHeight ?? FALLBACK_ROW_H)
+
+let viewportAttrObserver: MutationObserver | null = null
+
+function readTokenRowHeight(): void {
+  if (props.rowHeight !== undefined) return
+  const raw = getComputedStyle(document.documentElement).getPropertyValue(ROW_H_TOKEN).trim()
+  const parsed = Number.parseFloat(raw)
+  if (Number.isFinite(parsed) && parsed > 0) resolvedRowHeight.value = parsed
+}
+
+watch(
+  () => props.rowHeight,
+  (value) => {
+    if (value !== undefined) resolvedRowHeight.value = value
+    else readTokenRowHeight()
+  },
+)
+
+onMounted(() => {
+  readTokenRowHeight()
+  // 视口通道触发 remeasure（D-5 红线：组件不裸 matchMedia，监听根属性变化）
+  if (props.rowHeight === undefined && typeof MutationObserver !== 'undefined') {
+    viewportAttrObserver = new MutationObserver(readTokenRowHeight)
+    viewportAttrObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-ux-viewport'],
+    })
+  }
+})
+
+onBeforeUnmount(() => {
+  viewportAttrObserver?.disconnect()
+  viewportAttrObserver = null
+})
+
 const virtual = useVirtualRows({
   count: () => sorted.value.length,
-  rowHeight: props.rowHeight,
+  rowHeight: () => resolvedRowHeight.value,
 })
 
 const visibleRows = computed(() => sorted.value.slice(virtual.startIndex.value, virtual.endIndex.value))
@@ -123,7 +168,7 @@ function onHeadContext(e: MouseEvent): void {
           :key="row.index"
           class="ux-dt__row"
           role="row"
-          :style="{ top: `${(virtual.startIndex.value + vi) * rowHeight}px`, height: `${rowHeight}px` }"
+          :style="{ top: `${(virtual.startIndex.value + vi) * resolvedRowHeight}px`, height: `${resolvedRowHeight}px` }"
         >
           <div
             v-for="(value, ci) in row.cells"

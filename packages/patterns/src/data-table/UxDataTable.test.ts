@@ -180,3 +180,81 @@ describe('UxDataTable', () => {
     ).toContain('width: 160px')
   })
 })
+
+describe('UxDataTable 行高令牌模式（§3.2，rowHeight 缺省消费 --ux-row-h）', () => {
+  /** 受控令牌值：getComputedStyle stub 读取此变量，测试中改值模拟触控档切换 */
+  let tokenRowH: string
+  let tokenSpy: ReturnType<typeof vi.spyOn>
+
+  beforeEach(() => {
+    ResizeObserverStub.instances = []
+    tokenRowH = '40px'
+    tokenSpy = vi.spyOn(window, 'getComputedStyle').mockReturnValue({
+      getPropertyValue: (name: string) => (name === '--ux-row-h' ? tokenRowH : ''),
+    } as CSSStyleDeclaration)
+    document.documentElement.removeAttribute('data-ux-viewport')
+  })
+
+  afterEach(() => {
+    tokenSpy.mockRestore()
+    document.documentElement.removeAttribute('data-ux-viewport')
+  })
+
+  async function mountTokenTable(rowsCount = 500) {
+    vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
+      cb(0)
+      return 1
+    })
+    vi.stubGlobal('cancelAnimationFrame', () => {})
+    vi.stubGlobal('ResizeObserver', ResizeObserverStub)
+    const big = Array.from({ length: rowsCount }, (_, i) => [i + 1, i])
+    const wrapper = mount(UxDataTable, { props: { columns, rows: big } })
+    const table = wrapper.find('[data-ux="data-table"]')
+    Object.defineProperty(table.element, 'clientHeight', { value: 280, configurable: true })
+    ResizeObserverStub.instances[ResizeObserverStub.instances.length - 1].trigger()
+    await nextTick()
+    return wrapper
+  }
+
+  it('缺省消费 --ux-row-h（coarse 档 40px）：窗口/占位按 40 重算', async () => {
+    const wrapper = await mountTokenTable()
+    // clientHeight 280 / 40 = 7 行可见，+1 + overscan 12 = 20 行窗口
+    expect(bodyRows(wrapper)).toHaveLength(20)
+    expect(wrapper.find('.ux-dt__spacer').attributes('style')).toContain('height: 20000px')
+    expect(bodyRows(wrapper)[0].attributes('style')).toContain('height: 40px')
+    wrapper.unmount()
+  })
+
+  it('样式表缺失（隔离单测环境）回退桌面档 26px', async () => {
+    tokenRowH = ''
+    const wrapper = await mountTokenTable()
+    expect(bodyRows(wrapper)[0].attributes('style')).toContain('height: 26px')
+    expect(wrapper.find('.ux-dt__spacer').attributes('style')).toContain('height: 13000px')
+    wrapper.unmount()
+  })
+
+  it('data-ux-viewport 根属性变化 → 重读令牌 remeasure（不裸 matchMedia）', async () => {
+    const wrapper = await mountTokenTable()
+    expect(bodyRows(wrapper)[0].attributes('style')).toContain('height: 40px')
+
+    tokenRowH = '36px'
+    document.documentElement.setAttribute('data-ux-viewport', 'sm coarse portrait')
+    // MutationObserver 回调走微任务，宏任务兜底等一拍
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    await nextTick()
+    expect(bodyRows(wrapper)[0].attributes('style')).toContain('height: 36px')
+    wrapper.unmount()
+  })
+
+  it('显式 rowHeight prop 优先，令牌变化不干扰（确定性消费方）', async () => {
+    const wrapper = await mount(UxDataTable, {
+      props: { columns, rows: [[1, 10]], rowHeight: 28 },
+    })
+    expect(bodyRows(wrapper)[0].attributes('style')).toContain('height: 28px')
+
+    document.documentElement.setAttribute('data-ux-viewport', 'sm coarse portrait')
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(bodyRows(wrapper)[0].attributes('style')).toContain('height: 28px')
+    wrapper.unmount()
+  })
+})

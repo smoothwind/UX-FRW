@@ -73,6 +73,13 @@
   --ux-control-h-md: 28px;
   --ux-control-h-lg: 32px;
 
+  /* 列表/表格行高（§3.2）：UxDataTable 等固定行高虚拟滚动的 JS 事实源；
+     coarse 切档后组件由 data-ux-viewport 通道触发 remeasure（useVirtualRows getter） */
+  --ux-row-h: 26px;
+
+  /* 输入字号（§3.5）：触控下 16px 硬基线——低于 16px 聚焦时 iOS WebView 自动放大页面 */
+  --ux-input-fs: var(--ux-fs-lg);
+
   /* z-index 语义阶梯（MdReader 阶梯原样采纳） */
   --ux-z-local: 20;        /* 组件内部局部堆叠 */
   --ux-z-dock: 900;        /* 停靠面板/悬浮窗口 */
@@ -108,11 +115,26 @@
     "Cascadia Code", "JetBrains Mono", Consolas, "Courier New", monospace;
 }
 
-/* 触控档（docs/UxKit-移动端设计规范.md §3.2）：粗指针设备控件高度整档提升，组件零改动 */
+/* 触控档（docs/UxKit-移动端设计规范.md §3.2/§3.5）：粗指针设备整档提升，组件零改动 */
 @media (pointer: coarse) {
   :root {
     --ux-control-h-sm: 36px;
     --ux-control-h-md: 44px;
     --ux-control-h-lg: 48px;
+    --ux-row-h: 40px;
+    --ux-fs-md: 14px;
+    --ux-input-fs: 16px;
   }
+}
+
+/* 触控基线（§3.5）：可交互元素禁双击缩放，快速连点不被吞（桌面无副作用） */
+button,
+input,
+select,
+textarea,
+[role='button'],
+[role='option'],
+[role='tab'],
+[role='menuitem'] {
+  touch-action: manipulation;
 }

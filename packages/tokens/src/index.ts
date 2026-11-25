@@ -12,6 +12,8 @@ export {
 export type { TintContrastCheck, TintContrastReport, TintDefinition } from './tints'
 export { BP, VIEWPORT_ATTR, applyViewport, resolveViewport } from './viewport'
 export type { ViewportState, ViewportTier } from './viewport'
+export { applySafeAreaInsets, getSafeAreaOverrides, resetSafeAreaInsets } from './safe-area'
+export type { SafeAreaInsets } from './safe-area'
 
 /** 文档根元素上的主题标记（Primer 约定） */
 export const THEME_ATTR = 'data-color-mode'
@@ -111,6 +113,12 @@ export function getToken(name: string): string {
 
 /** token 名常量：避免业务代码中出现魔法字符串 */
 export const tokenNames = {
+  layout: {
+    /** 列表/表格固定行高（§3.2，coarse 切档，虚拟滚动 remeasure 事实源） */
+    rowH: '--ux-row-h',
+    /** 输入字号（§3.5，触控 16px 硬基线） */
+    inputFs: '--ux-input-fs',
+  },
   fs: {
     xs: '--ux-fs-xs',
     sm: '--ux-fs-sm',

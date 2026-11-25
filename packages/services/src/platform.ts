@@ -21,6 +21,20 @@ export interface PlatformAdapter {
   applyWindowMaterial?(options: WindowMaterialOptions): Promise<void>
   /** 提供后宿主注册 OS 通知身份（Windows AUMID）；应在宿主启动早期调用一次（§11.6） */
   registerToastIdentity?(options: ToastIdentityOptions): Promise<void>
+  /**
+   * 移动端：可靠安全区四边数值（px）——部分安卓 WebView env(safe-area-inset-*) 不可靠时
+   * 宿主上报兜底；消费方经 @ux/tokens `applySafeAreaInsets` 运行时覆写 --ux-safe-*
+   * （移动端规范 §3.3/§8）。web 无需实现。
+   */
+  safeAreaInsets?(): Promise<SafeAreaInsets>
+}
+
+/** 安全区四边数值（与 @ux/tokens SafeAreaInsets 结构对齐，避免跨包依赖） */
+export interface SafeAreaInsets {
+  top: number
+  right: number
+  bottom: number
+  left: number
 }
 
 let current: PlatformAdapter | null = null

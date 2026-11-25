@@ -34,6 +34,7 @@ export type {
   DisplayMetricsChangedEvent,
   WindowMaterialOptions,
   ToastIdentityOptions,
+  SafeAreaInsets,
 } from './platform'
 
 export { checkViewportHealth, installViewportHealthWatch } from './viewport'
