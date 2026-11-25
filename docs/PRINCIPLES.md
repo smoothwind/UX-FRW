@@ -89,6 +89,8 @@
 | `check:tokens` R3 | 禁字面量 z-index / 圆角 / 字号 / 阴影 | 规则 1 |
 | `check:tokens` R4 | 行级选中禁 `--ux-bg-selected`，只准 `accent-subtle` + `accent-fg` | 规则 18（配合 1） |
 | `check:tokens` R5 | `backdrop-filter` 禁裸值，只准 `--ux-material-*` / `--ux-frost-*`（材质通道 §4.5） | 规则 1 |
+| `check:tokens` R3+ | 媒体查询宽度字面量须为断点登记值（600/960/1280 或 599.98/959.98/1279.98；移动端规范 §3.1） | 规则 1 |
+| `check:tokens` R6 | `pointer: coarse` 作用域 height 禁 24/28/32px 字面量，走 `--ux-control-h-*` / `--ux-row-h` 触控档（移动端规范 §3.2/§10） | 规则 1 |
 | `check:icons` | iconId ↔ 语义一对一 + 易困惑组合黑名单 | 规则 13、14 |
 | `check:shortcuts` | 键位唯一占用（错误）+ 保留键位（警告） | 规则 15 |
 | `check:i18n` | 各语言包叶子 key 完全对齐 | 规则 16 |

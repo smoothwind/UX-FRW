@@ -7,11 +7,16 @@
  *     （用于图表/画布等"数据配色"场景）。
  * R2  margin/padding/gap 禁止 px 字面量，必须使用 --ux-sp-*（0 / var() / calc() 除外）。
  * R3  z-index / border-radius / font-size / box-shadow 禁止字面量，必须使用令牌。
+ * R3+ 断点登记（移动端规范 §3.1）：媒体查询中的宽度字面量只允许是登记值
+ *     （--ux-bp-sm/md/lg = 600/960/1280，或其 max-width 等价写法 599.98/959.98/1279.98）
+ *     与 0px；layout.css 是登记处。其余宽度断点 = 违规，行级 `tokens-exempt` 豁免。
  * R4  行级选中禁止铺实心主色：行/列表项/表格行（`*__row` / `tr` / `role=row|option|treeitem|…`）
  *     只用 `--ux-accent-subtle` 底 + `--ux-accent-fg` 字；`--ux-bg-selected`（实心主色）
  *     保留给控件级选中（按钮/页签/分段控件）。对齐 UxTree / UxSegmented 既有惯例。
  * R5  backdrop-filter 禁止裸值（blur()/saturate() 等），必须消费 --ux-material-* /
  *     --ux-frost-* 材质与特效令牌（改进提案 P2-1 修订版，设计方案 §4.5）。
+ * R6  触控目标（移动端规范 §3.2/§10）：`pointer: coarse` 作用域内 height 禁止
+ *     24/28/32px 桌面档字面量回潮，必须消费 --ux-control-h-* / --ux-row-h 触控档。
  *
  * 实现要点：先剥离 var(...) 引用，再对剩余字面量判定，避免变量引用被误报。
  */
@@ -192,6 +197,81 @@ function checkRowSelection(content, file) {
     }))
 }
 
+/* ---------- R3+ 断点登记 / R6 触控目标（块级媒体查询上下文扫描） ---------- */
+
+/** 断点登记值：layout.css --ux-bp-* 与 @ux/tokens BP 双源同值（改登记必同步此处） */
+const BP_REGISTERED = [600, 960, 1280]
+/** 媒体查询允许的宽度字面量：登记值 + 其 max-width 等价写法（-0.02 防区间重叠）+ 0px */
+const BP_ALLOWED_PX = new Set([
+  '0px',
+  ...BP_REGISTERED.flatMap((v) => [`${v}px`, `${(v - 0.02).toFixed(2)}px`]),
+])
+
+const MEDIA_WIDTH_PX_RE = /\(\s*(?:min|max)-width\s*:\s*([\d.]+px)\s*\)/gi
+const COARSE_MEDIA_RE = /pointer\s*:\s*coarse/i
+const HEIGHT_DECL_RE = /(?:^|[;{\s])height\s*:\s*([^;}]+)/gi
+/** 桌面档控件/行高字面量（触控档切档后禁止回潮） */
+const DESKTOP_CTRL_PX_RE = /\b(?:24|28|32)(?:\.\d+)?px\b/
+
+/**
+ * 单遍扫描样式块，跟踪 @media 栈：
+ * - R3+：任何 @media 条件中的宽度字面量必须 ∈ 断点登记白名单（§3.1）；
+ * - R6：祖先链含 pointer: coarse 的声明块里，height 禁桌面档字面量（§3.2/§10）。
+ */
+function checkResponsive(content, file) {
+  const css = extractStyleText(content, file)
+  const hits = []
+  const stack = [] // { media?: '@media 条件'（@media 块）；sel?: 选择器（样式规则块） }
+  let buf = ''
+  let line = 1
+  let declLine = 1
+  for (let i = 0; i < css.length; i++) {
+    const ch = css[i]
+    if (ch === '\n') line++
+    if (ch === '{') {
+      const head = buf.trim()
+      buf = ''
+      declLine = line
+      if (head.startsWith('@media')) {
+        MEDIA_WIDTH_PX_RE.lastIndex = 0
+        let m
+        while ((m = MEDIA_WIDTH_PX_RE.exec(head))) {
+          if (!BP_ALLOWED_PX.has(m[1].toLowerCase())) {
+            hits.push({ line: declLine, kind: 'R3+', text: head })
+          }
+        }
+        stack.push({ media: head })
+      } else {
+        stack.push({ sel: head })
+      }
+    } else if (ch === '}') {
+      const top = stack[stack.length - 1]
+      if (buf.trim() && top?.sel) {
+        const selChain = stack
+          .filter((e) => e.sel)
+          .map((e) => e.sel)
+          .join(' ')
+        const inCoarse = stack.some((e) => e.media && COARSE_MEDIA_RE.test(e.media))
+        if (inCoarse) {
+          HEIGHT_DECL_RE.lastIndex = 0
+          let m
+          while ((m = HEIGHT_DECL_RE.exec(buf))) {
+            if (DESKTOP_CTRL_PX_RE.test(stripVars(m[1]))) {
+              hits.push({ line: declLine, kind: 'R6', text: `${selChain} { height: … }` })
+            }
+          }
+        }
+      }
+      buf = ''
+      stack.pop()
+      declLine = line
+    } else {
+      buf += ch
+    }
+  }
+  return hits
+}
+
 const files = SCAN_DIRS.flatMap((d) => {
   try {
     return walk(join(ROOT, d))
@@ -239,6 +319,19 @@ for (const file of files) {
         text: `${hit.selector} { ${hit.text} }`,
       })
     }
+    for (const hit of checkResponsive(content, file)) {
+      if (lines[hit.line - 1]?.includes(EXEMPT_MARK)) continue
+      violations.push({
+        file: relative(ROOT, file),
+        line: hit.line,
+        rule: hit.kind,
+        label:
+          hit.kind === 'R3+'
+            ? 'R3+ 媒体查询宽度字面量须为断点登记值（--ux-bp-* 600/960/1280 或 599.98/959.98/1279.98 等价写法）'
+            : 'R6 触控档（pointer: coarse）height 禁 24/28/32px 字面量，改用 --ux-control-h-* / --ux-row-h',
+        text: hit.text,
+      })
+    }
   }
 }
 
@@ -252,6 +345,12 @@ if (violations.length > 0) {
   console.error('规则依据：红线 1（令牌优先）— docs/UxKit-设计方案.md §5 规则 1；速查与 CI 对照见 docs/PRINCIPLES.md。')
   if (violations.some((v) => v.rule === 'R4')) {
     console.error('R4：行级选中（*__row / tr / role=row|option|treeitem|…）请改用 --ux-accent-subtle 底 + --ux-accent-fg 字。')
+  }
+  if (violations.some((v) => v.rule === 'R3+')) {
+    console.error('R3+：断点登记制（移动端规范 §3.1）——新增断点先登记 layout.css --ux-bp-* 与 @ux/tokens BP，媒体查询只写登记值；确需例外加行内 tokens-exempt。')
+  }
+  if (violations.some((v) => v.rule === 'R6')) {
+    console.error('R6：触控目标（移动端规范 §3.2/§10）——coarse 作用域内高度声明消费 --ux-control-h-* / --ux-row-h，禁止桌面档字面量。')
   }
   process.exit(1)
 }
