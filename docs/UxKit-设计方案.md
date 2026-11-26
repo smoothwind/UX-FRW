@@ -368,7 +368,7 @@ interface Platform {
 | `UxDataTable` | **单一实现双模式**：行数 ≤600 全渲染 / >600 自动虚拟滚动（同一套 API，终结 PDB 双表格路径）；列宽拖拽、列显隐、列值筛选、右键菜单、单元格复制 |
 | `UxTabList` ✅ | 页签列表 popover（供页签栏 `#actions` 使用）：过滤输入 + 选项（accent 色点 / icon / title / subtitle / close 按钮）+ 当前项高亮 + ↑↓/Enter/Esc + `useOverflowPosition` 视口翻转（SPEC-UI-27） |
 | `UxSplitter` | 面板间分隔条，双击复位 |
-| `UxIcon` | **自绘图标注册表**（`registry.json`，84 个）：iconId 四族前缀命名——`obj-*` 对象（32）/ `act-*` 动作（47）/ `st-*` 状态（5）/ `file-*` 文件类型细分（category 归 obj）；**语义唯一注册**：iconId ↔ 语义一对一，同名禁二义、同义禁双形（红线 13/14 的执行点），`check-icons` CI 校验唯一性与易困惑黑名单。范围定位：自绘最小集覆盖框架与工具型应用高频语义；应用专属图标由业务侧按同规范自扩（沿用 `obj-/act-/st-` 分类 + `check-icons` 纳管），不承诺 lucide 全集映射 |
+| `UxIcon` | **自绘图标注册表**（`registry.json`）：iconId 四族前缀命名——`obj-*` 对象 / `act-*` 动作 / `st-*` 状态 / `file-*` 文件类型细分（category 归 obj）；**语义唯一注册**：iconId ↔ 语义一对一，同名禁二义、同义禁双形（红线 13/14 的执行点），`check-icons` CI 校验唯一性与易困惑黑名单。范围定位：自绘最小集覆盖框架与工具型应用高频语义；应用专属图标由业务侧按同规范自扩（沿用 `obj-/act-/st-` 分类 + `check-icons` 纳管），不承诺 lucide 全集映射。**实心态变体**（2026-11-26）：`-fill` 后缀 id + `fill: true` entry，evenodd 复合路径挖空字形、`fill=currentColor`/`stroke=none` 渲染；语义登记「xx（选中态实心）」——规则 13「允许随状态切换更换图标」的状态变体口径，同图形禁令（C2）仍要求与描边版造型可区分 |
 | `UxSpinner / UxSkeleton` | loading 两形态 |
 | `UxKbd` | 快捷键展示（命令面板/菜单/tooltip 通用） |
 
