@@ -40,5 +40,5 @@ export { isCheckable, menuItemKind } from './menu/types'
 export type { MenuBarItem, MenuItemKind } from './menu/types'
 
 export { default as UxToastHost } from './toast/ToastHost.vue'
-export { dismissToast, notify, notifyOnce } from './toast/service'
+export { dismissToast, notify, notifyOnce, toastState } from './toast/service'
 export type { ToastOptions, ToastType } from './toast/service'
