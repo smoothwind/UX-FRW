@@ -1,5 +1,65 @@
 # @ux/tokens
 
+## 0.3.0
+
+### Minor Changes
+
+- 0171392: feat(components): 补齐表单控件组五件（设计方案 §6.3 规格落地，改进提案 P1-1 首批）
+  
+  - UxCheckbox：原生 checkbox 底座，半选（indeterminate 横杠）+ hint/error + aria-invalid
+  - UxSwitch：role=switch 轨道滑块，Space 切换零 JS 状态机
+  - UxTextarea：UxInput 同构包装（label 关联 / placeholder / rows / maxlength）
+  - UxSelect：原生 select 底座 + 注册表 chevron 装饰（键盘与触屏行为零实现）
+  - UxSlider：原生 range + 填充轨道（--ux-slider-fill）+ showValue 当前值 output
+  - tokens 新增触控档：pointer:coarse 下 --ux-control-h-* 整档提升为 36/44/48（桌面零影响；移动端设计规范 §3.2 首项落地）
+- d12eb9d: feat(tokens): 新增常驻材质通道 data-ux-material（改进提案 P2-1 修订版）
+  
+  - data-ux-material="glass"：与 data-ux-fx 平行的常驻表面材质语义（fx=可开关特效，material=基础表面形态），共用 backdrop-filter 实现路径但参数独立（--ux-material-* 与 --ux-frost-* 互不覆盖），不新建平行 --ux-glass-* 层
+  - 颜色 token 三主题齐备（tint/border/highlight，全部由既有令牌 color-mix 派生，零裸值）+ 主题无关参数（blur/saturate，宿主可覆盖）
+  - 元素标注 data-ux-material-surface 即获得玻璃材质；@supports 回退不透明 --ux-bg-overlay（不做伪模糊）；宿主窗口不透明（applyWindowMaterial 'none'）时呈浅蒙层，CSS 仍工作
+  - check-tokens 新增 R5：backdrop-filter 禁裸值，只准消费 --ux-material-* / --ux-frost-*
+  - playground 主题区新增「玻璃材质」开关 + 常驻玻璃表面预览卡片；token 参考表同步（252 个令牌）
+- 29d0af7: feat: 移动端 M9a 收尾——触控档补全 + 安全区覆写 + R3+/R6 门禁
+  
+  @ux/tokens：
+  
+  - layout.css 触控档补全（移动端规范 §3.2/§3.5）：`--ux-row-h`（桌面 26px / coarse 40px）、`--ux-input-fs`（coarse 16px 硬基线，iOS 聚焦缩放规避）、coarse `--ux-fs-md: 14px`、`touch-action: manipulation` 全局交互基线
+  - 新增 `applySafeAreaInsets` / `resetSafeAreaInsets` / `getSafeAreaOverrides`：宿主上报安全区数值运行时覆写 `--ux-safe-*`（安卓 WebView env() 不可靠兜底，§3.3/§8）；tokenNames 增 layout.rowH / layout.inputFs
+  
+  @ux/composables：
+  
+  - `useVirtualRows.rowHeight` 支持 getter（`number | (() => number)`）——行高令牌切档后窗口/占位响应式重算（§3.2 remeasure 路径）
+  
+  @ux/patterns：
+  
+  - `UxDataTable` 行高令牌模式：rowHeight 缺省消费 `--ux-row-h`，监听 `data-ux-viewport` 根属性变化重读令牌（D-5 红线内不裸 matchMedia）；显式 prop 仍优先（确定性消费方不受切档影响）
+  
+  @ux/services：
+  
+  - `PlatformAdapter.safeAreaInsets?()` 移动契约（四边数值宿主上报，web 无需实现）
+  
+  门禁与消费方：
+  
+  - check-tokens 新增 R3+（媒体查询宽度字面量须为断点登记值 600/960/1280 或 *.98px 等价写法）与 R6（coarse 作用域 height 禁 24/28/32px 字面量）；SettingsShell 720px 孤例迁移 599.98px（§3.1 限期迁移项清零）
+  - playground：main.ts 接线 safeAreaInsets → applySafeAreaInsets；TokensPanel 新增视口演示卡（通道值实时回显 + 三断点可视化 + coarse 徽标，M9a 验收项）；触控行高演示随 DataTable 令牌模式生效
+- dca450b: feat(tokens): 着色表面色板 registerTint + AA 对比度校验（改进提案 P2-3 设计评审先行）
+  
+  - token 结构 --ux-tint-{name}-surface/-deep/-fg/-opaque：色值由消费者经 registerTint 运行时注入（单 <style data-ux-tints> 管理块，:root + .dark 两套），业务配色不落样式文件、不绕过 R1/dark 红线
+  - 注册即强制 AA 校验：fg 对 surface/deep/opaque 三对 ≥4.5:1（WCAG 2.1），不达标抛错并携带数值；validate:false 可显式跳过
+  - 配套 tintContrast（单对 WCAG 计算）/ checkTintContrast（报告式全量）/ listTints / resetTints
+  - 设计稿成文于设计方案 §4.6（消费惯例：var(--ux-tint-x-*, var(--ux-bg-*)) 带语义回退）；13 条单测
+- 8a6e9c5: feat(tokens): 视口状态通道 data-ux-viewport + 断点/安全区登记（移动端规范 §3.1/§3.3/§3.4 先行切片）
+  
+  - BP 断点登记（sm 600 / md 960 / lg 1280，与 layout.css --ux-bp-* 双源同值；CSS 媒体查询不能消费变量的登记制方案）
+  - applyViewport()：matchMedia 监听断点/指针/方向，维护 html[data-ux-viewport="sm coarse portrait"] 根属性通道；resolveViewport() 单次读取；视口判断唯一出口（组件不得自行 matchMedia）
+  - --ux-safe-* 安全区令牌（env(safe-area-inset-*)，配套 viewport-fit=cover；安卓 WebView 不可靠时由宿主上报覆写兜底）
+  - 6 条单测（档位边界 / 持续更新 / 取消清理）
+  
+  playground 移动入口（apps/playground）：
+  
+  - 窄屏（< --ux-bp-sm 600px）收缩：五页签横向滚动保持全部可达、副标题隐藏、safe-area 顶/底让位、按钮点击区对齐触控档 36px；只收缩不增强
+  - index.html viewport-fit=cover；e2e 新增 mobile.spec.ts（390×844 触屏视口：通道属性 + 收缩导航可达性 + 切分区）
+
 ## 0.2.0
 
 ### Minor Changes
